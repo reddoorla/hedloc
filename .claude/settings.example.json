@@ -1,0 +1,59 @@
+{
+  "_note": "Copy to .claude/settings.json and replace <…> placeholders with absolute paths. See AUTONOMY.md for the blast-radius tiers this encodes.",
+  "permissions": {
+    "allow": [
+      "Bash(*)",
+      "Write(<REPO_ROOT>/**)",
+      "Edit(<REPO_ROOT>/**)"
+    ],
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git push --force-with-lease:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git clean -fdx:*)",
+      "Bash(git clean -fd:*)",
+      "Bash(rm -rf:*)",
+      "Bash(rm -fr:*)"
+    ],
+    "ask": [
+      "Bash(netlify:*)",
+      "Bash(netlify deploy:*)",
+      "Bash(vercel:*)",
+      "Bash(gh secret:*)",
+      "Bash(gh release:*)",
+      "Bash(gh api:* -X DELETE:*)",
+      "Bash(gh api:* --method DELETE:*)"
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "network": {
+      "allowedDomains": [
+        "github.com",
+        "api.github.com",
+        "codeload.github.com",
+        "objects.githubusercontent.com",
+        "registry.npmjs.org",
+        "*.npmjs.org",
+        "*.prismic.io",
+        "*.cdn.prismic.io"
+      ]
+    },
+    "filesystem": {
+      "allowWrite": [
+        "<GITHUB_ROOT>",
+        "~/Library/pnpm",
+        "~/Library/Caches/ms-playwright",
+        "~/.npm"
+      ],
+      "denyRead": ["~/.ssh", "~/.aws"]
+    },
+    "excludedCommands": [
+      "gh *", "git *",
+      "pnpm test*", "pnpm run*", "pnpm exec*", "pnpm build*",
+      "pnpm typecheck*", "pnpm lint*", "pnpm format*", "pnpm vitest*",
+      "node*", "npx*"
+    ]
+  }
+}
