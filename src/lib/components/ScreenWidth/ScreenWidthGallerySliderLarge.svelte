@@ -154,7 +154,7 @@
               class="h-full object-cover -z-10"
             />
             <div
-              class="absolute w-full aspect-[4/3] top-8 left-0 bg-dark opacity-0 hover:opacity-100 hover:bg-opacity-80 transition-opacity duration-500 flex justify-center items-center"
+              class="absolute w-full aspect-[4/3] top-8 left-0 bg-dark/80 opacity-0 hover:opacity-100 transition-opacity duration-500 flex justify-center items-center"
             >
               <h4 class="text-white">{item.name}</h4>
             </div>

@@ -11,7 +11,7 @@
 <div class="w-full lg:w-1/2 my-8 {$$props.class || ''}">
   <div
     class="w-full aspect-[4/3] {image === placeholder
-      ? 'border-light border-2 bg-light bg-opacity-25'
+      ? 'border-light border-2 bg-light/25'
       : ''}  rounded-sm flex items-center justify-center relative"
   >
     <img

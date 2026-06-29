@@ -13,7 +13,7 @@
 <div class="w-full my-8 {$$props.class || ''}">
   <div
     class="w-full aspect-square {src === placeholder
-      ? 'border-light border-2 bg-light bg-opacity-25'
+      ? 'border-light border-2 bg-light/25'
       : ''}  rounded-sm flex items-center justify-center relative"
   >
     <img
