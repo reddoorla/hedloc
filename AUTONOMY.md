@@ -35,7 +35,7 @@ safety, not a human gate.
 
 ### 🔴 RED — never autonomous (human checkpoint, every time)
 - Custom-domain / DNS changes; manual out-of-git Netlify deploy promotion or env-var changes.
-- Secrets (`gh secret set`), branch-protection / org / billing changes.
+- Secrets (`gh secret set`), branch-protection / org / billing changes. The allowlist gating here is best-effort for CLI-accessible operations — org/billing changes ultimately rely on the human GitHub account having no agent token scoped for them.
 - Deleting Prismic documents or custom types the agent did not create.
 - History rewrites (force-push, `reset --hard` on shared branches); deletes of data the agent
   did not create.
@@ -66,7 +66,7 @@ the 3-lens review before merge.
 `.claude/settings.json` (local, gitignored; sanitized template at `.claude/settings.example.json`)
 encodes the tiers as allow / ask / deny rules: GREEN commands are `allow`ed (broad `Bash(*)`);
 RED commands are in `ask` (deploy / secrets — forces a prompt) or `deny` (force-push,
-`reset --hard`, `rm -rf`). The OS sandbox is enabled (macOS Seatbelt): `pnpm install`
+`--force-with-lease`, `reset --hard`, `git clean -fd(x)`, `rm -rf`). The OS sandbox is enabled (macOS Seatbelt): `pnpm install`
 postinstall scripts run sandboxed with a network allowlist (github, npm, prismic) and no read
 access to `~/.ssh` / `~/.aws` — the supply-chain containment that matters for Renovate
 auto-merge. The dev loop (`gh`, `git`, `pnpm build/test/lint`, `node`, `npx`) runs unsandboxed

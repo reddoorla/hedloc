@@ -18,8 +18,8 @@
     ],
     "ask": [
       "Bash(netlify:*)",
-      "Bash(netlify deploy:*)",
       "Bash(vercel:*)",
+      "Bash(gh api * /branches/*/protection*)",
       "Bash(gh secret:*)",
       "Bash(gh release:*)",
       "Bash(gh api:* -X DELETE:*)",
@@ -47,13 +47,14 @@
         "~/Library/Caches/ms-playwright",
         "~/.npm"
       ],
-      "denyRead": ["~/.ssh", "~/.aws"]
+      "denyRead": ["~/.ssh", "~/.aws", "~/.config/gh", "~/.netrc", "~/Library/Keychains"]
     },
     "excludedCommands": [
       "gh *", "git *",
       "pnpm test*", "pnpm run*", "pnpm exec*", "pnpm build*",
       "pnpm typecheck*", "pnpm lint*", "pnpm format*", "pnpm vitest*",
-      "node*", "npx*"
+      "node*", "npx*",
+      "netlify*", "vercel*"
     ]
   }
 }
