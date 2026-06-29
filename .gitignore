@@ -1,1 +1,13 @@
 node_modules
+/build
+/.svelte-kit
+/.netlify
+.env
+.env.*
+!.env.example
+.DS_Store
+pnpm-debug.log*
+
+# Claude Code local autonomy config (machine-specific; committed as .claude/settings.example.json)
+.claude/settings.json
+.claude/settings.local.json
