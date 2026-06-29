@@ -1,6 +1,6 @@
 {
-	"repositoryName": "hedloc",
-	"adapter": "@slicemachine/adapter-sveltekit",
-	"libraries": ["./src/lib/slices"],
-	"localSliceSimulatorURL": "http://localhost:5173/slice-simulator"
+  "repositoryName": "hedloc",
+  "adapter": "@slicemachine/adapter-sveltekit",
+  "libraries": ["./src/lib/slices"],
+  "localSliceSimulatorURL": "http://localhost:5173/slice-simulator"
 }

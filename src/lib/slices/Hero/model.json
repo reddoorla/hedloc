@@ -103,11 +103,7 @@
           "config": {
             "label": "text box float",
             "placeholder": "",
-            "options": [
-              "left",
-              "right",
-              "center"
-            ],
+            "options": ["left", "right", "center"],
             "default_value": "left"
           }
         },
@@ -116,11 +112,7 @@
           "config": {
             "label": "text box vertical align",
             "placeholder": "",
-            "options": [
-              "top",
-              "bottom",
-              "center"
-            ],
+            "options": ["top", "bottom", "center"],
             "default_value": "top"
           }
         },
@@ -129,11 +121,7 @@
           "config": {
             "label": "text justify",
             "placeholder": "",
-            "options": [
-              "left",
-              "right",
-              "center"
-            ],
+            "options": ["left", "right", "center"],
             "default_value": "left"
           }
         }
@@ -218,11 +206,7 @@
           "config": {
             "label": "text box float",
             "placeholder": "",
-            "options": [
-              "left",
-              "right",
-              "center"
-            ],
+            "options": ["left", "right", "center"],
             "default_value": "left"
           }
         },
@@ -231,11 +215,7 @@
           "config": {
             "label": "text box vertical align",
             "placeholder": "",
-            "options": [
-              "top",
-              "bottom",
-              "center"
-            ],
+            "options": ["top", "bottom", "center"],
             "default_value": "top"
           }
         },
@@ -244,11 +224,7 @@
           "config": {
             "label": "text justify",
             "placeholder": "",
-            "options": [
-              "left",
-              "right",
-              "center"
-            ],
+            "options": ["left", "right", "center"],
             "default_value": "left"
           }
         }

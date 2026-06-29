@@ -23,17 +23,20 @@ safety, not a human gate.
 ## Blast-radius tiers
 
 ### 🟢 GREEN — fully autonomous, no prompt
+
 - Edits, branches, commits, push to **feature** branches, PR **create**.
 - **Merge of CI-green, adversarial-review-clean `fix` PRs** (deploys on merge; instantly reversible).
 - Reads of GitHub / Prismic content; running builds, `svelte-check`, lint, lighthouse/a11y audits.
 
 ### 🟡 YELLOW — autonomous behind a stronger gate, logged + reversible
+
 - Behavior-changing `feat` merges — allowed unattended **only** when CI is green AND a 3-lens
   adversarial review is clean. These deploy to prod on merge; reversibility is the gate. Logged
   in `docs/autonomy-journal.md`.
 - Prismic content-model (Slice Machine) changes shipped through a PR.
 
 ### 🔴 RED — never autonomous (human checkpoint, every time)
+
 - Custom-domain / DNS changes; manual out-of-git Netlify deploy promotion or env-var changes.
 - Secrets (`gh secret set`), branch-protection / org / billing changes. The allowlist gating here is best-effort for CLI-accessible operations — org/billing changes ultimately rely on the human GitHub account having no agent token scoped for them.
 - Deleting Prismic documents or custom types the agent did not create.
@@ -41,12 +44,14 @@ safety, not a human gate.
   did not create.
 
 ## Merge authority (policy: "everything but RED")
+
 The agent may **auto-merge any PR** once it is CI-green and adversarial-review clean — including
 `feat`s — **except** any PR that itself performs a RED action (→ always human). Squash-merge,
 delete the branch, and append a journal entry. `fix` PRs need no separate sign-off; `feat`s get
 the 3-lens review before merge.
 
 ## Stop conditions — pause regardless of permissions
+
 1. A genuine **product / design / direction fork** — not the agent's to decide.
 2. Any **RED** action.
 3. **CI failing > 2 times** on the same change without a clear fix — stop, report, ask.
@@ -55,6 +60,7 @@ the 3-lens review before merge.
 6. A finding that contradicts how something was described — surface it, don't "fix" past it.
 
 ## The working loop
+
 1. **TDD where there is logic to test**; for content/UI changes, verify via build + a real
    browser smoke-run.
 2. **Adversarial review** — fresh subagents review the diff across distinct lenses; every real
@@ -63,6 +69,7 @@ the 3-lens review before merge.
 4. **Journal** — append what + why to [`docs/autonomy-journal.md`](docs/autonomy-journal.md).
 
 ## Permissions & sandbox
+
 `.claude/settings.json` (local, gitignored; sanitized template at `.claude/settings.example.json`)
 encodes the tiers as allow / ask / deny rules: GREEN commands are `allow`ed (broad `Bash(*)`);
 RED commands are in `ask` (deploy / secrets — forces a prompt) or `deny` (force-push,

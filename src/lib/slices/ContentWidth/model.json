@@ -106,11 +106,7 @@
           "config": {
             "label": "text float",
             "placeholder": "",
-            "options": [
-              "left",
-              "right",
-              "center"
-            ],
+            "options": ["left", "right", "center"],
             "default_value": "left"
           }
         },
@@ -119,11 +115,7 @@
           "config": {
             "label": "text box position vertical",
             "placeholder": "",
-            "options": [
-              "top",
-              "bottom",
-              "center"
-            ],
+            "options": ["top", "bottom", "center"],
             "default_value": "top"
           }
         },
@@ -132,11 +124,7 @@
           "config": {
             "label": "text box position horizontal",
             "placeholder": "",
-            "options": [
-              "left",
-              "right",
-              "center"
-            ],
+            "options": ["left", "right", "center"],
             "default_value": "left"
           }
         },
@@ -360,11 +348,7 @@
           "config": {
             "label": "text float",
             "placeholder": "",
-            "options": [
-              "left",
-              "right",
-              "center"
-            ],
+            "options": ["left", "right", "center"],
             "default_value": "left"
           }
         },
@@ -373,11 +357,7 @@
           "config": {
             "label": "text box position vertical",
             "placeholder": "",
-            "options": [
-              "top",
-              "bottom",
-              "center"
-            ],
+            "options": ["top", "bottom", "center"],
             "default_value": "top"
           }
         },
@@ -386,11 +366,7 @@
           "config": {
             "label": "text box position horizontal",
             "placeholder": "",
-            "options": [
-              "left",
-              "right",
-              "center"
-            ],
+            "options": ["left", "right", "center"],
             "default_value": "left"
           }
         },

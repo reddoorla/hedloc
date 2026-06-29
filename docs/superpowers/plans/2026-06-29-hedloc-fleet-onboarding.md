@@ -28,6 +28,7 @@
 ### Task 1.1: Harden `.gitignore`
 
 **Files:**
+
 - Modify: `$HEDLOC/.gitignore` (currently contains only `node_modules`)
 
 - [ ] **Step 1: Replace `.gitignore` with the hardened version**
@@ -64,6 +65,7 @@ git commit -m "chore: harden .gitignore for fleet stack and autonomy config"
 ### Task 1.2: Create `.claude/settings.json` (the allowlist — gitignored)
 
 **Files:**
+
 - Create: `$HEDLOC/.claude/settings.json`
 
 - [ ] **Step 1: Write the file**
@@ -120,10 +122,7 @@ git commit -m "chore: harden .gitignore for fleet stack and autonomy config"
         "~/Library/Caches/ms-playwright",
         "~/.npm"
       ],
-      "denyRead": [
-        "~/.ssh",
-        "~/.aws"
-      ]
+      "denyRead": ["~/.ssh", "~/.aws"]
     },
     "excludedCommands": [
       "gh *",
@@ -151,6 +150,7 @@ Expected: prints `ok`; `git status` shows NO output for that path (ignored).
 ### Task 1.3: Create `.claude/settings.local.json` (read-only conveniences — gitignored)
 
 **Files:**
+
 - Create: `$HEDLOC/.claude/settings.local.json`
 
 - [ ] **Step 1: Write the file**
@@ -206,6 +206,7 @@ Expected: `ok`.
 ### Task 1.4: Create `.claude/settings.example.json` (committed, sanitized)
 
 **Files:**
+
 - Create: `$HEDLOC/.claude/settings.example.json`
 
 - [ ] **Step 1: Write the file** (same shape as `settings.json`, with machine paths replaced by `<REPO_ROOT>` / `<GITHUB_ROOT>` placeholders so the config is reproducible on another machine)
@@ -214,11 +215,7 @@ Expected: `ok`.
 {
   "_note": "Copy to .claude/settings.json and replace <…> placeholders with absolute paths. See AUTONOMY.md for the blast-radius tiers this encodes.",
   "permissions": {
-    "allow": [
-      "Bash(*)",
-      "Write(<REPO_ROOT>/**)",
-      "Edit(<REPO_ROOT>/**)"
-    ],
+    "allow": ["Bash(*)", "Write(<REPO_ROOT>/**)", "Edit(<REPO_ROOT>/**)"],
     "deny": [
       "Bash(git push --force:*)",
       "Bash(git push -f:*)",
@@ -263,10 +260,18 @@ Expected: `ok`.
       "denyRead": ["~/.ssh", "~/.aws"]
     },
     "excludedCommands": [
-      "gh *", "git *",
-      "pnpm test*", "pnpm run*", "pnpm exec*", "pnpm build*",
-      "pnpm typecheck*", "pnpm lint*", "pnpm format*", "pnpm vitest*",
-      "node*", "npx*"
+      "gh *",
+      "git *",
+      "pnpm test*",
+      "pnpm run*",
+      "pnpm exec*",
+      "pnpm build*",
+      "pnpm typecheck*",
+      "pnpm lint*",
+      "pnpm format*",
+      "pnpm vitest*",
+      "node*",
+      "npx*"
     ]
   }
 }
@@ -280,11 +285,12 @@ Expected: `ok`.
 ### Task 1.5: Create `AUTONOMY.md` (the contract, re-derived for a content site)
 
 **Files:**
+
 - Create: `$HEDLOC/AUTONOMY.md`
 
 - [ ] **Step 1: Write the file**
 
-````markdown
+```markdown
 # Autonomy contract
 
 How the AI agent (Claude) operates on this repo with reduced human intervention. The
@@ -310,17 +316,20 @@ safety, not a human gate.
 ## Blast-radius tiers
 
 ### 🟢 GREEN — fully autonomous, no prompt
+
 - Edits, branches, commits, push to **feature** branches, PR **create**.
 - **Merge of CI-green, adversarial-review-clean `fix` PRs** (deploys on merge; instantly reversible).
 - Reads of GitHub / Prismic content; running builds, `svelte-check`, lint, lighthouse/a11y audits.
 
 ### 🟡 YELLOW — autonomous behind a stronger gate, logged + reversible
+
 - Behavior-changing `feat` merges — allowed unattended **only** when CI is green AND a 3-lens
   adversarial review is clean. These deploy to prod on merge; reversibility is the gate. Logged
   in `docs/autonomy-journal.md`.
 - Prismic content-model (Slice Machine) changes shipped through a PR.
 
 ### 🔴 RED — never autonomous (human checkpoint, every time)
+
 - Custom-domain / DNS changes; manual out-of-git Netlify deploy promotion or env-var changes.
 - Secrets (`gh secret set`), branch-protection / org / billing changes.
 - Deleting Prismic documents or custom types the agent did not create.
@@ -328,12 +337,14 @@ safety, not a human gate.
   did not create.
 
 ## Merge authority (policy: "everything but RED")
+
 The agent may **auto-merge any PR** once it is CI-green and adversarial-review clean — including
 `feat`s — **except** any PR that itself performs a RED action (→ always human). Squash-merge,
 delete the branch, and append a journal entry. `fix` PRs need no separate sign-off; `feat`s get
 the 3-lens review before merge.
 
 ## Stop conditions — pause regardless of permissions
+
 1. A genuine **product / design / direction fork** — not the agent's to decide.
 2. Any **RED** action.
 3. **CI failing > 2 times** on the same change without a clear fix — stop, report, ask.
@@ -342,6 +353,7 @@ the 3-lens review before merge.
 6. A finding that contradicts how something was described — surface it, don't "fix" past it.
 
 ## The working loop
+
 1. **TDD where there is logic to test**; for content/UI changes, verify via build + a real
    browser smoke-run.
 2. **Adversarial review** — fresh subagents review the diff across distinct lenses; every real
@@ -350,6 +362,7 @@ the 3-lens review before merge.
 4. **Journal** — append what + why to [`docs/autonomy-journal.md`](docs/autonomy-journal.md).
 
 ## Permissions & sandbox
+
 `.claude/settings.json` (local, gitignored; sanitized template at `.claude/settings.example.json`)
 encodes the tiers as allow / ask / deny rules: GREEN commands are `allow`ed (broad `Bash(*)`);
 RED commands are in `ask` (deploy / secrets — forces a prompt) or `deny` (force-push,
@@ -358,7 +371,7 @@ postinstall scripts run sandboxed with a network allowlist (github, npm, prismic
 access to `~/.ssh` / `~/.aws` — the supply-chain containment that matters for Renovate
 auto-merge. The dev loop (`gh`, `git`, `pnpm build/test/lint`, `node`, `npx`) runs unsandboxed
 via `excludedCommands` (Seatbelt-incompatible; our own trusted code).
-````
+```
 
 - [ ] **Step 2: Verify it renders as valid markdown (no broken fences)**
 
@@ -368,6 +381,7 @@ Expected: an even number (all fences closed).
 ### Task 1.6: Seed `docs/autonomy-journal.md`
 
 **Files:**
+
 - Create: `$HEDLOC/docs/autonomy-journal.md`
 
 - [ ] **Step 1: Write the file**
@@ -379,6 +393,7 @@ Append-only log of unattended/agentic changes on hedloc: what changed, why, and 
 verified. Newest entries on top. See [`AUTONOMY.md`](../AUTONOMY.md) for the contract.
 
 ## 2026-06-29 — Fleet onboarding
+
 - Established the autonomy guardrails (`.claude/settings.json` allowlist + sandbox,
   `AUTONOMY.md`, this journal). See `docs/superpowers/plans/2026-06-29-hedloc-fleet-onboarding.md`.
 ```
@@ -407,6 +422,7 @@ and gotchas. hedloc is already on Svelte 5, so the active deltas are: Tailwind 3
 ### Task 2.1: Run the stack upgrade
 
 **Files (expected to change):**
+
 - Modify: `$HEDLOC/package.json` (deps + scripts), `$HEDLOC/svelte.config.js` (adapter-netlify),
   `$HEDLOC/postcss.config.js` → Tailwind 4 plugin, `$HEDLOC/src/app.css` (Tailwind 4 import),
   `$HEDLOC/tailwind.config.js`, `$HEDLOC/vite.config.js`, `$HEDLOC/netlify.toml`
@@ -416,6 +432,7 @@ and gotchas. hedloc is already on Svelte 5, so the active deltas are: Tailwind 3
 - [ ] **Step 1: Invoke the upgrade skill**
 
 Invoke the `svelte4-to-5-upgrade` skill and follow its 7-commit recipe against `$HEDLOC`. Apply these hedloc-specific deltas/gotchas (verified from the current files):
+
 - **app.css** uses Tailwind 3 directives `@tailwind base; @tailwind components; @tailwind utilities;` → replace with `@import "tailwindcss";` (Tailwind 4). Preserve all the custom CSS below the directives (body/scrollbar rules, `.bump`/`.negative-bump`, the `svelte-select` overrides, `.filter-to-dark`).
 - **postcss.config.js** uses `{ tailwindcss: {}, autoprefixer: {} }` → Tailwind 4 uses the `@tailwindcss/postcss` plugin (or the `@tailwindcss/vite` plugin in `vite.config.js`); autoprefixer is no longer needed.
 - **tailwind.config.js** has duplicate `height` keys (`screen-75/50/25/10/5` repeated) and an invalid `'proportion': 'proportion'` entry — clean these up while migrating the theme (custom `screens`, `colors` incl. the stray `light:'#C8AF5E;'` trailing semicolon, and `transitionTimingFunction`). Keep the `safelist`.
@@ -427,6 +444,7 @@ Invoke the `svelte4-to-5-upgrade` skill and follow its 7-commit recipe against `
 - [ ] **Step 2: Verify the build is green on the new stack**
 
 Run:
+
 ```bash
 cd $HEDLOC
 pnpm install
@@ -434,6 +452,7 @@ pnpm run build
 pnpm run check
 pnpm run lint
 ```
+
 Expected: install succeeds; `build` completes with the adapter-netlify output in `build/`; `check` (svelte-check) reports 0 errors; `lint` passes (or only pre-existing style nits — fix them).
 
 - [ ] **Step 3: Smoke-run the app in a browser**
@@ -443,6 +462,7 @@ Use the `/run` skill (or `pnpm run dev` + open `http://localhost:5173`). Confirm
 - [ ] **Step 4: Commit**
 
 The `svelte4-to-5-upgrade` recipe commits in its own steps. If any changes remain unstaged after the skill finishes:
+
 ```bash
 cd $HEDLOC
 git add -A
@@ -462,10 +482,12 @@ maintenance + audit deps and installs them; `sync-configs` writes the canonical 
 - [ ] **Step 1: Build the CLI if `dist` is stale, then smoke it**
 
 Run:
+
 ```bash
 cd /Users/tuckerlemos/Documents/GitHub/reddoor-maintenance
 node dist/cli/bin.js --help
 ```
+
 Expected: the CLI help lists `onboard`, `self-updating`, `sync-configs`, `launch`. If it errors (stale/missing `dist`), run `pnpm install && pnpm build` in that repo first, then retry.
 
 ### Task 3.2: Run `onboard` against hedloc
@@ -475,9 +497,11 @@ Expected: the CLI help lists `onboard`, `self-updating`, `sync-configs`, `launch
 - [ ] **Step 1: Dry-run preview**
 
 Run:
+
 ```bash
 node /Users/tuckerlemos/Documents/GitHub/reddoor-maintenance/dist/cli/bin.js onboard --cwd $HEDLOC --audits lighthouse,a11y --verbose
 ```
+
 Note: `onboard` has no `--dry`; read the verbose output as it runs. It adds (to `devDependencies`):
 `@reddoorla/maintenance@<caret>`, `@sveltejs/adapter-netlify@^6.0.4`, `@lhci/cli@^0.15.1`,
 `@playwright/test@^1.60.0`, `@axe-core/playwright@^4.11.3`, then runs `pnpm install` and commits
@@ -503,9 +527,11 @@ Expected: the `chore(reddoor): onboard …` commit. If the recipe did not auto-c
 - [ ] **Step 1: Dry-run preview**
 
 Run:
+
 ```bash
 node /Users/tuckerlemos/Documents/GitHub/reddoor-maintenance/dist/cli/bin.js sync-configs --cwd $HEDLOC --dry --verbose
 ```
+
 Expected: a diff of the config files above. The `svelte.config.js` will be rewritten to the
 `createSvelteConfig` + `adapter-netlify` form (replacing Phase 2's interim adapter swap); the
 `.gitignore` is merged (our Phase 1 entries are preserved). Review that nothing site-specific is lost.
@@ -513,6 +539,7 @@ Expected: a diff of the config files above. The `svelte.config.js` will be rewri
 - [ ] **Step 2: Apply for real**
 
 Run:
+
 ```bash
 node /Users/tuckerlemos/Documents/GitHub/reddoor-maintenance/dist/cli/bin.js sync-configs --cwd $HEDLOC --verbose
 ```
@@ -520,6 +547,7 @@ node /Users/tuckerlemos/Documents/GitHub/reddoor-maintenance/dist/cli/bin.js syn
 - [ ] **Step 3: Reconcile and verify the full toolchain**
 
 Run:
+
 ```bash
 cd $HEDLOC
 pnpm install
@@ -527,6 +555,7 @@ pnpm run lint
 pnpm run check
 pnpm run build
 ```
+
 Expected: `eslint.config.js` resolves `@reddoorla/maintenance/configs/eslint`; lint + check + build all pass. If lint flags formatting, run `pnpm run format` and re-run. Confirm `.gitignore` still ignores `.claude/settings.json` (the merge must not have dropped it):
 `git check-ignore -v .claude/settings.json` → expected: matches.
 
@@ -541,16 +570,18 @@ git commit -m "chore(reddoor): sync fleet configs (eslint/prettier/lighthouse/pl
 ### Task 3.4: Integrate the branch into `main` (pre-CI)
 
 Branch protection is not in place yet (CI is added in Phase 5), and the site is pre-launch, so the
-onboarding work lands on `main` directly here; all *future* changes go through the PR/CI flow.
+onboarding work lands on `main` directly here; all _future_ changes go through the PR/CI flow.
 
 - [ ] **Step 1: Fast-forward `main` to `fleet-onboarding`**
 
 Run:
+
 ```bash
 cd $HEDLOC
 git checkout main
 git merge --ff-only fleet-onboarding
 ```
+
 Expected: `main` advances to the branch tip with no merge commit.
 
 - [ ] **Step 2: Verify `main` builds clean**
@@ -567,12 +598,14 @@ Expected: all green.
 - [ ] **Step 1: Confirm clean + push `main` to the current (`tucksravin`) origin**
 
 Run:
+
 ```bash
 cd $HEDLOC
 git status --short
 git push origin main
 git push origin fleet-onboarding
 ```
+
 Expected: `git status` empty; both branches pushed to `github.com/tucksravin/hedloc`.
 
 ### Task 4.2: 🔴 Transfer (RED — confirm with operator first)
@@ -584,9 +617,11 @@ Pause and confirm with the operator: "Transfer `tucksravin/hedloc` → `reddoorl
 - [ ] **Step 2: Execute the transfer**
 
 Run:
+
 ```bash
 gh api -X POST repos/tucksravin/hedloc/transfer -f new_owner=reddoorla
 ```
+
 Expected: HTTP 202 with the repo JSON. (GitHub sets up an automatic redirect from the old URL.)
 
 - [ ] **Step 3: Verify the repo now lives under `reddoorla`**
@@ -599,12 +634,14 @@ Expected: `reddoorla/hedloc`.
 - [ ] **Step 1: Update `origin` and verify fetch/push**
 
 Run:
+
 ```bash
 cd $HEDLOC
 git remote set-url origin https://github.com/reddoorla/hedloc.git
 git remote -v
 git fetch origin
 ```
+
 Expected: `origin` shows the `reddoorla/hedloc` URL; fetch succeeds.
 
 ---
@@ -621,9 +658,11 @@ auto-merge, and configures branch protection — the secret write and branch-pro
 The `self-updating` recipe provisions the `RENOVATE_TOKEN` repo secret from a token value it reads
 from the environment / `~/.config/reddoor-maint/credentials.env`. Confirm one is available without
 printing it:
+
 ```bash
 node -e "const v=process.env.RENOVATE_TOKEN; console.log(v? 'RENOVATE_TOKEN in env' : 'not in env — recipe will read credentials.env or skip')"
 ```
+
 If neither env nor the creds file has a `RENOVATE_TOKEN`, the secret-set step will fail or be
 skipped. In that case, pause and ask the operator to provide a GitHub PAT (repo + workflow scopes)
 to use as `RENOVATE_TOKEN`, or to confirm the Renovate run can use the shared `reddoorla` token.
@@ -633,9 +672,11 @@ to use as `RENOVATE_TOKEN`, or to confirm the Renovate run can use the shared `r
 - [ ] **Step 1: Preview**
 
 Run:
+
 ```bash
 node /Users/tuckerlemos/Documents/GitHub/reddoor-maintenance/dist/cli/bin.js self-updating --cwd $HEDLOC --dry --verbose
 ```
+
 Expected: lists the files it would write (`.github/workflows/ci.yml`, `.github/workflows/renovate.yml`,
 `renovate.json`), and the GitHub operations it would perform (set `RENOVATE_TOKEN`, enable
 auto-merge, protect `main` requiring the `ci / ci` check). Confirm the target repo is `reddoorla/hedloc`.
@@ -647,19 +688,23 @@ auto-merge, protect `main` requiring the `ci / ci` check). Confirm the target re
 - [ ] **Step 2: Execute**
 
 Run:
+
 ```bash
 node /Users/tuckerlemos/Documents/GitHub/reddoor-maintenance/dist/cli/bin.js self-updating --cwd $HEDLOC --verbose
 ```
+
 Expected: writes the three files on a `maint/self-updating-*` branch, pushes, opens a PR on
 `reddoorla/hedloc`, sets the secret, enables auto-merge, and protects `main`.
 
 - [ ] **Step 3: Verify CI runs green on the PR and it merges**
 
 Run:
+
 ```bash
 gh pr list -R reddoorla/hedloc
 gh run list -R reddoorla/hedloc -L 3
 ```
+
 Expected: the self-updating PR's `ci` check passes and (via auto-merge) the PR merges to `main`. If
 CI fails, debug the reusable workflow's expected scripts (`pnpm install/lint/check/build`) against
 hedloc's `package.json`; fix on the PR branch until green (stop after 2 failed attempts per the
@@ -668,10 +713,12 @@ contract and report).
 - [ ] **Step 4: Verify branch protection + auto-merge are active**
 
 Run:
+
 ```bash
 gh api repos/reddoorla/hedloc/branches/main/protection -q '.required_status_checks.contexts'
 gh repo view reddoorla/hedloc --json autoMergeAllowed -q .autoMergeAllowed
 ```
+
 Expected: the protection contexts include the CI check; `autoMergeAllowed` is `true`.
 
 ---
@@ -686,9 +733,11 @@ the Airtable REST API using the operator's PAT (or, as a fallback, by hand in th
 - [ ] **Step 1: Confirm Airtable creds are available** (without printing them)
 
 Run:
+
 ```bash
 test -f ~/.config/reddoor-maint/credentials.env && echo "creds file present" || echo "missing"
 ```
+
 Expected: `creds file present`. The file holds `AIRTABLE_PAT` and `AIRTABLE_BASE_ID`.
 
 - [ ] **Step 2: 🔴 Confirm with the operator**, then create the row via a one-off script
@@ -703,12 +752,17 @@ import { homedir } from "node:os";
 import Airtable from "airtable"; // resolved from the reddoor-maintenance node_modules
 
 // load AIRTABLE_PAT / AIRTABLE_BASE_ID from credentials.env without echoing them
-const env = readFileSync(`${homedir()}/.config/reddoor-maint/credentials.env`, "utf8");
+const env = readFileSync(
+  `${homedir()}/.config/reddoor-maint/credentials.env`,
+  "utf8",
+);
 for (const line of env.split("\n")) {
   const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
   if (m) process.env[m[1]] ??= m[2].replace(/^["']|["']$/g, "");
 }
-const base = new Airtable({ apiKey: process.env.AIRTABLE_PAT }).base(process.env.AIRTABLE_BASE_ID);
+const base = new Airtable({ apiKey: process.env.AIRTABLE_PAT }).base(
+  process.env.AIRTABLE_BASE_ID,
+);
 const rec = await base("Websites").create([
   {
     fields: {
@@ -727,13 +781,15 @@ console.log("created row:", rec[0].id);
 ```
 
 Run it with the maintenance repo's `node_modules` on the path (it has the `airtable` package):
+
 ```bash
 cd /Users/tuckerlemos/Documents/GitHub/reddoor-maintenance
 node $SCRATCH/create-hedloc-row.mjs
 ```
+
 Expected: prints `created row: rec…`. Delete the scratchpad script afterward (it referenced creds).
 
-*Fallback (manual):* create the row in the Airtable **Websites** table UI with the same field values.
+_Fallback (manual):_ create the row in the Airtable **Websites** table UI with the same field values.
 
 - [ ] **Step 3: Verify the row exists and is active**
 
@@ -755,6 +811,7 @@ cd /Users/tuckerlemos/Documents/GitHub/reddoor-maintenance
 REDDOOR_FLEET_WORKDIR=/Users/tuckerlemos/Documents/GitHub \
   node dist/cli/bin.js launch hedloc --verbose
 ```
+
 Setting `REDDOOR_FLEET_WORKDIR` to the GitHub dir makes the recipe resolve the checkout to the
 existing `$HEDLOC` (slug `hedloc`) instead of cloning a fresh copy.
 Expected: three steps run; a `Launch` report **draft** is queued in the dashboard. **It does not
@@ -763,9 +820,11 @@ send** — sending is the human-gated M3 approve loop and is out of scope here.
 - [ ] **Step 2: Verify the draft + scores**
 
 Run:
+
 ```bash
 gh api repos/reddoorla/hedloc/commits -q '.[0].sha' >/dev/null && echo "repo ok"
 ```
+
 Then confirm in the dashboard that the Hedloc Websites row has fresh Lighthouse scores
 (`pScore`/`rScore`/`bpScore`/`seoScore`) and a queued Launch draft.
 

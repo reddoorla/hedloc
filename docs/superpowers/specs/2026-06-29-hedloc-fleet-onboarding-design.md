@@ -32,6 +32,7 @@ Airtable inventory.
 ## Goals / Non-goals
 
 **Goals**
+
 - hedloc has the autonomy guardrails (allowlist + `AUTONOMY.md` + journal), adapted for
   a content site.
 - hedloc runs the reddoor-starter stack (adapter-netlify, pnpm, Tailwind 4, Vite 8, Lucide).
@@ -41,13 +42,14 @@ Airtable inventory.
   `launch` recipe has produced a **draft** Launch report (sending stays human-gated).
 
 **Non-goals**
+
 - Sending the launch report (human-gated, out of scope here).
 - Any content/design changes to the site itself.
 - Changing other fleet sites.
 
 ## Confirmed decisions
 
-1. **Scope:** full fleet onboarding (guardrails + auto-merge + onboard recipe). 
+1. **Scope:** full fleet onboarding (guardrails + auto-merge + onboard recipe).
 2. **Repo move:** transfer the existing repo (`tucksravin/hedloc` → `reddoorla`), preserving
    history/issues and GitHub's URL redirect.
 3. **Stack:** full upgrade to the reddoor-starter baseline.
@@ -72,6 +74,7 @@ precedes B); D's CI/branch-protection/auto-merge must target the final repo loca
 ## Workstream C — Allowlist + Autonomy
 
 ### C1 — `.claude/settings.json` (the allowlist), adapted for hedloc
+
 - **`allow`:** `Bash(*)`; `Write`/`Edit` scoped to the hedloc repo
   (`/Users/tuckerlemos/Documents/GitHub/hedloc/**`) + its memory dir
   (`/Users/tuckerlemos/.claude/projects/-Users-tuckerlemos-Documents-GitHub-hedloc/memory/**`);
@@ -97,12 +100,14 @@ precedes B); D's CI/branch-protection/auto-merge must target the final repo loca
   also commit a sanitized **`.claude/settings.example.json`** so the config is reproducible.
 
 ### C2 — `AUTONOMY.md` (re-derived for a content site) + seed `docs/autonomy-journal.md`
+
 Same structure as the parent (tiers / merge authority / stop conditions / working loop /
 permissions & sandbox), but the irreversible chokepoint changes from `npm publish`
 (fans out to ~200 fleet sites) to the **Netlify production deploy** (one client site,
 instantly reversible).
 
 Blast-radius tiers for hedloc:
+
 - **🟢 GREEN** — edits, branches, commits, feature-branch push, PR create; reads;
   audits/build/test/lint/typecheck; Prismic content reads; **merge of CI-green,
   review-clean `fix` PRs** (deploys to prod, but instantly reversible).
@@ -121,6 +126,7 @@ sign-off, `feat` gets the 3-lens review first; squash-merge, delete branch, appe
 ## Workstream A — Stack upgrade (via `svelte4-to-5-upgrade` recipe)
 
 Svelte 5 is already present; the deltas to reach the reddoor-starter baseline:
+
 - Tailwind **3 → 4** (config/PostCSS migration, `@tailwindcss/vite`).
 - Vite **6 → 8**.
 - `@sveltejs/adapter-auto` → `@sveltejs/adapter-netlify`; rewrite the broken `netlify.toml`
@@ -156,7 +162,7 @@ directly). It adds `@reddoorla/maintenance` (caret-pinned to the package's own v
 1. Create the Airtable **Websites** row: `Name=Hedloc`, `URL=<placeholder>`,
    `gitRepo=reddoorla/hedloc`, `Status=launch period`, `pointOfContact=<placeholder>`,
    `GA4=<placeholder>`, default maintenance/testing frequencies.
-   - *Open item:* whether the maintenance CLI exposes a row-**create** path, or the row is
+   - _Open item:_ whether the maintenance CLI exposes a row-**create** path, or the row is
      created via the Airtable API/MCP directly (parent references `mcp__airtable__update_field`).
      The CLI loads its own creds from `~/.config/reddoor-maint/credentials.env`.
 2. Run the `launch` recipe (`node dist/cli/bin.js launch …`): `selfUpdating` bootstrap
