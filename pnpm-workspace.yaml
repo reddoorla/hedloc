@@ -2,3 +2,5 @@ allowBuilds:
   "@scarf/scarf": true
   esbuild: true
   sharp: true
+minimumReleaseAgeExclude:
+  - '@reddoorla/maintenance@0.64.0'

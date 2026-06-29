@@ -39,7 +39,11 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.60.0",
     "typescript-svelte-plugin": "^0.3.52",
-    "vite": "^8.0.14"
+    "vite": "^8.0.14",
+    "@reddoorla/maintenance": "^0.64.0",
+    "@lhci/cli": "^0.15.1",
+    "@playwright/test": "^1.60.0",
+    "@axe-core/playwright": "^4.11.3"
   },
   "dependencies": {
     "@prismicio/client": "^7.3.1",
