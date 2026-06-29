@@ -1,4 +1,8 @@
 [build]
-    command = "npm run build"
+    command = "pnpm build"
     publish = "build/"
     functions = "functions/"
+
+[build.environment]
+    NODE_VERSION = "24"
+    COREPACK_INTEGRITY_KEYS = "0"
