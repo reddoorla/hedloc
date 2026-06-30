@@ -1,5 +1,3 @@
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
 <script lang="ts">
   import { onMount } from "svelte";
   import { createSwipeAction, type SwipeCustomEvent } from "$lib/utils/swipeAction";
@@ -15,34 +13,37 @@
     filters?: string[];
   };
 
-  export let itemArray: GalleryItem[] = [
-    {
-      name: "Item 1",
-      featuredText: "Dev + UX",
-      href: "#",
-      filters: ["Dev", "UX"],
-    },
-    {
-      name: "Item 2",
-    },
-    {
-      name: "Item 3",
-      featuredText: "UX + UI",
-      href: "#",
-      featuredImage: placeholder,
-      filters: ["UI", "UX"],
-    },
-  ];
+  let {
+    itemArray = [
+      {
+        name: "Item 1",
+        featuredText: "Dev + UX",
+        href: "#",
+        filters: ["Dev", "UX"],
+      },
+      {
+        name: "Item 2",
+      },
+      {
+        name: "Item 3",
+        featuredText: "UX + UI",
+        href: "#",
+        featuredImage: placeholder,
+        filters: ["UI", "UX"],
+      },
+    ],
+    class: className = "",
+  }: { itemArray?: GalleryItem[]; class?: string } = $props();
 
   const SLIDER_TRANSITION_LENGTH_IN_MS = 2000;
   const SLIDER_INTERVAL_IN_MS = 5000;
 
-  let sliderIndex = 0;
-  let innerWidth: number;
-  let imageWidth: number;
-  let isSlideAnimated = true;
+  let sliderIndex = $state(0);
+  let innerWidth: number = $state(0);
+  let imageWidth: number = $state(0);
+  let isSlideAnimated = $state(true);
 
-  $: {
+  $effect(() => {
     if (innerWidth > 1040) {
       imageWidth = 720;
     } else if (innerWidth > 768) {
@@ -50,7 +51,7 @@
     } else {
       imageWidth = 320;
     }
-  }
+  });
 
   const resetSliderToStart = () => {
     setTimeout(() => (isSlideAnimated = false), SLIDER_TRANSITION_LENGTH_IN_MS);
@@ -95,28 +96,28 @@
 
   let _progressPosistion = 0;
   let _progressWrapForwardPosition = -100;
-  let _progressWrapBackwardPosition = itemArray.length * 100;
+  let _progressWrapBackwardPosition = 0;
 
-  $: {
+  $effect(() => {
     _progressPosistion = sliderIndex * 100;
     if (sliderIndex == itemArray.length) _progressWrapForwardPosition = 0;
     else _progressWrapForwardPosition = 100;
 
     if (sliderIndex == -1) _progressWrapBackwardPosition = itemArray.length * 100 - 100;
     else _progressWrapBackwardPosition = itemArray.length * 100;
-  }
+  });
 
   onMount(() => {
     sliderInterval = setInterval(() => slideRight(), SLIDER_INTERVAL_IN_MS);
   });
 
-  const tripledItems = itemArray.concat(itemArray).concat(itemArray);
+  const tripledItems = $derived(itemArray.concat(itemArray).concat(itemArray));
 </script>
 
 <svelte:head><title>Portfolios | Reddoor Wireframer</title></svelte:head>
 <svelte:window bind:innerWidth />
 
-<section class="pb-32 {$$props.class || ''}">
+<section class="pb-32 {className || ''}">
   <div use:swipe class="h-py-2 relative" style="height:{imageWidth * 0.95}px;">
     <div
       class="h-full flex flex-row flex-nowrap {isSlideAnimated
@@ -165,7 +166,7 @@
                 itemArray.length + (sliderIndex % itemArray.length) === i)
                 ? 'bg-dark border-dark'
                 : 'border-light'}"
-              on:click={() => setSliderIndex(i)}
+              onclick={() => setSliderIndex(i)}
               aria-label="image {i} of {itemArray.length}"
               aria-hidden
             ></button>

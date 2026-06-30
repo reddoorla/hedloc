@@ -1,29 +1,39 @@
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
 <script lang="ts">
-  export let icon = "";
-  export let iconAltText = "company logo";
-  export let testimonialText = "";
-  export let attribution = "";
-  export let attributionLabel = "";
-  export let backgroundColor = "transparent";
-  export let float = "center";
-  let justify: string;
-  let horizontalFloatMargin: string;
+  let {
+    icon = "",
+    iconAltText = "company logo",
+    testimonialText = "",
+    attribution = "",
+    attributionLabel = "",
+    backgroundColor = "transparent",
+    float = "center",
+    class: className = "",
+  }: {
+    icon?: string;
+    iconAltText?: string;
+    testimonialText?: string;
+    attribution?: string;
+    attributionLabel?: string;
+    backgroundColor?: string;
+    float?: string;
+    class?: string;
+  } = $props();
 
-  $: {
-    justify = float;
-    if (float === "left") justify = "start";
-    if (float === "right") justify = "end";
+  let justify = $derived.by(() => {
+    if (float === "left") return "start";
+    if (float === "right") return "end";
+    return float;
+  });
 
-    horizontalFloatMargin = "mx-auto";
-    if (float === "left") horizontalFloatMargin = "ml-0 mr-auto";
-    if (float === "right") horizontalFloatMargin = "ml-auto mr-0";
-  }
+  let horizontalFloatMargin = $derived.by(() => {
+    if (float === "left") return "ml-0 mr-auto";
+    if (float === "right") return "ml-auto mr-0";
+    return "mx-auto";
+  });
 </script>
 
 <div
-  class="{$$props.class || ''} w-full flex flex-col p-2 sm:p-8 justify-{justify} text-{float}"
+  class="{className || ''} w-full flex flex-col p-2 sm:p-8 justify-{justify} text-{float}"
   style="background-color: {backgroundColor}"
 >
   {#if icon}

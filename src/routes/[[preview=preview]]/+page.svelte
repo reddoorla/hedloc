@@ -4,7 +4,7 @@
   import { PrismicImage, PrismicRichText } from "@prismicio/svelte";
 
   let { data } = $props();
-  let content = $state(data.page.data);
+  let content = $derived(data.page.data);
 
   let viewportWidth = $state(1024);
 </script>

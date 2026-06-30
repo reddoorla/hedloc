@@ -8,11 +8,12 @@
   let {
     labels = ["Is this thing on?", "It could be why don't you check"],
     contents = [LOREM, LOREM],
+  }: {
+    labels?: string[];
+    contents?: string[];
   } = $props();
 
-  let activeAccordians: boolean[] = $state([]);
-
-  labels.forEach(() => activeAccordians.push(false));
+  let activeAccordians: Record<number, boolean> = $state({});
 </script>
 
 <div class="w-full flex flex-col border-light border-b-2 cursor-pointer">

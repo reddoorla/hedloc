@@ -1,23 +1,29 @@
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
 <script lang="ts">
   import Select from "svelte-select";
   import dropdownArrow from "$lib/assets/icons/dropdown-arrow-light.svg";
 
-  export let items: string[] | { label: string; value: string }[];
-  export let value = "";
-  export let placeholder = "";
+  let {
+    value = $bindable(""),
+    placeholder = "",
+    class: className = "",
+    items,
+  }: {
+    value?: string;
+    placeholder?: string;
+    class?: string;
+    items: string[] | { label: string; value: string }[];
+  } = $props();
 
-  let selectHover = false;
+  let selectHover = $state(false);
 </script>
 
 <div
-  class="max-w-[720px] w-full mx-auto cursor-pointer relative {$$props.class || ''}"
+  class="max-w-[720px] w-full mx-auto cursor-pointer relative {className || ''}"
   role="separator"
-  on:mouseover={() => (selectHover = true)}
-  on:focus={() => (selectHover = true)}
-  on:mouseout={() => (selectHover = false)}
-  on:blur={() => (selectHover = false)}
+  onmouseover={() => (selectHover = true)}
+  onfocus={() => (selectHover = true)}
+  onmouseout={() => (selectHover = false)}
+  onblur={() => (selectHover = false)}
 >
   <Select {items} bind:value {placeholder} searchable={false} class="svelte-select" />
   <div

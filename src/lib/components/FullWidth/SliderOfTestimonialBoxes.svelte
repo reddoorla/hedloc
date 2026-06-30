@@ -2,11 +2,21 @@
   import { onMount } from "svelte";
   import { createSwipeAction, type SwipeCustomEvent } from "$lib/utils/swipeAction";
   import TestimonialBox from "./TestimonialBox.svelte";
-  import type { ComponentProps } from "svelte";
   import arrow from "$lib/assets/icons/wireframe-link-arrow-right.svg";
 
+  interface TestimonialBoxProps {
+    icon?: string;
+    iconAltText?: string;
+    testimonialText?: string;
+    attribution?: string;
+    attributionLabel?: string;
+    backgroundColor?: string;
+    float?: string;
+    class?: string;
+  }
+
   interface Props {
-    testimonialBoxPropsArray?: ComponentProps<TestimonialBox>[];
+    testimonialBoxPropsArray?: TestimonialBoxProps[];
   }
 
   let {
@@ -33,7 +43,7 @@
   const SLIDER_INTERVAL_IN_MS = 5000;
   let sliderIndex = $state(0);
   let sliderInterval: ReturnType<typeof setInterval>;
-  let sliderWidth = 100 / testimonialBoxPropsArray.length / 5;
+  let sliderWidth = $derived(100 / testimonialBoxPropsArray.length / 5);
   let isSlideAnimated = $state(true);
 
   const resetSlider = () => {
@@ -72,13 +82,13 @@
     sliderInterval = setInterval(() => slideLeft(), SLIDER_INTERVAL_IN_MS);
   });
 
-  const quintupledPropsArray = [
+  const quintupledPropsArray = $derived([
     ...testimonialBoxPropsArray,
     ...testimonialBoxPropsArray,
     ...testimonialBoxPropsArray,
     ...testimonialBoxPropsArray,
     ...testimonialBoxPropsArray,
-  ];
+  ]);
 </script>
 
 <div use:swipe class="w-full h-full relative overflow-hidden">

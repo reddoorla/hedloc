@@ -1,32 +1,43 @@
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
 <script lang="ts">
-  export let text = "BUTTON";
-  export let click = () => {};
-  export let filled = true;
-  export let href = "";
+  let {
+    text = "BUTTON",
+    click = () => {},
+    filled = true,
+    href = "",
+    class: className = "",
+    children,
+  }: {
+    text?: string;
+    click?: (
+      event: MouseEvent & { currentTarget: EventTarget & (HTMLAnchorElement | HTMLButtonElement) },
+    ) => void;
+    filled?: boolean;
+    href?: string;
+    class?: string;
+    children?: import("svelte").Snippet;
+  } = $props();
 </script>
 
 {#if href}
   <a
     {href}
-    on:click={click}
+    onclick={click}
     class="{filled
       ? 'bg-dark/80 hover:bg-dark active:bg-black  text-white'
-      : 'hover:bg-dark text-dark hover:text-white active:bg-black '} border-2 border-dark w-full md:w-auto text-center mb-5 sm:mb-0 uppercase cursor-pointer text-nowrap transition-all duration-300 active:-translate-y-2 {$$props.class ||
+      : 'hover:bg-dark text-dark hover:text-white active:bg-black '} border-2 border-dark w-full md:w-auto text-center mb-5 sm:mb-0 uppercase cursor-pointer text-nowrap transition-all duration-300 active:-translate-y-2 {className ||
       ''}"
   >
-    <slot />
+    {#if children}{@render children()}{:else}{text}{/if}
   </a>
 {:else}
   <button
-    on:click={click}
+    onclick={click}
     class="{filled
       ? 'bg-dark/80 hover:bg-dark active:bg-black  text-white'
-      : 'hover:bg-dark text-dark hover:text-white active:bg-black '} border-2 border-dark w-full md:w-auto text-center mb-5 sm:mb-0 uppercase cursor-pointer text-nowrap transition-all duration-300 active:-translate-y-2 {$$props.class ||
+      : 'hover:bg-dark text-dark hover:text-white active:bg-black '} border-2 border-dark w-full md:w-auto text-center mb-5 sm:mb-0 uppercase cursor-pointer text-nowrap transition-all duration-300 active:-translate-y-2 {className ||
       ''}"
   >
-    <slot />
+    {#if children}{@render children()}{:else}{text}{/if}
   </button>
 {/if}
 

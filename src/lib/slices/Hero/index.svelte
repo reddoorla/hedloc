@@ -1,6 +1,6 @@
 <script>
-  /** @type {import("@prismicio/client").Content.HeroSlice} */
-  export let slice;
+  /** @type {{ slice: import("@prismicio/client").Content.HeroSlice }} */
+  let { slice } = $props();
 </script>
 
 <section data-slice-type={slice.slice_type} data-slice-variation={slice.variation}>

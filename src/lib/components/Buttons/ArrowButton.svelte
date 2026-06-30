@@ -1,18 +1,16 @@
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
 <script>
   import linkArrow from "$lib/assets/icons/wireframe-link-arrow-right.svg";
-  export let text = "";
-  export let href = "#";
 
-  let isLinkArrowActive = false;
+  let { text = "", href = "#", class: className = "" } = $props();
+
+  let isLinkArrowActive = $state(false);
 </script>
 
 <a
-  on:mouseenter={() => (isLinkArrowActive = true)}
-  on:mouseleave={() => (isLinkArrowActive = false)}
-  on:click={() => (isLinkArrowActive = false)}
-  class="flex flex-row items-center text-center no-underline justify-center transition-all duration-300 active:-translate-y-2 {$$props.class ||
+  onmouseenter={() => (isLinkArrowActive = true)}
+  onmouseleave={() => (isLinkArrowActive = false)}
+  onclick={() => (isLinkArrowActive = false)}
+  class="flex flex-row items-center text-center no-underline justify-center transition-all duration-300 active:-translate-y-2 {className ||
     ''}"
   {href}
 >
