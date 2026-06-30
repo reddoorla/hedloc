@@ -3,5 +3,7 @@ allowBuilds:
   esbuild: true
   sharp: true
 minimumReleaseAgeExclude:
-  - "@reddoorla/maintenance@0.64.0"
-  - "@reddoorla/maintenance@0.65.0"
+  # First-party fleet package — published by us, consumed immediately by every
+  # site, so it is exempt from the third-party-supply-chain release-age gate.
+  # Name glob (not name@version): minimumReleaseAgeExclude matches package names.
+  - "@reddoorla/maintenance"
