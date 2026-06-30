@@ -79,4 +79,12 @@
     </ContentWidth>
   </footer>
 </main>
-<PrismicPreview {repositoryName} />
+<!-- Only mount the Prismic preview toolbar on server-rendered preview routes
+     (/preview/*). On public, prerendered pages the toolbar's iframe sets 21
+     third-party cookies (io.prismic.previewSession), which tanks the Lighthouse
+     best-practices score to ~0.78 and is a privacy concern for every visitor.
+     The Prismic dashboard preview flow redirects through /api/preview to a
+     /preview/* URL, so editors still get the toolbar where it matters. -->
+{#if $page.params.preview === "preview"}
+  <PrismicPreview {repositoryName} />
+{/if}
