@@ -11,3 +11,16 @@ pnpm-debug.log*
 # Claude Code local autonomy config (machine-specific; committed as .claude/settings.example.json)
 .claude/settings.json
 .claude/settings.local.json
+
+# canonical entries from @reddoorla/maintenance sync-configs
+dist/
+coverage/
+.vitest-cache/
+playwright-report/
+test-results/
+.lighthouseci/
+.tsbuildinfo
+*.log
+.vercel/
+.reddoor-a11y/
+.reddoor-a11y-spec-*/
