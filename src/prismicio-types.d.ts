@@ -217,8 +217,11 @@ interface AboutDocumentData {
  *
  * @typeParam Lang - Language API ID of the document.
  */
-export type AboutDocument<Lang extends string = string> =
-  prismic.PrismicDocumentWithoutUID<Simplify<AboutDocumentData>, "about", Lang>;
+export type AboutDocument<Lang extends string = string> = prismic.PrismicDocumentWithoutUID<
+  Simplify<AboutDocumentData>,
+  "about",
+  Lang
+>;
 
 type HomeDocumentDataSlicesSlice = never;
 
@@ -377,8 +380,11 @@ interface HomeDocumentData {
  *
  * @typeParam Lang - Language API ID of the document.
  */
-export type HomeDocument<Lang extends string = string> =
-  prismic.PrismicDocumentWithoutUID<Simplify<HomeDocumentData>, "home", Lang>;
+export type HomeDocument<Lang extends string = string> = prismic.PrismicDocumentWithoutUID<
+  Simplify<HomeDocumentData>,
+  "home",
+  Lang
+>;
 
 type PageDocumentDataSlicesSlice = RichTextSlice;
 
@@ -449,8 +455,11 @@ interface PageDocumentData {
  *
  * @typeParam Lang - Language API ID of the document.
  */
-export type PageDocument<Lang extends string = string> =
-  prismic.PrismicDocumentWithUID<Simplify<PageDocumentData>, "page", Lang>;
+export type PageDocument<Lang extends string = string> = prismic.PrismicDocumentWithUID<
+  Simplify<PageDocumentData>,
+  "page",
+  Lang
+>;
 
 export type AllDocumentTypes = AboutDocument | HomeDocument | PageDocument;
 
@@ -588,10 +597,7 @@ export interface ContentWidthMediaSliceDefaultPrimary {
    * - **API ID Path**: content_width_media.default.primary.text_box_position_vertical
    * - **Documentation**: https://prismic.io/docs/field#select
    */
-  text_box_position_vertical: prismic.SelectField<
-    "top" | "bottom" | "center",
-    "filled"
-  >;
+  text_box_position_vertical: prismic.SelectField<"top" | "bottom" | "center", "filled">;
 
   /**
    * text box position horizontal field in *ContentWidth → Single Col Text → Primary*
@@ -602,10 +608,7 @@ export interface ContentWidthMediaSliceDefaultPrimary {
    * - **API ID Path**: content_width_media.default.primary.text_box_position_horizontal
    * - **Documentation**: https://prismic.io/docs/field#select
    */
-  text_box_position_horizontal: prismic.SelectField<
-    "left" | "right" | "center",
-    "filled"
-  >;
+  text_box_position_horizontal: prismic.SelectField<"left" | "right" | "center", "filled">;
 
   /**
    * vimeo_id field in *ContentWidth → Single Col Text → Primary*
@@ -780,12 +783,11 @@ export interface ContentWidthMediaSliceSliderLeftImageRightItem {
  * - **Description**: Default
  * - **Documentation**: https://prismic.io/docs/slice
  */
-export type ContentWidthMediaSliceSliderLeftImageRight =
-  prismic.SharedSliceVariation<
-    "sliderLeftImageRight",
-    Simplify<ContentWidthMediaSliceSliderLeftImageRightPrimary>,
-    Simplify<ContentWidthMediaSliceSliderLeftImageRightItem>
-  >;
+export type ContentWidthMediaSliceSliderLeftImageRight = prismic.SharedSliceVariation<
+  "sliderLeftImageRight",
+  Simplify<ContentWidthMediaSliceSliderLeftImageRightPrimary>,
+  Simplify<ContentWidthMediaSliceSliderLeftImageRightItem>
+>;
 
 /**
  * Primary content in *ContentWidth → Two Col Image and Text → Primary*
@@ -911,10 +913,7 @@ export interface ContentWidthMediaSliceTwoColImageAndTextPrimary {
    * - **API ID Path**: content_width_media.twoColImageAndText.primary.text_box_position_vertical
    * - **Documentation**: https://prismic.io/docs/field#select
    */
-  text_box_position_vertical: prismic.SelectField<
-    "top" | "bottom" | "center",
-    "filled"
-  >;
+  text_box_position_vertical: prismic.SelectField<"top" | "bottom" | "center", "filled">;
 
   /**
    * text box position horizontal field in *ContentWidth → Two Col Image and Text → Primary*
@@ -925,10 +924,7 @@ export interface ContentWidthMediaSliceTwoColImageAndTextPrimary {
    * - **API ID Path**: content_width_media.twoColImageAndText.primary.text_box_position_horizontal
    * - **Documentation**: https://prismic.io/docs/field#select
    */
-  text_box_position_horizontal: prismic.SelectField<
-    "left" | "right" | "center",
-    "filled"
-  >;
+  text_box_position_horizontal: prismic.SelectField<"left" | "right" | "center", "filled">;
 
   /**
    * vimeo_id field in *ContentWidth → Two Col Image and Text → Primary*
@@ -970,12 +966,11 @@ export interface ContentWidthMediaSliceTwoColImageAndTextPrimary {
  * - **Description**: Default
  * - **Documentation**: https://prismic.io/docs/slice
  */
-export type ContentWidthMediaSliceTwoColImageAndText =
-  prismic.SharedSliceVariation<
-    "twoColImageAndText",
-    Simplify<ContentWidthMediaSliceTwoColImageAndTextPrimary>,
-    never
-  >;
+export type ContentWidthMediaSliceTwoColImageAndText = prismic.SharedSliceVariation<
+  "twoColImageAndText",
+  Simplify<ContentWidthMediaSliceTwoColImageAndTextPrimary>,
+  never
+>;
 
 /**
  * Slice variation for *ContentWidth*
@@ -1121,10 +1116,7 @@ export interface HeroSliceDefaultPrimary {
    * - **API ID Path**: hero.default.primary.text_box_vertical_align
    * - **Documentation**: https://prismic.io/docs/field#select
    */
-  text_box_vertical_align: prismic.SelectField<
-    "top" | "bottom" | "center",
-    "filled"
-  >;
+  text_box_vertical_align: prismic.SelectField<"top" | "bottom" | "center", "filled">;
 
   /**
    * text justify field in *Hero → Default → Primary*
@@ -1255,10 +1247,7 @@ export interface HeroSliceSliderPrimary {
    * - **API ID Path**: hero.slider.primary.text_box_vertical_align
    * - **Documentation**: https://prismic.io/docs/field#select
    */
-  text_box_vertical_align: prismic.SelectField<
-    "top" | "bottom" | "center",
-    "filled"
-  >;
+  text_box_vertical_align: prismic.SelectField<"top" | "bottom" | "center", "filled">;
 
   /**
    * text justify field in *Hero → slider → Primary*
@@ -1364,10 +1353,7 @@ type RichTextSliceVariation = RichTextSliceDefault;
  * - **Description**: RichText
  * - **Documentation**: https://prismic.io/docs/slice
  */
-export type RichTextSlice = prismic.SharedSlice<
-  "rich_text",
-  RichTextSliceVariation
->;
+export type RichTextSlice = prismic.SharedSlice<"rich_text", RichTextSliceVariation>;
 
 /**
  * Primary content in *ThreeStepPlan → Default → Primary*
@@ -2357,9 +2343,7 @@ export type ThreeStepPlanSliceSlider = prismic.SharedSliceVariation<
  * Slice variation for *ThreeStepPlan*
  */
 type ThreeStepPlanSliceVariation =
-  | ThreeStepPlanSliceDefault
-  | ThreeStepPlanSliceClickthrough
-  | ThreeStepPlanSliceSlider;
+  ThreeStepPlanSliceDefault | ThreeStepPlanSliceClickthrough | ThreeStepPlanSliceSlider;
 
 /**
  * ThreeStepPlan Shared Slice

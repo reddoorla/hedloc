@@ -37,19 +37,8 @@
       ]
     },
     "filesystem": {
-      "allowWrite": [
-        "<GITHUB_ROOT>",
-        "~/Library/pnpm",
-        "~/Library/Caches/ms-playwright",
-        "~/.npm"
-      ],
-      "denyRead": [
-        "~/.ssh",
-        "~/.aws",
-        "~/.config/gh",
-        "~/.netrc",
-        "~/Library/Keychains"
-      ]
+      "allowWrite": ["<GITHUB_ROOT>", "~/Library/pnpm", "~/Library/Caches/ms-playwright", "~/.npm"],
+      "denyRead": ["~/.ssh", "~/.aws", "~/.config/gh", "~/.netrc", "~/Library/Keychains"]
     },
     "excludedCommands": [
       "gh *",

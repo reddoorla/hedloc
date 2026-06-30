@@ -2,10 +2,7 @@
 <!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
 <script lang="ts">
   import { onMount } from "svelte";
-  import {
-    createSwipeAction,
-    type SwipeCustomEvent,
-  } from "$lib/utils/swipeAction";
+  import { createSwipeAction, type SwipeCustomEvent } from "$lib/utils/swipeAction";
   import placeholder from "../../assets/images/image_placeholder.svg";
   import ContentWidth from "../ContentWidth/ContentWidth.svelte";
   import FourByThreeImage from "../FullWidth/FourByThreeImage.svelte";
@@ -58,22 +55,13 @@
   const resetSliderToStart = () => {
     setTimeout(() => (isSlideAnimated = false), SLIDER_TRANSITION_LENGTH_IN_MS);
     setTimeout(() => (sliderIndex = 0), SLIDER_TRANSITION_LENGTH_IN_MS + 20);
-    setTimeout(
-      () => (isSlideAnimated = true),
-      SLIDER_TRANSITION_LENGTH_IN_MS + 40,
-    );
+    setTimeout(() => (isSlideAnimated = true), SLIDER_TRANSITION_LENGTH_IN_MS + 40);
   };
 
   const resetSliderToEnd = () => {
     setTimeout(() => (isSlideAnimated = false), SLIDER_TRANSITION_LENGTH_IN_MS);
-    setTimeout(
-      () => (sliderIndex = itemArray.length - 1),
-      SLIDER_TRANSITION_LENGTH_IN_MS + 20,
-    );
-    setTimeout(
-      () => (isSlideAnimated = true),
-      SLIDER_TRANSITION_LENGTH_IN_MS + 40,
-    );
+    setTimeout(() => (sliderIndex = itemArray.length - 1), SLIDER_TRANSITION_LENGTH_IN_MS + 20);
+    setTimeout(() => (isSlideAnimated = true), SLIDER_TRANSITION_LENGTH_IN_MS + 40);
   };
 
   const slideRight = () => {
@@ -114,8 +102,7 @@
     if (sliderIndex == itemArray.length) _progressWrapForwardPosition = 0;
     else _progressWrapForwardPosition = 100;
 
-    if (sliderIndex == -1)
-      _progressWrapBackwardPosition = itemArray.length * 100 - 100;
+    if (sliderIndex == -1) _progressWrapBackwardPosition = itemArray.length * 100 - 100;
     else _progressWrapBackwardPosition = itemArray.length * 100;
   }
 
@@ -137,16 +124,11 @@
         : ''}"
       style="width:{(imageWidth - 8) *
         tripledItems.length}px; margin-left:calc(50vw - {(imageWidth - 8) /
-        2}px); transform:translateX({-(sliderIndex + itemArray.length) *
-        (imageWidth - 8)}px); "
+        2}px); transform:translateX({-(sliderIndex + itemArray.length) * (imageWidth - 8)}px); "
     >
-      {#each tripledItems as item}
+      {#each tripledItems as item, i (i)}
         {#if item.href}
-          <a
-            href={item?.href || "#"}
-            class="h-full mx-4 relative"
-            style="width:{imageWidth}px;"
-          >
+          <a href={item?.href || "#"} class="h-full mx-4 relative" style="width:{imageWidth}px;">
             <FourByThreeImage
               src={item?.featuredImage}
               label={item?.featuredText || ""}
@@ -174,7 +156,7 @@
     <div class="absolute flex justify-center w-full bottom-0">
       <ContentWidth class="h-full relative w-full">
         <div class="h-10 flex align-middle justify-center bottom-10">
-          {#each itemArray as _item, i}
+          {#each itemArray as _item, i (i)}
             <button
               class="h-[10px] w-[10px] border-2 rounded-full transition-colors duration-1000 cursor-pointer active:-translate-y-[0.5px] hover:opacity-60 mx-2 translate-x-2
                                     {(sliderIndex % itemArray.length >= 0 &&

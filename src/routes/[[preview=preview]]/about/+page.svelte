@@ -28,9 +28,7 @@
   class="flex flex-col items-start justify-end py-36 gap-6"
 >
   <h1 class="text-white max-w-screen-lg">{content.hero_header || ""}</h1>
-  <div
-    class="max-w-screen-lg text-white whitespace-pre-line flex flex-col gap-2"
-  >
+  <div class="max-w-screen-lg text-white whitespace-pre-line flex flex-col gap-2">
     <p>{content.hero_body}</p>
   </div>
 </ScreenWidthImage>
@@ -38,23 +36,15 @@
   <ContentWidth class="text-white mb-10">
     <h2>{content.team_header}</h2>
   </ContentWidth>
-  <ContentWidth
-    class="flex flex-col lg:flex-row justify-start relative lg:h-[640px] gap-10"
-  >
-    <div
-      class="lg:w-1/4 flex flex-col items-start justify-start gap-2 z-30"
-      id="team-top"
-    >
+  <ContentWidth class="flex flex-col lg:flex-row justify-start relative lg:h-[640px] gap-10">
+    <div class="lg:w-1/4 flex flex-col items-start justify-start gap-2 z-30" id="team-top">
       {#if active !== -1}
         <button
           transition:fade={{ duration: 150 }}
           onclick={() => (active = -1)}
           class="hidden lg:flex flex-col items-start justify-start gap-2"
         >
-          <PrismicImage
-            class="w-full aspect-[3/4]"
-            field={content.team_member[active].headshot}
-          />
+          <PrismicImage class="w-full aspect-[3/4]" field={content.team_member[active].headshot} />
           <h4>{content.team_member[active].name}</h4>
           <h5>{content.team_member[active].title}</h5>
 
@@ -66,7 +56,7 @@
         </button>
       {/if}
     </div>
-    {#each content.team_member as _p, i}
+    {#each content.team_member as _p, i (i)}
       <button
         onclick={() => {
           if (active === i) {
@@ -80,8 +70,7 @@
             }
           }
         }}
-        class="lg:w-1/4 members flex flex-col items-start justify-start gap-2 {active !==
-        -1
+        class="lg:w-1/4 members flex flex-col items-start justify-start gap-2 {active !== -1
           ? 'pointer-events-none'
           : ''}"
       >
@@ -141,24 +130,15 @@
   </ContentWidth>
   <ContentWidth class="flex flex-col mt-16">
     <div class="flex flex-col gap-10 lg:gap-0 lg:flex-row mb-10">
-      <PrismicImage
-        field={content.hq_image_one}
-        class="h-[500px] lg:w-3/4 object-cover lg:mr-5"
-      />
-      <PrismicImage
-        field={content.hq_image_two}
-        class="h-[500px] lg:w-1/4 object-cover lg:ml-5"
-      />
+      <PrismicImage field={content.hq_image_one} class="h-[500px] lg:w-3/4 object-cover lg:mr-5" />
+      <PrismicImage field={content.hq_image_two} class="h-[500px] lg:w-1/4 object-cover lg:ml-5" />
     </div>
     <div class="flex flex-col gap-10 lg:gap-0 lg:flex-row mb-10">
       <PrismicImage
         field={content.hq_image_three}
         class="h-[300px] lg:w-1/2 object-cover lg:mr-5"
       />
-      <PrismicImage
-        field={content.hq_image_four}
-        class="h-[300px] lg:w-1/2 object-cover lg:ml-5"
-      />
+      <PrismicImage field={content.hq_image_four} class="h-[300px] lg:w-1/2 object-cover lg:ml-5" />
     </div>
   </ContentWidth>
 </section>

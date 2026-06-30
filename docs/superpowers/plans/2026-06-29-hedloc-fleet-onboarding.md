@@ -251,12 +251,7 @@ Expected: `ok`.
       ]
     },
     "filesystem": {
-      "allowWrite": [
-        "<GITHUB_ROOT>",
-        "~/Library/pnpm",
-        "~/Library/Caches/ms-playwright",
-        "~/.npm"
-      ],
+      "allowWrite": ["<GITHUB_ROOT>", "~/Library/pnpm", "~/Library/Caches/ms-playwright", "~/.npm"],
       "denyRead": ["~/.ssh", "~/.aws"]
     },
     "excludedCommands": [
@@ -752,17 +747,12 @@ import { homedir } from "node:os";
 import Airtable from "airtable"; // resolved from the reddoor-maintenance node_modules
 
 // load AIRTABLE_PAT / AIRTABLE_BASE_ID from credentials.env without echoing them
-const env = readFileSync(
-  `${homedir()}/.config/reddoor-maint/credentials.env`,
-  "utf8",
-);
+const env = readFileSync(`${homedir()}/.config/reddoor-maint/credentials.env`, "utf8");
 for (const line of env.split("\n")) {
   const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
   if (m) process.env[m[1]] ??= m[2].replace(/^["']|["']$/g, "");
 }
-const base = new Airtable({ apiKey: process.env.AIRTABLE_PAT }).base(
-  process.env.AIRTABLE_BASE_ID,
-);
+const base = new Airtable({ apiKey: process.env.AIRTABLE_PAT }).base(process.env.AIRTABLE_BASE_ID);
 const rec = await base("Websites").create([
   {
     fields: {

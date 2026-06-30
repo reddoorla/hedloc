@@ -30,10 +30,7 @@
     <meta name="og:image" content={$page.data.meta_image.url} />
     <meta name="twitter:card" content="summary_large_image" />
   {/if}
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0 user-scalable=no"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no" />
 </svelte:head>
 <svelte:window bind:innerWidth={viewportWidth} />
 <main class="overflow-hidden">
@@ -48,9 +45,7 @@
       >
       <div class="flex flex-row text-white gap-6 uppercase">
         <a href="/about" class="hover:opacity-80 transition-opacity">About</a>
-        <a href="/about#contact" class="hover:opacity-80 transition-opacity"
-          >Contact Us</a
-        >
+        <a href="/about#contact" class="hover:opacity-80 transition-opacity">Contact Us</a>
       </div>
     </ContentWidth>
   </header>
@@ -66,13 +61,11 @@
         /></a
       >
     </ContentWidth>
-    <ContentWidth
-      class="h-full flex flex-col md:flex-row justify-between items-start mt-12"
-    >
+    <ContentWidth class="h-full flex flex-col md:flex-row justify-between items-start mt-12">
       <div class="flex flex-col md:flex-row justify-start gap-16">
         <div>
-          223 West Wall Street, Suite 300 <br /> Midland, TX 79701 <br /> <br /> P.O.
-          Box 882 | Midland, TX 79702
+          223 West Wall Street, Suite 300 <br /> Midland, TX 79701 <br /> <br /> P.O. Box 882 | Midland,
+          TX 79702
         </div>
         <div>
           P: 432.253.7808 <br /> F: 432.253.7840
@@ -81,9 +74,7 @@
       <div class="flex flex-col gap-3 mt-16 md:mt-0">
         <a href="/" class="hover:opacity-80 transition-opacity">Home</a>
         <a href="/about" class="hover:opacity-80 transition-opacity">About</a>
-        <a href="/about#contact" class="hover:opacity-80 transition-opacity"
-          >Contact Us</a
-        >
+        <a href="/about#contact" class="hover:opacity-80 transition-opacity">Contact Us</a>
       </div>
     </ContentWidth>
   </footer>

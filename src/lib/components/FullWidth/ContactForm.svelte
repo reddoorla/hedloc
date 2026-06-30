@@ -20,9 +20,7 @@
 >
   <input type="hidden" name="form-name" value="contact" />
 
-  <div
-    class="flex flex-col md:flex-row text-light items-center justify-center w-full"
-  >
+  <div class="flex flex-col md:flex-row text-light items-center justify-center w-full">
     <div class="flex items-center justify-center w-full translate-x-[6px]">
       <i class="fa-regular fa-envelope h-6 mt-[7px] -mr-8 z-10"></i>
       <input
@@ -33,11 +31,7 @@
       />
     </div>
   </div>
-  <StyledSingleSelect
-    placeholder="Select product"
-    items={PRODUCTS}
-    bind:value={selectValue}
-  />
+  <StyledSingleSelect placeholder="Select product" items={PRODUCTS} bind:value={selectValue} />
   <input name="select" type="select" bind:value={selectValue} hidden />
 
   <textarea

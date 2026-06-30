@@ -37,16 +37,11 @@
 </script>
 
 <div
-  class="w-full flex flex-col p-2 sm:p-8 justify-{justify} text-{float} {$$props.class ||
-    ''}"
+  class="w-full flex flex-col p-2 sm:p-8 justify-{justify} text-{float} {$$props.class || ''}"
   style="background-color: {backgroundColor}"
 >
   {#if icon}
-    <img
-      src={icon}
-      alt={iconAltText}
-      class="w-[70px] h-[70px] mb-7 {horizontalFloatMargin}"
-    />
+    <img src={icon} alt={iconAltText} class="w-[70px] h-[70px] mb-7 {horizontalFloatMargin}" />
   {/if}
   {#if labelText}
     <h6 class="mb-7">{labelText}</h6>
@@ -84,11 +79,7 @@
       <DefaultButton text={buttonText} class="mr-5" />
     {/if}
     {#if linkText}
-      <ArrowButton
-        text={linkText}
-        href={linkHref}
-        class="translate-y-1 md:translate-y-0"
-      />
+      <ArrowButton text={linkText} href={linkHref} class="translate-y-1 md:translate-y-0" />
     {/if}
   </div>
 </div>

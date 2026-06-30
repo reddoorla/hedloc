@@ -17,21 +17,14 @@
   let viewportWidth: number;
 </script>
 
-<svelte:window
-  bind:innerHeight={viewportHeight}
-  bind:innerWidth={viewportWidth}
-/>
+<svelte:window bind:innerHeight={viewportHeight} bind:innerWidth={viewportWidth} />
 
 <section
-  class="h-screen w-screen overflow-clip {backdrop
-    ? 'fixed -z-10 top-0 left-0'
-    : 'relative'}"
+  class="h-screen w-screen overflow-clip {backdrop ? 'fixed -z-10 top-0 left-0' : 'relative'}"
 >
   <div
     class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-h-screen aspect-video
-		{viewportHeight * 16 > viewportWidth * 9
-      ? 'h-screen min-w-full'
-      : 'w-screen min-h-full'}"
+		{viewportHeight * 16 > viewportWidth * 9 ? 'h-screen min-w-full' : 'w-screen min-h-full'}"
   >
     {#if !field}
       <img
@@ -43,10 +36,7 @@
           : ''}"
       />
     {:else}
-      <PrismicImage
-        {field}
-        class="absolute  h-full w-full object-cover -z-10"
-      />
+      <PrismicImage {field} class="absolute  h-full w-full object-cover -z-10" />
     {/if}
 
     {#if vimeoId}
@@ -75,9 +65,7 @@
     {/if}
   </div>
   <div class="w-screen h-screen absolute top-0 left-0">
-    <ContentWidth
-      class="{$$props.class || 'flex items-center justify-center'} h-full"
-    >
+    <ContentWidth class="{$$props.class || 'flex items-center justify-center'} h-full">
       <slot />
     </ContentWidth>
   </div>
@@ -85,11 +73,7 @@
 
 <style>
   .bg-darken-gradient {
-    background: linear-gradient(
-      180deg,
-      rgba(220, 193, 105, 0.8) 0%,
-      rgba(220, 193, 105, 0) 100%
-    );
+    background: linear-gradient(180deg, rgba(220, 193, 105, 0.8) 0%, rgba(220, 193, 105, 0) 100%);
   }
   .bg-darken-gradient-2 {
     background: linear-gradient(0deg, #2d2322 0%, rgba(164, 128, 88, 0) 100%);

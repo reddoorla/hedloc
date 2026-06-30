@@ -12,10 +12,7 @@
 </script>
 
 <section class="container p-2 md:p8">
-  <PrismicRichText
-    field={slice.primary.content}
-    components={{ label: Label }}
-  />
+  <PrismicRichText field={slice.primary.content} components={{ label: Label }} />
 </section>
 
 <style>
@@ -23,7 +20,7 @@
     max-width: 600px;
     margin: 6em auto;
     font-family:
-      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
-      sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif,
+      "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   }
 </style>

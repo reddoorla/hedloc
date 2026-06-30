@@ -23,16 +23,11 @@
 </script>
 
 <div
-  class="{$$props.class ||
-    ''} w-full flex flex-col p-2 sm:p-8 justify-{justify} text-{float}"
+  class="{$$props.class || ''} w-full flex flex-col p-2 sm:p-8 justify-{justify} text-{float}"
   style="background-color: {backgroundColor}"
 >
   {#if icon}
-    <img
-      src={icon}
-      alt={iconAltText}
-      class="pl-3 mb-12 {horizontalFloatMargin}"
-    />
+    <img src={icon} alt={iconAltText} class="pl-3 mb-12 {horizontalFloatMargin}" />
   {/if}
 
   {#if testimonialText}

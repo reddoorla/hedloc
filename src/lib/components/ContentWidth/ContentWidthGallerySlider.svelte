@@ -1,10 +1,7 @@
 <!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
 <!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
 <script lang="ts">
-  import {
-    createSwipeAction,
-    type SwipeCustomEvent,
-  } from "$lib/utils/swipeAction";
+  import { createSwipeAction, type SwipeCustomEvent } from "$lib/utils/swipeAction";
   import placeholder from "../../assets/images/background_placeholder.svg";
   import ContentWidth from "../ContentWidth/ContentWidth.svelte";
   import FourByThreeImage from "../FullWidth/FourByThreeImage.svelte";
@@ -25,22 +22,13 @@
   const _resetSliderToStart = () => {
     setTimeout(() => (isSlideAnimated = false), SLIDER_TRANSITION_LENGTH_IN_MS);
     setTimeout(() => (sliderIndex = 0), SLIDER_TRANSITION_LENGTH_IN_MS + 20);
-    setTimeout(
-      () => (isSlideAnimated = true),
-      SLIDER_TRANSITION_LENGTH_IN_MS + 40,
-    );
+    setTimeout(() => (isSlideAnimated = true), SLIDER_TRANSITION_LENGTH_IN_MS + 40);
   };
 
   const _resetSliderToEnd = () => {
     setTimeout(() => (isSlideAnimated = false), SLIDER_TRANSITION_LENGTH_IN_MS);
-    setTimeout(
-      () => (sliderIndex = imageArray.length - 1),
-      SLIDER_TRANSITION_LENGTH_IN_MS + 20,
-    );
-    setTimeout(
-      () => (isSlideAnimated = true),
-      SLIDER_TRANSITION_LENGTH_IN_MS + 40,
-    );
+    setTimeout(() => (sliderIndex = imageArray.length - 1), SLIDER_TRANSITION_LENGTH_IN_MS + 20);
+    setTimeout(() => (isSlideAnimated = true), SLIDER_TRANSITION_LENGTH_IN_MS + 40);
   };
 
   const slideRight = () => {
@@ -81,22 +69,18 @@
   <div use:swipe class="h-[320px] py-2 relative">
     <div
       class="overflow-hidden w-screen mt-20 lg:mt-0"
-      style="margin-left:{viewportWidth > 1340
-        ? viewportWidth - 1220 / 2
-        : viewportWidth * 0.04};"
+      style="margin-left:{viewportWidth > 1340 ? viewportWidth - 1220 / 2 : viewportWidth * 0.04};"
     >
       <div
         class="h-full flex flex-row flex-nowrap {isSlideAnimated
           ? 'transition-transform duration-[2000ms]'
           : ''}"
-        style="width:{352 *
-          tripledImages.length}px; margin-left:{viewportWidth > 1340
+        style="width:{352 * tripledImages.length}px; margin-left:{viewportWidth > 1340
           ? viewportWidth - 1220 / 2
-          : viewportWidth * 0.04}; transform:translateX({-(
-          sliderIndex + imageArray.length
-        ) * 352}px); "
+          : viewportWidth * 0.04}; transform:translateX({-(sliderIndex + imageArray.length) *
+          352}px); "
       >
-        {#each tripledImages as _image}
+        {#each tripledImages as _image, i (i)}
           <div class="w-[360px] h-full mx-4">
             <FourByThreeImage alt={altText} class="h-full object-cover -z-10" />
           </div>
@@ -114,11 +98,7 @@
             ? 'opacity-20 pointer-events-none'
             : ''}"
         >
-          <img
-            alt="chevron-left"
-            src={chevronLeft}
-            class="-translate-x-[1px]"
-          />
+          <img alt="chevron-left" src={chevronLeft} class="-translate-x-[1px]" />
         </button>
         <button
           on:click={slideRight}
@@ -127,11 +107,7 @@
             ? 'opacity-20 pointer-events-none'
             : ''}"
         >
-          <img
-            alt="chevron-right"
-            src={chevronRight}
-            class="translate-x-[1px]"
-          />
+          <img alt="chevron-right" src={chevronRight} class="translate-x-[1px]" />
         </button>
       </ContentWidth>
     </div>
