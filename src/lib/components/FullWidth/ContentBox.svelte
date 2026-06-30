@@ -1,27 +1,24 @@
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
 <script lang="ts">
-  import placeholderIcon from "../../assets/icons/logos/logo.svg";
+    let { icon = "", iconAltText = "logo", labelText = "", titleText = "", titleTag = "h3", subtitleText = "", paragraphText = "", buttonText = "", linkText = "", linkHref = "", backgroundColor = "transparent", float = "center", ...rest, class: className = "" }: { icon?: unknown; iconAltText?: unknown; labelText?: unknown; titleText?: unknown; titleTag?: unknown; subtitleText?: unknown; paragraphText?: unknown; buttonText?: unknown; linkText?: unknown; linkHref?: unknown; backgroundColor?: unknown; float?: unknown; [key: string]: unknown; class?: string } = $props();
+import placeholderIcon from "../../assets/icons/logos/logo.svg";
   import DefaultButton from "../Buttons/DefaultButton.svelte";
   import ArrowButton from "../Buttons/ArrowButton.svelte";
 
-  export let icon = "";
-  export let iconAltText = "logo";
-  export let labelText = "";
-  export let titleText = "";
-  export let titleTag = "h3";
-  export let subtitleText = "";
-  export let paragraphText = "";
-  export let buttonText = "";
-  export let linkText = "";
-  export let linkHref = "";
 
-  export let backgroundColor = "transparent";
-  export let float = "center";
+
+
+
+
+
+
+
+
+
   let justify: string;
   let horizontalFloatMargin: string;
 
-  $: {
+  // @migration-task: $effect won't trigger UI updates on plain `let` bindings — refine mutated locals to $state or split into per-variable $derived.
+  $effect(() => {
     justify = float;
     if (float === "left") justify = "start";
     if (float === "right") justify = "end";
@@ -29,7 +26,7 @@
     horizontalFloatMargin = "mx-auto";
     if (float === "left") horizontalFloatMargin = "ml-0 mr-auto";
     if (float === "right") horizontalFloatMargin = "ml-auto mr-0";
-  }
+  });
 
   if (icon === "placeholder") {
     icon = placeholderIcon;
@@ -37,7 +34,7 @@
 </script>
 
 <div
-  class="w-full flex flex-col p-2 sm:p-8 justify-{justify} text-{float} {$$props.class || ''}"
+  class="w-full flex flex-col p-2 sm:p-8 justify-{justify} text-{float} {className || ''}"
   style="background-color: {backgroundColor}"
 >
   {#if icon}

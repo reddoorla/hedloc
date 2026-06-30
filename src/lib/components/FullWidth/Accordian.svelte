@@ -5,10 +5,8 @@
   const LOREM =
     "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat m dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor inc.";
 
-  let {
-    labels = ["Is this thing on?", "It could be why don't you check"],
-    contents = [LOREM, LOREM],
-  } = $props();
+  let { labels = ["Is this thing on?", "It could be why don't you check"],
+    contents = [LOREM, LOREM], ...rest } = $props();
 
   let activeAccordians: boolean[] = $state([]);
 

@@ -15,7 +15,7 @@
 
   let viewportWidth = $state(1024);
 
-  let { children } = $props();
+  let { children, ...rest } = $props();
 </script>
 
 <svelte:head>

@@ -1,17 +1,16 @@
 <script lang="ts">
-  import type { ImageField } from "@prismicio/client";
+    let { src = placeholder, field, altText = "background image", placeholderSide = "right", vimeoId = "", darken = false, backdrop = false, flip = false, ...rest, class: className = "" }: { src?: string; field: ImageField | null; altText?: unknown; placeholderSide?: unknown; vimeoId?: unknown; darken?: unknown; backdrop?: unknown; flip?: unknown; [key: string]: unknown; class?: string } = $props();
+import type { ImageField } from "@prismicio/client";
   import placeholder from "../../assets/images/background_placeholder.svg";
   import ContentWidth from "../ContentWidth/ContentWidth.svelte";
   import { PrismicImage } from "@prismicio/svelte";
 
-  export let src: string = placeholder;
-  export let field: ImageField | null;
-  export let altText = "background image";
-  export let placeholderSide = "right";
-  export let vimeoId = "";
-  export let darken = false;
-  export let backdrop = false;
-  export let flip = false;
+
+
+
+
+
+
 
   let viewportHeight: number;
   let viewportWidth: number;
@@ -65,7 +64,7 @@
     {/if}
   </div>
   <div class="w-screen h-screen absolute top-0 left-0">
-    <ContentWidth class="{$$props.class || 'flex items-center justify-center'} h-full">
+    <ContentWidth class="{className || 'flex items-center justify-center'} h-full">
       <slot />
     </ContentWidth>
   </div>

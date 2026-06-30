@@ -1,14 +1,12 @@
 <!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
 <script lang="ts">
-  import { onDestroy, onMount } from "svelte";
+    let { style = "", transitionDelayMax = 400, transitionDuration = 2400, ...rest }: { style?: unknown; transitionDelayMax?: unknown; transitionDuration?: unknown; [key: string]: unknown } = $props();
+import { onDestroy, onMount } from "svelte";
 
   let isInView = false;
   let el: HTMLElement | null;
   let transitionDelay = 0;
-  export let style = "";
 
-  export let transitionDelayMax = 400;
-  export let transitionDuration = 2400;
 
   const checkViewport = () => {
     if (window && el) {

@@ -1,14 +1,12 @@
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
 <script lang="ts">
-  import placeholder from "$lib/assets/images/image_placeholder.svg";
-  export let image = placeholder;
+    let { image = placeholder, ...rest, class: className = "" }: { image?: unknown; [key: string]: unknown; class?: string } = $props();
+import placeholder from "$lib/assets/images/image_placeholder.svg";
 
   let rotationAngle = "36.8";
   let crossLength = "125%";
 </script>
 
-<div class="w-full lg:w-1/2 my-8 {$$props.class || ''}">
+<div class="w-full lg:w-1/2 my-8 {className || ''}">
   <div
     class="w-full aspect-[4/3] {image === placeholder
       ? 'border-light border-2 bg-light/25'

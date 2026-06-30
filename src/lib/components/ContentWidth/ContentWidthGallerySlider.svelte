@@ -1,15 +1,12 @@
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
 <script lang="ts">
-  import { createSwipeAction, type SwipeCustomEvent } from "$lib/utils/swipeAction";
+    let { imageArray = [placeholder, placeholder, placeholder, placeholder], altText = "background image", ...rest, class: className = "" }: { imageArray?: unknown; altText?: unknown; [key: string]: unknown; class?: string } = $props();
+import { createSwipeAction, type SwipeCustomEvent } from "$lib/utils/swipeAction";
   import placeholder from "../../assets/images/background_placeholder.svg";
   import ContentWidth from "../ContentWidth/ContentWidth.svelte";
   import FourByThreeImage from "../FullWidth/FourByThreeImage.svelte";
   import chevronLeft from "$lib/assets/icons/chevron-left.svg";
   import chevronRight from "$lib/assets/icons/chevron-right.svg";
 
-  export let imageArray = [placeholder, placeholder, placeholder, placeholder];
-  export let altText = "background image";
 
   const SLIDER_TRANSITION_LENGTH_IN_MS = 2000;
 
@@ -65,7 +62,7 @@
 
 <svelte:window bind:innerWidth={viewportWidth} />
 
-<section class="pb-32 {$$props.class || ''}">
+<section class="pb-32 {className || ''}">
   <div use:swipe class="h-[320px] py-2 relative">
     <div
       class="overflow-hidden w-screen mt-20 lg:mt-0"
@@ -92,7 +89,7 @@
     >
       <ContentWidth class="h-full relative w-full">
         <button
-          on:click={slideLeft}
+          onclick={slideLeft}
           class="absolute left-0 lg:top-auto lg:-left-2 h-6 w-6 rounded-full border-[#C2D1D9] border-2 p-1 flex align-middle justify-center cursor-pointer transition-all duration-500 hover:bg-[#424B5A] hover:border-[#424B5A] active:bg-black bump {sliderIndex ===
           0
             ? 'opacity-20 pointer-events-none'
@@ -101,7 +98,7 @@
           <img alt="chevron-left" src={chevronLeft} class="-translate-x-[1px]" />
         </button>
         <button
-          on:click={slideRight}
+          onclick={slideRight}
           class="absolute right-0 lg:right-auto lg:-left-2 lg:top-12 -translate-y-[0.7px] h-6 w-6 rounded-full border-[#C2D1D9] border-2 p-1 flex align-middle cursor-pointer transition-all duration-500 justify-center hover:bg-[#424B5A] hover:border-[#424B5A] active:bg-black bump {sliderIndex ===
           imageArray.length - 1
             ? 'opacity-20 pointer-events-none'

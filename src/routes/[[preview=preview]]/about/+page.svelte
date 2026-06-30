@@ -4,7 +4,7 @@
   import { PrismicImage, PrismicRichText } from "@prismicio/svelte";
   import { fade } from "svelte/transition";
 
-  let { data } = $props();
+  let { data, ...rest } = $props();
   let content = $state(data.page.data);
 
   let viewportWidth = $state(1024);

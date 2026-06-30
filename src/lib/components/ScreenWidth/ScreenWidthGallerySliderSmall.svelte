@@ -1,7 +1,6 @@
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
-<!-- @migration-task Error while migrating Svelte code: $$props is used together with named props in a way that cannot be automatically migrated. -->
 <script lang="ts">
-  import { onMount } from "svelte";
+    let { imageArray = [placeholder, placeholder, placeholder, placeholder], altText = "background image", ...rest, class: className = "" }: { imageArray?: unknown; altText?: unknown; [key: string]: unknown; class?: string } = $props();
+import { onMount } from "svelte";
   import { createSwipeAction, type SwipeCustomEvent } from "$lib/utils/swipeAction";
   import placeholder from "../../assets/images/background_placeholder.svg";
   import ContentWidth from "../ContentWidth/ContentWidth.svelte";
@@ -9,8 +8,6 @@
   import chevronLeft from "$lib/assets/icons/chevron-left.svg";
   import chevronRight from "$lib/assets/icons/chevron-right.svg";
 
-  export let imageArray = [placeholder, placeholder, placeholder, placeholder];
-  export let altText = "background image";
 
   const SLIDER_TRANSITION_LENGTH_IN_MS = 2000;
   const SLIDER_INTERVAL_IN_MS = 5000;
@@ -66,7 +63,8 @@
   let progressWrapForwardPosition: number;
   let progressWrapBackwardPosition: number;
 
-  $: {
+  // @migration-task: $effect won't trigger UI updates on plain `let` bindings — refine mutated locals to $state or split into per-variable $derived.
+  $effect(() => {
     progressPosistion = sliderIndex * 100;
     if (sliderIndex == imageArray.length) progressWrapForwardPosition = 0;
     else progressWrapForwardPosition = 100;
@@ -75,7 +73,7 @@
     else progressWrapBackwardPosition = imageArray.length * 100;
 
     console.log(sliderIndex);
-  }
+  });
 
   onMount(() => {
     sliderInterval = setInterval(() => slideLeft(), SLIDER_INTERVAL_IN_MS);
@@ -84,7 +82,7 @@
   const tripledImages = imageArray.concat(imageArray).concat(imageArray);
 </script>
 
-<section class="pb-32 {$$props.class || ''}">
+<section class="pb-32 {className || ''}">
   <div use:swipe class="h-[320px] py-2 relative">
     <div
       class="h-full flex flex-row flex-nowrap {isSlideAnimated
@@ -130,13 +128,13 @@
         </div>
 
         <button
-          on:click={slideLeft}
+          onclick={slideLeft}
           class="absolute -left-2 h-6 w-6 rounded-full border-[#C2D1D9] border-2 p-1 flex align-middle justify-center cursor-pointer transition-all duration-500 hover:bg-[#424B5A] hover:border-[#424B5A] active:bg-black bump"
         >
           <img alt="chevron-left" src={chevronLeft} class="-translate-x-[1px]" />
         </button>
         <button
-          on:click={slideRight}
+          onclick={slideRight}
           class="absolute -right-2 -translate-y-[0.7px] h-6 w-6 rounded-full border-[#C2D1D9] border-2 p-1 flex align-middle cursor-pointer transition-all duration-500 justify-center hover:bg-[#424B5A] hover:border-[#424B5A] active:bg-black bump"
         >
           <img alt="chevron-right" src={chevronRight} class="translate-x-[1px]" />
