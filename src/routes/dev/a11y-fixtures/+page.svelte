@@ -6,7 +6,9 @@
   />
 </svelte:head>
 
-<main>
+<!-- Isolated high-contrast surface: the site body is dark (#2D2322), so default
+     text here would fail axe color-contrast. This page is a dev/test target only. -->
+<main style="background-color: #ffffff; color: #1a1a1a; min-height: 100vh; padding: 2rem 1.5rem;">
   <header>
     <h1>Accessibility fixtures</h1>
     <p>
