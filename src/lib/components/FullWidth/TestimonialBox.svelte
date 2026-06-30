@@ -7,7 +7,7 @@
     attributionLabel = "",
     backgroundColor = "transparent",
     float = "center",
-    class: className = ""
+    class: className = "",
   }: {
     icon?: string;
     iconAltText?: string;

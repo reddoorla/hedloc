@@ -5,14 +5,16 @@
     filled = true,
     href = "",
     class: className = "",
-    children
+    children,
   }: {
     text?: string;
-    click?: (event: MouseEvent & { currentTarget: EventTarget & (HTMLAnchorElement | HTMLButtonElement) }) => void;
+    click?: (
+      event: MouseEvent & { currentTarget: EventTarget & (HTMLAnchorElement | HTMLButtonElement) },
+    ) => void;
     filled?: boolean;
     href?: string;
     class?: string;
-    children?: import('svelte').Snippet;
+    children?: import("svelte").Snippet;
   } = $props();
 </script>
 
@@ -25,7 +27,7 @@
       : 'hover:bg-dark text-dark hover:text-white active:bg-black '} border-2 border-dark w-full md:w-auto text-center mb-5 sm:mb-0 uppercase cursor-pointer text-nowrap transition-all duration-300 active:-translate-y-2 {className ||
       ''}"
   >
-    {@render children?.()}
+    {#if children}{@render children()}{:else}{text}{/if}
   </a>
 {:else}
   <button
@@ -35,7 +37,7 @@
       : 'hover:bg-dark text-dark hover:text-white active:bg-black '} border-2 border-dark w-full md:w-auto text-center mb-5 sm:mb-0 uppercase cursor-pointer text-nowrap transition-all duration-300 active:-translate-y-2 {className ||
       ''}"
   >
-    {@render children?.()}
+    {#if children}{@render children()}{:else}{text}{/if}
   </button>
 {/if}
 

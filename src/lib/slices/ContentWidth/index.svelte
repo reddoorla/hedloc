@@ -1,6 +1,6 @@
 <script>
-    let { slice, ...rest } = $props();
-/** @type {import("@prismicio/client").Content.ContentWidthMediaSlice} */
+  /** @type {{ slice: import("@prismicio/client").Content.ContentWidthMediaSlice }} */
+  let { slice } = $props();
 </script>
 
 <section data-slice-type={slice.slice_type} data-slice-variation={slice.variation}>

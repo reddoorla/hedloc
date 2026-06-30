@@ -1,15 +1,15 @@
 <script lang="ts">
-import AnimateIn from "../Animation/AnimateIn.svelte";
+  import AnimateIn from "../Animation/AnimateIn.svelte";
 
-let {
-  animateIn = false,
-  class: className = "",
-  children,
-}: {
-  animateIn?: boolean;
-  class?: string;
-  children?: import('svelte').Snippet;
-} = $props();
+  let {
+    animateIn = false,
+    class: className = "",
+    children,
+  }: {
+    animateIn?: boolean;
+    class?: string;
+    children?: import("svelte").Snippet;
+  } = $props();
 </script>
 
 {#if animateIn}

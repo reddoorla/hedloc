@@ -6,7 +6,7 @@
    */
 
   /** @type {Props} */
-  let { node, children, ...rest } = $props();
+  let { node, children } = $props();
 </script>
 
 {#if node.data.label === "codespan"}

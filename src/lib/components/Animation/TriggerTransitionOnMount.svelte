@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
-  let { children, ...rest } = $props();
+  let { children } = $props();
 
   let isMounted = $state(false);
 

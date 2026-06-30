@@ -3,7 +3,7 @@
 
   import { components } from "$lib/slices";
 
-  let { data, ...rest } = $props();
+  let { data } = $props();
 </script>
 
 <SliceZone slices={data.page.data.slices} {components} />

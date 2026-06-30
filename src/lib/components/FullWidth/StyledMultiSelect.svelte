@@ -2,7 +2,7 @@
   import Select from "svelte-select";
   import dropdownArrow from "$lib/assests/icons/dropdown-arrow-light.svg";
 
-  let { activeFilters = $bindable([""]), filters = [""], ...rest } = $props();
+  let { activeFilters = $bindable([""]), filters = [""] } = $props();
 
   let selectHover = $state(false);
 </script>

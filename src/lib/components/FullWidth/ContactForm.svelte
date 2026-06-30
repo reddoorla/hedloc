@@ -2,7 +2,7 @@
   import StyledSingleSelect from "./StyledSingleSelect.svelte";
   import DefaultButton from "../Buttons/DefaultButton.svelte";
 
-  let { PRODUCTS = ["Apples", "Bananas", "Clementines"], ...rest } = $props();
+  let { PRODUCTS = ["Apples", "Bananas", "Clementines"] } = $props();
 
   let submit = () => form?.submit();
   let form: HTMLFormElement | undefined = $state();

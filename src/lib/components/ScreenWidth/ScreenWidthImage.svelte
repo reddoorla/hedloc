@@ -28,10 +28,6 @@
     children?: import("svelte").Snippet;
   } = $props();
 
-
-
-
-
   let viewportHeight: number = $state(0);
   let viewportWidth: number = $state(0);
 </script>

@@ -15,7 +15,7 @@
     linkHref = "",
     backgroundColor = "transparent",
     float = "center",
-    class: className = ""
+    class: className = "",
   }: {
     icon?: string;
     iconAltText?: string;
@@ -30,16 +30,6 @@
     float?: string;
     class?: string;
   } = $props();
-
-
-
-
-
-
-
-
-
-
 
   let justify = $derived.by(() => {
     let value = float;

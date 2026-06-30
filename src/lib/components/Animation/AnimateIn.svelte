@@ -17,7 +17,6 @@
   let el: HTMLElement | null;
   let transitionDelay = $state(0);
 
-
   const checkViewport = () => {
     if (window && el) {
       let rect = el.getBoundingClientRect();

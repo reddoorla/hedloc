@@ -5,7 +5,7 @@
     src = placeholder,
     alt = "placeholder",
     label = "",
-    class: className = ""
+    class: className = "",
   }: { src?: string; alt?: string; label?: string; class?: string } = $props();
 
   let rotationAngle = "36.8";

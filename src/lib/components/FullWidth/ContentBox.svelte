@@ -16,7 +16,7 @@
     linkHref = "",
     backgroundColor = "transparent",
     float = "center",
-    class: className = ""
+    class: className = "",
   }: {
     icon?: string;
     iconAltText?: string;
@@ -33,11 +33,9 @@
     class?: string;
   } = $props();
 
-  const justify = $derived(
-    float === "left" ? "start" : float === "right" ? "end" : float
-  );
+  const justify = $derived(float === "left" ? "start" : float === "right" ? "end" : float);
   const horizontalFloatMargin = $derived(
-    float === "left" ? "ml-0 mr-auto" : float === "right" ? "ml-auto mr-0" : "mx-auto"
+    float === "left" ? "ml-0 mr-auto" : float === "right" ? "ml-auto mr-0" : "mx-auto",
   );
 
   const resolvedIcon = $derived(icon === "placeholder" ? placeholderIcon : icon);
@@ -48,7 +46,11 @@
   style="background-color: {backgroundColor}"
 >
   {#if resolvedIcon}
-    <img src={resolvedIcon} alt={iconAltText} class="w-[70px] h-[70px] mb-7 {horizontalFloatMargin}" />
+    <img
+      src={resolvedIcon}
+      alt={iconAltText}
+      class="w-[70px] h-[70px] mb-7 {horizontalFloatMargin}"
+    />
   {/if}
   {#if labelText}
     <h6 class="mb-7">{labelText}</h6>

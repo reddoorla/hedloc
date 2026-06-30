@@ -8,7 +8,7 @@
    */
 
   /** @type {Props} */
-  let { slice, ...rest } = $props();
+  let { slice } = $props();
 </script>
 
 <section class="container p-2 md:p8">
