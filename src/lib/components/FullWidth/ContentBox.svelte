@@ -1,44 +1,54 @@
 <script lang="ts">
-    let { icon = "", iconAltText = "logo", labelText = "", titleText = "", titleTag = "h3", subtitleText = "", paragraphText = "", buttonText = "", linkText = "", linkHref = "", backgroundColor = "transparent", float = "center", ...rest, class: className = "" }: { icon?: unknown; iconAltText?: unknown; labelText?: unknown; titleText?: unknown; titleTag?: unknown; subtitleText?: unknown; paragraphText?: unknown; buttonText?: unknown; linkText?: unknown; linkHref?: unknown; backgroundColor?: unknown; float?: unknown; [key: string]: unknown; class?: string } = $props();
-import placeholderIcon from "../../assets/icons/logos/logo.svg";
+  import placeholderIcon from "../../assets/icons/logos/logo.svg";
   import DefaultButton from "../Buttons/DefaultButton.svelte";
   import ArrowButton from "../Buttons/ArrowButton.svelte";
 
+  let {
+    icon = "",
+    iconAltText = "logo",
+    labelText = "",
+    titleText = "",
+    titleTag = "h3",
+    subtitleText = "",
+    paragraphText = "",
+    buttonText = "",
+    linkText = "",
+    linkHref = "",
+    backgroundColor = "transparent",
+    float = "center",
+    class: className = ""
+  }: {
+    icon?: string;
+    iconAltText?: string;
+    labelText?: string;
+    titleText?: string;
+    titleTag?: string;
+    subtitleText?: string;
+    paragraphText?: string;
+    buttonText?: string;
+    linkText?: string;
+    linkHref?: string;
+    backgroundColor?: string;
+    float?: string;
+    class?: string;
+  } = $props();
 
+  const justify = $derived(
+    float === "left" ? "start" : float === "right" ? "end" : float
+  );
+  const horizontalFloatMargin = $derived(
+    float === "left" ? "ml-0 mr-auto" : float === "right" ? "ml-auto mr-0" : "mx-auto"
+  );
 
-
-
-
-
-
-
-
-
-  let justify: string;
-  let horizontalFloatMargin: string;
-
-  // @migration-task: $effect won't trigger UI updates on plain `let` bindings — refine mutated locals to $state or split into per-variable $derived.
-  $effect(() => {
-    justify = float;
-    if (float === "left") justify = "start";
-    if (float === "right") justify = "end";
-
-    horizontalFloatMargin = "mx-auto";
-    if (float === "left") horizontalFloatMargin = "ml-0 mr-auto";
-    if (float === "right") horizontalFloatMargin = "ml-auto mr-0";
-  });
-
-  if (icon === "placeholder") {
-    icon = placeholderIcon;
-  }
+  const resolvedIcon = $derived(icon === "placeholder" ? placeholderIcon : icon);
 </script>
 
 <div
   class="w-full flex flex-col p-2 sm:p-8 justify-{justify} text-{float} {className || ''}"
   style="background-color: {backgroundColor}"
 >
-  {#if icon}
-    <img src={icon} alt={iconAltText} class="w-[70px] h-[70px] mb-7 {horizontalFloatMargin}" />
+  {#if resolvedIcon}
+    <img src={resolvedIcon} alt={iconAltText} class="w-[70px] h-[70px] mb-7 {horizontalFloatMargin}" />
   {/if}
   {#if labelText}
     <h6 class="mb-7">{labelText}</h6>

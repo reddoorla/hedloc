@@ -1,6 +1,5 @@
 <script lang="ts">
-    let { imageArray = [placeholder, placeholder, placeholder, placeholder], altText = "background image", ...rest, class: className = "" }: { imageArray?: unknown; altText?: unknown; [key: string]: unknown; class?: string } = $props();
-import { onMount } from "svelte";
+  import { onMount, untrack } from "svelte";
   import { createSwipeAction, type SwipeCustomEvent } from "$lib/utils/swipeAction";
   import placeholder from "../../assets/images/background_placeholder.svg";
   import ContentWidth from "../ContentWidth/ContentWidth.svelte";
@@ -8,13 +7,18 @@ import { onMount } from "svelte";
   import chevronLeft from "$lib/assets/icons/chevron-left.svg";
   import chevronRight from "$lib/assets/icons/chevron-right.svg";
 
+  let {
+    imageArray = [placeholder, placeholder, placeholder, placeholder],
+    altText = "background image",
+    class: className = "",
+  }: { imageArray?: string[]; altText?: string; class?: string } = $props();
 
   const SLIDER_TRANSITION_LENGTH_IN_MS = 2000;
   const SLIDER_INTERVAL_IN_MS = 5000;
 
-  let sliderIndex = imageArray.length - 1;
+  let sliderIndex = $state(untrack(() => imageArray.length - 1));
 
-  let isSlideAnimated = true;
+  let isSlideAnimated = $state(true);
 
   const resetSliderToStart = () => {
     setTimeout(() => (isSlideAnimated = false), SLIDER_TRANSITION_LENGTH_IN_MS);
@@ -59,11 +63,10 @@ import { onMount } from "svelte";
 
   const swipe = createSwipeAction(handleSwipe);
 
-  let progressPosistion: number;
-  let progressWrapForwardPosition: number;
-  let progressWrapBackwardPosition: number;
+  let progressPosistion: number = $state(0);
+  let progressWrapForwardPosition: number = $state(0);
+  let progressWrapBackwardPosition: number = $state(0);
 
-  // @migration-task: $effect won't trigger UI updates on plain `let` bindings — refine mutated locals to $state or split into per-variable $derived.
   $effect(() => {
     progressPosistion = sliderIndex * 100;
     if (sliderIndex == imageArray.length) progressWrapForwardPosition = 0;
@@ -79,7 +82,7 @@ import { onMount } from "svelte";
     sliderInterval = setInterval(() => slideLeft(), SLIDER_INTERVAL_IN_MS);
   });
 
-  const tripledImages = imageArray.concat(imageArray).concat(imageArray);
+  const tripledImages = $derived(imageArray.concat(imageArray).concat(imageArray));
 </script>
 
 <section class="pb-32 {className || ''}">

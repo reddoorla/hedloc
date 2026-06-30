@@ -1,19 +1,39 @@
 <script lang="ts">
-    let { src = placeholder, field, altText = "background image", placeholderSide = "right", vimeoId = "", darken = false, backdrop = false, flip = false, ...rest, class: className = "" }: { src?: string; field: ImageField | null; altText?: unknown; placeholderSide?: unknown; vimeoId?: unknown; darken?: unknown; backdrop?: unknown; flip?: unknown; [key: string]: unknown; class?: string } = $props();
-import type { ImageField } from "@prismicio/client";
+  import type { ImageField } from "@prismicio/client";
   import placeholder from "../../assets/images/background_placeholder.svg";
   import ContentWidth from "../ContentWidth/ContentWidth.svelte";
   import { PrismicImage } from "@prismicio/svelte";
 
+  let {
+    src = placeholder,
+    field,
+    altText = "background image",
+    placeholderSide = "right",
+    vimeoId = "",
+    darken = false,
+    backdrop = false,
+    flip = false,
+    class: className = "",
+    children,
+  }: {
+    src?: string;
+    field: ImageField | null;
+    altText?: string;
+    placeholderSide?: string;
+    vimeoId?: string;
+    darken?: boolean;
+    backdrop?: boolean;
+    flip?: boolean;
+    class?: string;
+    children?: import("svelte").Snippet;
+  } = $props();
 
 
 
 
 
-
-
-  let viewportHeight: number;
-  let viewportWidth: number;
+  let viewportHeight: number = $state(0);
+  let viewportWidth: number = $state(0);
 </script>
 
 <svelte:window bind:innerHeight={viewportHeight} bind:innerWidth={viewportWidth} />
@@ -65,7 +85,7 @@ import type { ImageField } from "@prismicio/client";
   </div>
   <div class="w-screen h-screen absolute top-0 left-0">
     <ContentWidth class="{className || 'flex items-center justify-center'} h-full">
-      <slot />
+      {@render children?.()}
     </ContentWidth>
   </div>
 </section>

@@ -1,9 +1,35 @@
 <script lang="ts">
-    let { icon = placeholderIcon, iconAltText = "logo", labelText = "", titleText = "", subtitleText = "", paragraphText = "", buttonText = "", linkText = "", linkHref = "", backgroundColor = "transparent", float = "center", ...rest, class: className = "" }: { icon?: unknown; iconAltText?: unknown; labelText?: unknown; titleText?: unknown; subtitleText?: unknown; paragraphText?: unknown; buttonText?: unknown; linkText?: unknown; linkHref?: unknown; backgroundColor?: unknown; float?: unknown; [key: string]: unknown; class?: string } = $props();
-import placeholderIcon from "../../assets/icons/logos/logo.svg";
+  import placeholderIcon from "../../assets/icons/logos/logo.svg";
   import DefaultButton from "../Buttons/DefaultButton.svelte";
   import ArrowButton from "../Buttons/ArrowButton.svelte";
 
+  let {
+    icon = placeholderIcon,
+    iconAltText = "logo",
+    labelText = "",
+    titleText = "",
+    subtitleText = "",
+    paragraphText = "",
+    buttonText = "",
+    linkText = "",
+    linkHref = "",
+    backgroundColor = "transparent",
+    float = "center",
+    class: className = ""
+  }: {
+    icon?: string;
+    iconAltText?: string;
+    labelText?: string;
+    titleText?: string;
+    subtitleText?: string;
+    paragraphText?: string;
+    buttonText?: string;
+    linkText?: string;
+    linkHref?: string;
+    backgroundColor?: string;
+    float?: string;
+    class?: string;
+  } = $props();
 
 
 
@@ -14,13 +40,20 @@ import placeholderIcon from "../../assets/icons/logos/logo.svg";
 
 
 
-  let justify = float;
-  if (float === "left") justify = "start";
-  if (float === "right") justify = "end";
 
-  let horizontalFloatMargin = "mx-auto";
-  if (float === "left") horizontalFloatMargin = "ml-0 mr-auto";
-  if (float === "right") horizontalFloatMargin = "ml-auto mr-0";
+  let justify = $derived.by(() => {
+    let value = float;
+    if (float === "left") value = "start";
+    if (float === "right") value = "end";
+    return value;
+  });
+
+  let horizontalFloatMargin = $derived.by(() => {
+    let value = "mx-auto";
+    if (float === "left") value = "ml-0 mr-auto";
+    if (float === "right") value = "ml-auto mr-0";
+    return value;
+  });
 
   let _isLinkArrowActive = false;
 </script>

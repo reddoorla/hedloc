@@ -1,6 +1,5 @@
 <script lang="ts">
-    let { itemArray = [, ...rest, class: className = "" }: { itemArray?: GalleryItem[]; [key: string]: unknown; class?: string } = $props();
-import { onMount } from "svelte";
+  import { onMount } from "svelte";
   import { createSwipeAction, type SwipeCustomEvent } from "$lib/utils/swipeAction";
   import placeholder from "../../assets/images/image_placeholder.svg";
   import ContentWidth from "../ContentWidth/ContentWidth.svelte";
@@ -14,33 +13,36 @@ import { onMount } from "svelte";
     filters?: string[];
   };
 
-    {
-      name: "Item 1",
-      featuredText: "Dev + UX",
-      href: "#",
-      filters: ["Dev", "UX"],
-    },
-    {
-      name: "Item 2",
-    },
-    {
-      name: "Item 3",
-      featuredText: "UX + UI",
-      href: "#",
-      featuredImage: placeholder,
-      filters: ["UI", "UX"],
-    },
-  ];
+  let {
+    itemArray = [
+      {
+        name: "Item 1",
+        featuredText: "Dev + UX",
+        href: "#",
+        filters: ["Dev", "UX"],
+      },
+      {
+        name: "Item 2",
+      },
+      {
+        name: "Item 3",
+        featuredText: "UX + UI",
+        href: "#",
+        featuredImage: placeholder,
+        filters: ["UI", "UX"],
+      },
+    ],
+    class: className = "",
+  }: { itemArray?: GalleryItem[]; class?: string } = $props();
 
   const SLIDER_TRANSITION_LENGTH_IN_MS = 2000;
   const SLIDER_INTERVAL_IN_MS = 5000;
 
-  let sliderIndex = 0;
-  let innerWidth: number;
-  let imageWidth: number;
-  let isSlideAnimated = true;
+  let sliderIndex = $state(0);
+  let innerWidth: number = $state(0);
+  let imageWidth: number = $state(0);
+  let isSlideAnimated = $state(true);
 
-  // @migration-task: $effect won't trigger UI updates on plain `let` bindings — refine mutated locals to $state or split into per-variable $derived.
   $effect(() => {
     if (innerWidth > 1040) {
       imageWidth = 720;
@@ -94,9 +96,8 @@ import { onMount } from "svelte";
 
   let _progressPosistion = 0;
   let _progressWrapForwardPosition = -100;
-  let _progressWrapBackwardPosition = itemArray.length * 100;
+  let _progressWrapBackwardPosition = 0;
 
-  // @migration-task: $effect won't trigger UI updates on plain `let` bindings — refine mutated locals to $state or split into per-variable $derived.
   $effect(() => {
     _progressPosistion = sliderIndex * 100;
     if (sliderIndex == itemArray.length) _progressWrapForwardPosition = 0;
@@ -110,7 +111,7 @@ import { onMount } from "svelte";
     sliderInterval = setInterval(() => slideRight(), SLIDER_INTERVAL_IN_MS);
   });
 
-  const tripledItems = itemArray.concat(itemArray).concat(itemArray);
+  const tripledItems = $derived(itemArray.concat(itemArray).concat(itemArray));
 </script>
 
 <svelte:head><title>Portfolios | Reddoor Wireframer</title></svelte:head>

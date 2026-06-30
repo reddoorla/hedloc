@@ -1,12 +1,20 @@
 <script lang="ts">
-    let { value = "", placeholder = "", ...rest, class: className = "" }: { value?: unknown; placeholder?: unknown; [key: string]: unknown; class?: string } = $props();
-import Select from "svelte-select";
+  import Select from "svelte-select";
   import dropdownArrow from "$lib/assets/icons/dropdown-arrow-light.svg";
 
-  export let items: string[] | { label: string; value: string }[];
+  let {
+    value = $bindable(""),
+    placeholder = "",
+    class: className = "",
+    items,
+  }: {
+    value?: string;
+    placeholder?: string;
+    class?: string;
+    items: string[] | { label: string; value: string }[];
+  } = $props();
 
-
-  let selectHover = false;
+  let selectHover = $state(false);
 </script>
 
 <div

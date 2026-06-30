@@ -3,8 +3,8 @@
   import ScreenWidthImage from "$lib/components/ScreenWidth/ScreenWidthImage.svelte";
   import { PrismicImage, PrismicRichText } from "@prismicio/svelte";
 
-  let { data, ...rest } = $props();
-  let content = $state(data.page.data);
+  let { data } = $props();
+  let content = $derived(data.page.data);
 
   let viewportWidth = $state(1024);
 </script>

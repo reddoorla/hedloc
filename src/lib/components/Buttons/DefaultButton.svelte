@@ -1,7 +1,19 @@
 <script lang="ts">
-
-
-  let { text = "BUTTON", click = () => {}, filled = true, href = "", class: className = "" }: { text?: unknown; click?: unknown; filled?: unknown; href?: unknown; class?: string } = $props();
+  let {
+    text = "BUTTON",
+    click = () => {},
+    filled = true,
+    href = "",
+    class: className = "",
+    children
+  }: {
+    text?: string;
+    click?: (event: MouseEvent & { currentTarget: EventTarget & (HTMLAnchorElement | HTMLButtonElement) }) => void;
+    filled?: boolean;
+    href?: string;
+    class?: string;
+    children?: import('svelte').Snippet;
+  } = $props();
 </script>
 
 {#if href}
@@ -13,7 +25,7 @@
       : 'hover:bg-dark text-dark hover:text-white active:bg-black '} border-2 border-dark w-full md:w-auto text-center mb-5 sm:mb-0 uppercase cursor-pointer text-nowrap transition-all duration-300 active:-translate-y-2 {className ||
       ''}"
   >
-    <slot />
+    {@render children?.()}
   </a>
 {:else}
   <button
@@ -23,7 +35,7 @@
       : 'hover:bg-dark text-dark hover:text-white active:bg-black '} border-2 border-dark w-full md:w-auto text-center mb-5 sm:mb-0 uppercase cursor-pointer text-nowrap transition-all duration-300 active:-translate-y-2 {className ||
       ''}"
   >
-    <slot />
+    {@render children?.()}
   </button>
 {/if}
 

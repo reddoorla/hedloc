@@ -7,7 +7,7 @@
   import chevronRight from "../../assets/icons/chevron-right.svg";
 
   interface Props {
-    contentBoxPropsArray?: ComponentProps<ContentBox>[];
+    contentBoxPropsArray?: ComponentProps<typeof ContentBox>[];
     isNumbered?: boolean;
   }
 
@@ -34,7 +34,7 @@
   const SLIDER_INTERVAL_IN_MS = 5000;
   let sliderIndex = $state(0);
   let sliderInterval: ReturnType<typeof setInterval>;
-  let sliderWidth = 100 / contentBoxPropsArray.length / 5;
+  let sliderWidth = $derived(100 / contentBoxPropsArray.length / 5);
   let isSlideAnimated = $state(true);
 
   const resetSlider = () => {
@@ -73,13 +73,13 @@
     sliderInterval = setInterval(() => slideLeft(), SLIDER_INTERVAL_IN_MS);
   });
 
-  const quintupledPropsArray = [
+  const quintupledPropsArray = $derived([
     ...contentBoxPropsArray,
     ...contentBoxPropsArray,
     ...contentBoxPropsArray,
     ...contentBoxPropsArray,
     ...contentBoxPropsArray,
-  ];
+  ]);
 </script>
 
 <div use:swipe class="w-full h-full relative overflow-hidden">

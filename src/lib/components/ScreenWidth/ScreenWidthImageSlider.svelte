@@ -29,7 +29,7 @@
 
   let isSlideAnimated = $state(true);
   let _nextSlideIndex = 1;
-  let _previousSlideIndex = imageArray.length - 1;
+  let _previousSlideIndex = $derived(imageArray.length - 1);
 
   let getNextSlideIndex = () => {
     if (sliderIndex == imageArray.length - 1) {
@@ -106,7 +106,7 @@
     sliderInterval = setInterval(() => slideLeft(), SLIDER_INTERVAL_IN_MS);
   });
 
-  const tripledImages = imageArray.concat(imageArray).concat(imageArray);
+  const tripledImages = $derived(imageArray.concat(imageArray).concat(imageArray));
 </script>
 
 <section>

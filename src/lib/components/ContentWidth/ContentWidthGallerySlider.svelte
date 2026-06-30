@@ -1,20 +1,24 @@
 <script lang="ts">
-    let { imageArray = [placeholder, placeholder, placeholder, placeholder], altText = "background image", ...rest, class: className = "" }: { imageArray?: unknown; altText?: unknown; [key: string]: unknown; class?: string } = $props();
-import { createSwipeAction, type SwipeCustomEvent } from "$lib/utils/swipeAction";
+  import { createSwipeAction, type SwipeCustomEvent } from "$lib/utils/swipeAction";
   import placeholder from "../../assets/images/background_placeholder.svg";
   import ContentWidth from "../ContentWidth/ContentWidth.svelte";
   import FourByThreeImage from "../FullWidth/FourByThreeImage.svelte";
   import chevronLeft from "$lib/assets/icons/chevron-left.svg";
   import chevronRight from "$lib/assets/icons/chevron-right.svg";
 
+  let {
+    imageArray = [placeholder, placeholder, placeholder, placeholder],
+    altText = "background image",
+    class: className = "",
+  }: { imageArray?: string[]; altText?: string; class?: string } = $props();
 
   const SLIDER_TRANSITION_LENGTH_IN_MS = 2000;
 
-  let viewportWidth: number;
+  let viewportWidth = $state(0);
 
-  let sliderIndex = 0;
+  let sliderIndex = $state(0);
 
-  let isSlideAnimated = true;
+  let isSlideAnimated = $state(true);
 
   const _resetSliderToStart = () => {
     setTimeout(() => (isSlideAnimated = false), SLIDER_TRANSITION_LENGTH_IN_MS);
@@ -57,7 +61,7 @@ import { createSwipeAction, type SwipeCustomEvent } from "$lib/utils/swipeAction
 
   const swipe = createSwipeAction(handleSwipe);
 
-  const tripledImages = imageArray.concat(imageArray).concat(imageArray);
+  const tripledImages = $derived(imageArray.concat(imageArray).concat(imageArray));
 </script>
 
 <svelte:window bind:innerWidth={viewportWidth} />

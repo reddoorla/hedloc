@@ -1,6 +1,7 @@
 <script lang="ts">
-    let { image = placeholder, ...rest, class: className = "" }: { image?: unknown; [key: string]: unknown; class?: string } = $props();
-import placeholder from "$lib/assets/images/image_placeholder.svg";
+  import placeholder from "$lib/assets/images/image_placeholder.svg";
+
+  let { image = placeholder, class: className = "" }: { image?: string; class?: string } = $props();
 
   let rotationAngle = "36.8";
   let crossLength = "125%";

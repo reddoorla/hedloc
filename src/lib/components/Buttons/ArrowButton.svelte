@@ -1,9 +1,9 @@
 <script>
-    let { text = "", href = "#", ...rest, class: className = "" } = $props();
-import linkArrow from "$lib/assets/icons/wireframe-link-arrow-right.svg";
+  import linkArrow from "$lib/assets/icons/wireframe-link-arrow-right.svg";
 
+  let { text = "", href = "#", class: className = "" } = $props();
 
-  let isLinkArrowActive = false;
+  let isLinkArrowActive = $state(false);
 </script>
 
 <a

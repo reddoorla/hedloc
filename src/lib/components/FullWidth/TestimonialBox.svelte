@@ -1,23 +1,34 @@
 <script lang="ts">
+  let {
+    icon = "",
+    iconAltText = "company logo",
+    testimonialText = "",
+    attribution = "",
+    attributionLabel = "",
+    backgroundColor = "transparent",
+    float = "center",
+    class: className = ""
+  }: {
+    icon?: string;
+    iconAltText?: string;
+    testimonialText?: string;
+    attribution?: string;
+    attributionLabel?: string;
+    backgroundColor?: string;
+    float?: string;
+    class?: string;
+  } = $props();
 
+  let justify = $derived.by(() => {
+    if (float === "left") return "start";
+    if (float === "right") return "end";
+    return float;
+  });
 
-
-
-
-
-    let { icon = "", iconAltText = "company logo", testimonialText = "", attribution = "", attributionLabel = "", backgroundColor = "transparent", float = "center", ...rest, class: className = "" }: { icon?: unknown; iconAltText?: unknown; testimonialText?: unknown; attribution?: unknown; attributionLabel?: unknown; backgroundColor?: unknown; float?: unknown; [key: string]: unknown; class?: string } = $props();
-let justify: string;
-  let horizontalFloatMargin: string;
-
-  // @migration-task: $effect won't trigger UI updates on plain `let` bindings — refine mutated locals to $state or split into per-variable $derived.
-  $effect(() => {
-    justify = float;
-    if (float === "left") justify = "start";
-    if (float === "right") justify = "end";
-
-    horizontalFloatMargin = "mx-auto";
-    if (float === "left") horizontalFloatMargin = "ml-0 mr-auto";
-    if (float === "right") horizontalFloatMargin = "ml-auto mr-0";
+  let horizontalFloatMargin = $derived.by(() => {
+    if (float === "left") return "ml-0 mr-auto";
+    if (float === "right") return "ml-auto mr-0";
+    return "mx-auto";
   });
 </script>
 
