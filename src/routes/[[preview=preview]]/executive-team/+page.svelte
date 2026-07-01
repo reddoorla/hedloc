@@ -37,7 +37,10 @@
           onclick={() => (active = -1)}
           class="hidden lg:flex flex-col items-start justify-start gap-2"
         >
-          <PrismicImage class="w-full aspect-[3/4] object-cover" field={content.team_member[active].headshot} />
+          <PrismicImage
+            class="w-full aspect-[3/4] object-cover"
+            field={content.team_member[active].headshot}
+          />
           <h4>{content.team_member[active].name}</h4>
           <h5>{content.team_member[active].title}</h5>
 
