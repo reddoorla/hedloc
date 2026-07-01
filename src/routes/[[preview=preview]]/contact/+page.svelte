@@ -5,8 +5,10 @@
   let { data } = $props();
 
   let form: HTMLFormElement | undefined = $state();
+  // requestSubmit() runs HTML5 constraint validation (so the required fields are
+  // enforced) before posting to Netlify; plain .submit() would skip validation.
   let submit = () => {
-    if (form) form.submit();
+    if (form) form.requestSubmit();
   };
 </script>
 
@@ -21,7 +23,7 @@
 <section class="bg-dark py-24" id="contact">
   <ContentWidth>
     <form
-      class="w-full flex flex-col bg-primary text-white gap-8 lg:gap-10 p-4 lg:p-10"
+      class="w-full flex flex-col text-white gap-8 lg:gap-10"
       name="contact"
       method="post"
       bind:this={form}
@@ -30,41 +32,55 @@
     >
       <input type="hidden" name="form-name" value="contact" />
 
-      <div class="w-full flex flex-col lg:flex-row">
-        <div class="lg:w-1/12">Name</div>
+      <div class="w-full flex flex-col lg:flex-row lg:items-center">
+        <label for="name" class="text-gold lg:w-1/12">Name*</label>
         <input
-          class="lg:w-11/12 border-[1px] rounded-[3px] text-dark border-light h-10 pl-6"
+          id="name"
+          class="lg:w-11/12 border-[0.5px] rounded-xs normal-case text-white border-gold bg-transparent h-12 px-6"
           name="name"
           type="text"
+          placeholder="First and Last Name"
+          required
         />
       </div>
 
-      <div class="w-full flex flex-col lg:flex-row justify-start">
-        <div class="lg:w-1/12">Email</div>
+      <div class="w-full flex flex-col lg:flex-row lg:items-center justify-start">
+        <label for="email" class="text-gold lg:w-1/12">Email*</label>
         <input
-          class="lg:w-4/12 border-[1px] rounded-[3px] text-dark border-light h-10 pl-6"
+          id="email"
+          class="lg:w-4/12 border-[0.5px] rounded-xs normal-case text-white border-gold bg-transparent h-12 px-6"
           name="email"
-          type="text"
+          type="email"
+          placeholder="Email Address"
+          required
         />
         <div class="w-0 h-8 lg:h-0 lg:w-1/6"></div>
-        <div class="lg:w-1/12">Phone</div>
+        <label for="phone" class="text-gold lg:w-1/12">Phone*</label>
         <input
-          class="lg:w-4/12 border-[1px] rounded-[3px] text-dark border-light h-10 pl-6"
+          id="phone"
+          class="lg:w-4/12 border-[0.5px] rounded-xs normal-case text-white border-gold bg-transparent h-12 px-6"
           name="phone"
-          type="text"
+          type="tel"
+          placeholder="(000)-000-0000"
+          required
         />
       </div>
 
       <div class="w-full flex flex-col lg:flex-row">
-        <div class="lg:w-1/12">Message</div>
+        <label for="message" class="text-gold lg:w-1/12">Message*</label>
         <textarea
-          class="lg:w-11/12 border-[1px] rounded-[3px] text-dark border-light h-48 pl-6 pt-2"
-          name="message"></textarea>
+          id="message"
+          class="lg:w-11/12 border-[0.5px] rounded-xs normal-case text-white border-gold bg-transparent h-56 px-6 pt-2"
+          name="message"
+          placeholder="Write your message."
+          required></textarea>
       </div>
-      <div class="ml-auto mr-20 w-16">
+
+      <div class="w-full flex justify-end">
         <button
+          type="button"
           onclick={submit}
-          class="mt-8 button-text transition w-36 h-9 border-2 border-white text-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center"
+          class="mt-8 button-text transition w-36 h-9 border border-white text-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center"
           >Submit</button
         >
       </div>
