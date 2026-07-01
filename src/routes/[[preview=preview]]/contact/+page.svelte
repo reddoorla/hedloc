@@ -18,7 +18,7 @@
 >
   <h1 class="text-white max-w-screen-lg">Contact Us</h1>
 </ScreenWidthImage>
-<section class="bg-[#cac2b3] py-24" id="contact">
+<section class="bg-dark py-24" id="contact">
   <ContentWidth>
     <form
       class="w-full flex flex-col bg-primary text-white gap-8 lg:gap-10 p-4 lg:p-10"
