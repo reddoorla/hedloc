@@ -1,11 +1,16 @@
 import { asText } from "@prismicio/client";
+import { error } from "@sveltejs/kit";
 
 import { createClient } from "$lib/prismicio";
 
 export async function load({ params, fetch, cookies }) {
   const client = createClient({ fetch, cookies });
 
-  const page = await client.getByUID("page", params.uid);
+  const page = await client.getByUID("page", params.uid).catch(() => undefined);
+
+  if (!page) {
+    error(404, `Page not found: ${params.uid}`);
+  }
 
   return {
     page,
