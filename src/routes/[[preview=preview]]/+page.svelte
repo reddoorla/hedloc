@@ -32,12 +32,12 @@
         <h2>{content.subheading}</h2>
         <div class="flex flex-row gap-6 mt-14">
           <a
-            href="/about"
+            href="/executive-team"
             class="button-text transition w-36 h-9 border-2 border-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center"
-            >About Us</a
+            >Executive Team</a
           >
           <a
-            href="/about#contact"
+            href="/contact"
             class="button-text transition w-36 h-9 border-2 text-dark bg-white border-white hover:bg-dark active:bg-white active:text-dark hover:text-white flex items-center justify-center"
             >Contact Us</a
           >
