@@ -35,7 +35,7 @@
       <a href="/" class="bump"
         ><img
           src={logo}
-          class="h-12 hover:opacity-80 transition-opacity"
+          class="w-42 hover:opacity-80 transition-opacity"
           alt="hedloc investment co"
         /></a
       >
@@ -52,7 +52,7 @@
       <a href="/" class="bump"
         ><img
           src={logo}
-          class="h-12 hover:opacity-80 transition-opacity"
+          class="w-42 hover:opacity-80 transition-opacity"
           alt="hedloc investment co"
         /></a
       >
