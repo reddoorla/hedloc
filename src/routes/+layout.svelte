@@ -2,8 +2,7 @@
   import { PrismicPreview } from "@prismicio/svelte/kit";
   import { page } from "$app/stores";
   import { repositoryName } from "$lib/prismicio";
-  import logo from "$lib/assets/icons/logos/logoFull.svg";
-  import logoSmall from "$lib/assets/icons/logos/logo.svg";
+  import logo from "$lib/assets/icons/logos/hedloc-white.svg";
   import "../app.css";
   import ContentWidth from "$lib/components/ContentWidth/ContentWidth.svelte";
   /**
@@ -12,8 +11,6 @@
    */
 
   /** @type {Props} */
-
-  let viewportWidth = $state(1024);
 
   let { children } = $props();
 </script>
@@ -32,20 +29,19 @@
   {/if}
   <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no" />
 </svelte:head>
-<svelte:window bind:innerWidth={viewportWidth} />
 <main class="overflow-hidden">
   <header class="absolute top-0 left-0 w-screen h-24 z-20">
     <ContentWidth class="h-full flex flex-row justify-between items-center">
       <a href="/" class="bump"
         ><img
-          src={viewportWidth > 768 ? logo : logoSmall}
-          class="h-5 hover:opacity-80 transition-opacity"
+          src={logo}
+          class="w-42 hover:opacity-80 transition-opacity"
           alt="hedloc investment co"
         /></a
       >
       <div class="flex flex-row text-white gap-6 uppercase">
-        <a href="/about" class="hover:opacity-80 transition-opacity">About</a>
-        <a href="/about#contact" class="hover:opacity-80 transition-opacity">Contact Us</a>
+        <a href="/executive-team" class="hover:opacity-80 transition-opacity">Executive Team</a>
+        <a href="/contact" class="hover:opacity-80 transition-opacity">Contact Us</a>
       </div>
     </ContentWidth>
   </header>
@@ -55,8 +51,8 @@
     <ContentWidth class="flex flex-row justify-start">
       <a href="/" class="bump"
         ><img
-          src={viewportWidth > 768 ? logo : logoSmall}
-          class="h-5 hover:opacity-80 transition-opacity"
+          src={logo}
+          class="w-42 hover:opacity-80 transition-opacity"
           alt="hedloc investment co"
         /></a
       >
@@ -73,8 +69,8 @@
       </div>
       <div class="flex flex-col gap-3 mt-16 md:mt-0">
         <a href="/" class="hover:opacity-80 transition-opacity">Home</a>
-        <a href="/about" class="hover:opacity-80 transition-opacity">About</a>
-        <a href="/about#contact" class="hover:opacity-80 transition-opacity">Contact Us</a>
+        <a href="/executive-team" class="hover:opacity-80 transition-opacity">Executive Team</a>
+        <a href="/contact" class="hover:opacity-80 transition-opacity">Contact Us</a>
       </div>
     </ContentWidth>
   </footer>

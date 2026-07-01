@@ -14,6 +14,7 @@
   --color-light: #c8af5e;
   --color-dark: #2d2322;
   --color-primary: #a48058;
+  --color-gold: #dcc169;
 
   --ease-in-expo: cubic-bezier(0.95, 0.05, 0.795, 0.035);
   --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
@@ -261,6 +262,13 @@
 
   ::placeholder {
     color: #c2d1d9 !important;
+  }
+
+  /* Contact form uses white 50%-opacity placeholders on the dark section
+     (per Figma). Higher specificity + !important beats the global rule above. */
+  #contact input::placeholder,
+  #contact textarea::placeholder {
+    color: rgb(255 255 255 / 0.5) !important;
   }
 
   input[type="textarea"]::placeholder {

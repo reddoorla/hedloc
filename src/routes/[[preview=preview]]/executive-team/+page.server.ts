@@ -7,7 +7,7 @@ export async function load({ fetch, cookies }) {
 
   return {
     page,
-    title: "Hedloc | About",
+    title: "Hedloc | Executive Team",
     meta_description: page.data.meta_description,
     meta_title: page.data.meta_title,
     meta_image: page.data.meta_image.url,

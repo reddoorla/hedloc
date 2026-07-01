@@ -7,6 +7,14 @@
     NODE_VERSION = "22"
     COREPACK_INTEGRITY_KEYS = "0"
 
+# The retired /about page was split into /executive-team (team) and /contact.
+# 301 the old URL to the team page so existing links/bookmarks don't dead-end.
+[[redirects]]
+    from = "/about"
+    to = "/executive-team"
+    status = 301
+    force = true
+
 # Baseline security headers for all responses. CSP is emitted per-response by
 # SvelteKit (see `kit.csp` in svelte.config.js) so it is intentionally omitted
 # here to avoid conflicting duplicates.
