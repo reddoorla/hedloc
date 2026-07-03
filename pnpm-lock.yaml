@@ -40,8 +40,8 @@ importers:
         specifier: ^1.60.0
         version: 1.61.1
       '@reddoorla/maintenance':
-        specifier: ^0.65.0
-        version: 0.65.0(@sveltejs/kit@2.68.0(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.56.4(@typescript-eslint/types@8.62.0))(vite@8.1.0(@types/node@26.0.1)(jiti@2.7.0)))(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3)(vite@8.1.0(@types/node@26.0.1)(jiti@2.7.0)))(jiti@2.7.0)(playwright-core@1.61.1)(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3)
+        specifier: ^0.67.0
+        version: 0.67.0(@sveltejs/kit@2.68.0(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.56.4(@typescript-eslint/types@8.62.0))(vite@8.1.0(@types/node@26.0.1)(jiti@2.7.0)))(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3)(vite@8.1.0(@types/node@26.0.1)(jiti@2.7.0)))(jiti@2.7.0)(playwright-core@1.61.1)(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3)
       '@slicemachine/adapter-sveltekit':
         specifier: ^0.3.96
         version: 0.3.96(@prismicio/types@0.2.9)(@sveltejs/kit@2.68.0(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.56.4(@typescript-eslint/types@8.62.0))(vite@8.1.0(@types/node@26.0.1)(jiti@2.7.0)))(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3)(vite@8.1.0(@types/node@26.0.1)(jiti@2.7.0)))(prettier-plugin-svelte@4.1.1(prettier@3.9.1)(svelte@5.56.4(@typescript-eslint/types@8.62.0)))(prettier@3.9.1)(svelte@5.56.4(@typescript-eslint/types@8.62.0))
@@ -605,8 +605,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  '@reddoorla/maintenance@0.65.0':
-    resolution: {integrity: sha512-omvrHLq2LcmWs4nue+Y4JvH27wpIOdoV93MAIl0xB0hJvuLM96wTcn6ujFzUHkyaVjmr7UW5+Dtn53n0uz5vlg==}
+  '@reddoorla/maintenance@0.67.0':
+    resolution: {integrity: sha512-uh9VpkOeuZk0mNciP26P6HzNFvhzszHma+ZprvgZjMRi+nxczgPO/2yMTvJZM/DjwX4Zn5zBEjx+R4dIo4LN0g==}
     engines: {node: '>=20'}
     hasBin: true
     peerDependencies:
@@ -3855,7 +3855,7 @@ snapshots:
       - react-native-b4a
       - supports-color
 
-  '@reddoorla/maintenance@0.65.0(@sveltejs/kit@2.68.0(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.56.4(@typescript-eslint/types@8.62.0))(vite@8.1.0(@types/node@26.0.1)(jiti@2.7.0)))(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3)(vite@8.1.0(@types/node@26.0.1)(jiti@2.7.0)))(jiti@2.7.0)(playwright-core@1.61.1)(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3)':
+  '@reddoorla/maintenance@0.67.0(@sveltejs/kit@2.68.0(@sveltejs/vite-plugin-svelte@7.1.2(svelte@5.56.4(@typescript-eslint/types@8.62.0))(vite@8.1.0(@types/node@26.0.1)(jiti@2.7.0)))(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3)(vite@8.1.0(@types/node@26.0.1)(jiti@2.7.0)))(jiti@2.7.0)(playwright-core@1.61.1)(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3)':
     dependencies:
       '@axe-core/playwright': 4.12.1(playwright-core@1.61.1)
       '@eslint/js': 10.0.1(eslint@10.6.0(jiti@2.7.0))
