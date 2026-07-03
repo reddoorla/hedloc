@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@lucide/svelte':
+        specifier: ^1.17.0
+        version: 1.23.0(svelte@5.56.4(@typescript-eslint/types@8.62.0))
       '@prismicio/client':
         specifier: ^7.3.1
         version: 7.21.8
@@ -17,9 +20,6 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.3.0
         version: 4.3.1(vite@8.1.0(@types/node@26.0.1)(jiti@2.7.0))
-      lucide-svelte:
-        specifier: ^0.563.0
-        version: 0.563.0(svelte@5.56.4(@typescript-eslint/types@8.62.0))
       svelte-gestures:
         specifier: ^5.0.7
         version: 5.2.2
@@ -484,6 +484,11 @@ packages:
 
   '@lhci/utils@0.15.1':
     resolution: {integrity: sha512-WclJnUQJeOMY271JSuaOjCv/aA0pgvuHZS29NFNdIeI14id8eiFsjith85EGKYhljgoQhJ2SiW4PsVfFiakNNw==}
+
+  '@lucide/svelte@1.23.0':
+    resolution: {integrity: sha512-3LQbKXx9vId6Nx4E2Nu2qwgJfdmr5+CVeVJbxe5cy+HcnCRd9QVVtZXqvgBYAV1OJrPmQAf9/3gJWLCpASC/Ng==}
+    peerDependencies:
+      svelte: ^5
 
   '@lukeed/csprng@1.1.0':
     resolution: {integrity: sha512-Z7C/xXCiGWsg0KuKsHTKJxbWhpI3Vs5GwLfOean7MGyVFGqdRgBbAjOCh6u4bbjPc/8MJ2pZmK/0DLdCbivLDA==}
@@ -2259,12 +2264,6 @@ packages:
     resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
     engines: {node: '>=12'}
 
-  lucide-svelte@0.563.0:
-    resolution: {integrity: sha512-pjZKw7TpQcamfQrx7YdbOHgmrcNeKiGGMD0tKZQaVktwSsbqw28CsKc2Q97ttwjytiCWkJyOa8ij2Q+Og0nPfQ==}
-    deprecated: Package deprecated. Please use @lucide/svelte instead.
-    peerDependencies:
-      svelte: ^3 || ^4 || ^5.0.0-next.42
-
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
 
@@ -3726,6 +3725,10 @@ snapshots:
       - react-native-b4a
       - supports-color
       - utf-8-validate
+
+  '@lucide/svelte@1.23.0(svelte@5.56.4(@typescript-eslint/types@8.62.0))':
+    dependencies:
+      svelte: 5.56.4(@typescript-eslint/types@8.62.0)
 
   '@lukeed/csprng@1.1.0': {}
 
@@ -5577,10 +5580,6 @@ snapshots:
       yallist: 4.0.0
 
   lru-cache@7.18.3: {}
-
-  lucide-svelte@0.563.0(svelte@5.56.4(@typescript-eslint/types@8.62.0)):
-    dependencies:
-      svelte: 5.56.4(@typescript-eslint/types@8.62.0)
 
   magic-string@0.30.21:
     dependencies:
