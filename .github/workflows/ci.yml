@@ -5,4 +5,9 @@ on:
     branches: [main]
 jobs:
   ci:
-    uses: reddoorla/.github/.github/workflows/ci.yml@78c4da64b675f0f474961f12715f2a4c09d46eb5 # v1.0.0
+    permissions:
+      contents: read
+      pull-requests: write
+    uses: reddoorla/.github/.github/workflows/ci.yml@45ded88e97476dd5aa3a83b55af6f9248216df9c # v1.2.0
+    with:
+      node-version: "24"
