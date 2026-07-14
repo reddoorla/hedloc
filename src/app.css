@@ -154,20 +154,18 @@
   }
 
   h1 {
-    font-size: 90px;
+    font-size: 40px;
     font-style: italic;
     font-weight: 500;
     line-height: normal;
-    letter-spacing: 1.8px;
     text-transform: uppercase;
   }
 
   h2 {
-    font-size: 48px;
+    font-size: 32px;
     font-style: italic;
     font-weight: 500;
     line-height: normal;
-    letter-spacing: 0.96px;
     text-transform: uppercase;
   }
 
