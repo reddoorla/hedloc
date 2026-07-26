@@ -7,3 +7,30 @@ minimumReleaseAgeExclude:
   # site, so it is exempt from the third-party-supply-chain release-age gate.
   # Name glob (not name@version): minimumReleaseAgeExclude matches package names.
   - "@reddoorla/maintenance"
+# Transitive-dependency security pins (range-scoped, capped — never "latest"),
+# matching the fleet convention in reddoor-maintenance. pnpm 11 reads overrides
+# HERE, not package.json. Cleared 2026-07-26:
+#   - cookie <0.7.0: out-of-bounds chars in name/path/domain (GHSA-pxg6-pf52-xh8x);
+#     @sveltejs/kit pins ^0.6.0 even at latest, so an in-range bump can't reach it.
+#   - tmp <0.2.6: symlink/path-traversal temp writes (GHSA-52f5-9888-hmc6 +
+#     GHSA-ph9p-34f9-6g65); dev/CI-only path via @lhci/cli (inquirer/external-editor).
+#   - uuid <11.1.1: missing buffer-bounds check (GHSA-w5hq-g745-h8pq); dev/CI-only
+#     via @lhci/cli, which still pins uuid@8.
+overrides:
+  cookie@<0.7.0: ">=0.7.0 <1"
+  tmp@<0.2.6: ">=0.2.6"
+  uuid@<11.1.1: ">=11.1.1"
+auditConfig:
+  ignoreGhsas:
+    # brace-expansion <=5.0.7 unbounded-expansion OOM DoS (high). Patched ONLY
+    # in 5.0.8 — no 1.x/2.x backport exists (verified via the GH advisory API).
+    # Our sole remaining instance is brace-expansion@1.1.16 under @lhci/cli's
+    # legacy chrome-launcher→rimraf→glob@7→minimatch@3 chain, and force-
+    # overriding it to 5.x breaks minimatch@3 at runtime ("expand is not a
+    # function" — 5.x dropped the CJS default-function export; verified
+    # locally). Not reachable: that chain only brace-expands glob patterns
+    # containing "{...}", and rimraf/chrome-launcher pass literal temp-dir
+    # paths, never attacker-controlled brace patterns. Dev/CI-only surface.
+    # The eslint-side minimatch@10 instance resolves brace-expansion@>=5.0.8
+    # in-range and is genuinely patched. Revisit if a 1.x backport ships.
+    - GHSA-mh99-v99m-4gvg
