@@ -9,6 +9,10 @@
   // screen; `form` is the ingest action result ({ success } | { error }).
   let { data, form } = $props();
 
+  // Resolved server-side from the `contact` single (see +page.server.ts), which
+  // owns this page's hero independently of the About page.
+  let hero = $derived(data.hero);
+
   let submitting = $state(false);
 
   // Optional Cloudflare Turnstile — dark until PUBLIC_TURNSTILE_SITE_KEY is set;
@@ -46,10 +50,15 @@
 <ScreenWidthImage
   darken
   flip
-  field={data.page.data.hero_image}
+  field={hero.image}
   class="flex flex-col items-start justify-end py-36 gap-6"
 >
-  <h1 class="text-white max-w-screen-lg">Contact Us</h1>
+  <h1 class="text-white max-w-screen-lg">{hero.header}</h1>
+  {#if hero.body}
+    <div class="max-w-screen-lg text-white whitespace-pre-line flex flex-col gap-2">
+      <p>{hero.body}</p>
+    </div>
+  {/if}
 </ScreenWidthImage>
 <section class="bg-dark py-24" id="contact">
   <ContentWidth>

@@ -1,4 +1,5 @@
 import { env } from "$env/dynamic/private";
+import { isFilled, NotFoundError } from "@prismicio/client";
 import { createIngestAction } from "@reddoorla/maintenance/forms";
 import { createClient } from "$lib/prismicio";
 
@@ -12,14 +13,50 @@ export const prerender = false;
 export const load: PageServerLoad = async ({ fetch, cookies }) => {
   const client = createClient({ fetch, cookies });
 
-  const page = await client.getSingle("about");
+  // This page reads its own `contact` single (customtypes/contact) so the hero
+  // and copy are editable independently of `about`, which it used to borrow
+  // them from.
+  //
+  // EVERY Contact field is optional and falls back FIELD BY FIELD to the
+  // content this page shipped with — an editor filling in only the hero image
+  // never blanks the headline or drops the page's metadata. About is that
+  // fallback source (it is what this route rendered before), so both singles
+  // are fetched in parallel. A missing document on either side degrades instead
+  // of throwing: `getSingle` 404s while a document is unpublished, and only
+  // NotFoundError is swallowed — every other Prismic failure still surfaces.
+  const notFoundToNull = (label: string) => (err: unknown) => {
+    if (!(err instanceof NotFoundError)) throw err;
+    console.warn(`[contact] no published "${label}" document in Prismic — falling back`);
+    return null;
+  };
+
+  const [contact, about] = await Promise.all([
+    client.getSingle("contact").catch(notFoundToNull("contact")),
+    client.getSingle("about").catch(notFoundToNull("about")),
+  ]);
+
+  const c = contact?.data;
+  const a = about?.data;
 
   return {
-    page,
+    // The document actually driving the page (unused by the template today,
+    // kept for parity with the other routes and for a future slice zone).
+    page: contact ?? about,
+    hero: {
+      // Headline/body have no About equivalent worth inheriting — About's are
+      // the Executive Team's — so unfilled keeps the copy this page has always
+      // rendered: the hardcoded headline and no body paragraph.
+      header: c?.hero_header || "Contact Us",
+      body: c?.hero_body || "",
+      image: c && isFilled.image(c.hero_image) ? c.hero_image : (a?.hero_image ?? null),
+    },
     title: "Hedloc | Contact",
-    meta_description: page.data.meta_description,
-    meta_title: page.data.meta_title,
-    meta_image: page.data.meta_image.url,
+    meta_description:
+      c && isFilled.keyText(c.meta_description)
+        ? c.meta_description
+        : (a?.meta_description ?? null),
+    meta_title: c && isFilled.keyText(c.meta_title) ? c.meta_title : (a?.meta_title ?? null),
+    meta_image: c && isFilled.image(c.meta_image) ? c.meta_image.url : (a?.meta_image?.url ?? null),
     // Plant a per-request timestamp for the bot timing screen.
     formTs: Date.now(),
   };
