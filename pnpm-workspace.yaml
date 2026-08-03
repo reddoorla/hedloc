@@ -17,7 +17,7 @@ minimumReleaseAgeExclude:
 #   - uuid <11.1.1: missing buffer-bounds check (GHSA-w5hq-g745-h8pq); dev/CI-only
 #     via @lhci/cli, which still pins uuid@8.
 overrides:
-  cookie@<0.7.0: ">=0.7.0 <1"
+  cookie@<0.7.0: ">=0.7.0 <3"
   tmp@<0.2.6: ">=0.2.6"
   uuid@<11.1.1: ">=11.1.1"
 auditConfig:
