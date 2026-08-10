@@ -19,7 +19,7 @@
   flip
   field={data.page.data.hero_image}
   heightClass="h-[55vh] min-h-[420px]"
-  class="flex flex-col items-start justify-center pt-12"
+  class="flex flex-col items-start justify-end pt-12 pb-25"
 >
   <div class="max-w-screen-lg text-white whitespace-pre-line flex flex-col gap-2">
     <p>{content.hero_body}</p>
