@@ -51,7 +51,8 @@
   darken
   flip
   field={hero.image}
-  class="flex flex-col items-start justify-end py-36 gap-6"
+  heightClass="h-[55vh] min-h-[420px]"
+  class="flex flex-col items-start justify-end pt-12 pb-25 gap-6"
 >
   <h1 class="text-white max-w-screen-lg">{hero.header}</h1>
   {#if hero.body}
