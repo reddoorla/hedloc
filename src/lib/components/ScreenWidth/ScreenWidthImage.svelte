@@ -13,6 +13,7 @@
     darken = false,
     backdrop = false,
     flip = false,
+    heightClass = "h-screen",
     class: className = "",
     children,
   }: {
@@ -24,6 +25,7 @@
     darken?: boolean;
     backdrop?: boolean;
     flip?: boolean;
+    heightClass?: string;
     class?: string;
     children?: import("svelte").Snippet;
   } = $props();
@@ -35,7 +37,7 @@
 <svelte:window bind:innerHeight={viewportHeight} bind:innerWidth={viewportWidth} />
 
 <section
-  class="h-screen w-screen overflow-clip {backdrop ? 'fixed -z-10 top-0 left-0' : 'relative'}"
+  class="{heightClass} w-screen overflow-clip {backdrop ? 'fixed -z-10 top-0 left-0' : 'relative'}"
 >
   <div
     class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-h-screen aspect-video
@@ -79,7 +81,7 @@
       ></div>
     {/if}
   </div>
-  <div class="w-screen h-screen absolute top-0 left-0">
+  <div class="w-screen {heightClass} absolute top-0 left-0">
     <ContentWidth class="{className || 'flex items-center justify-center'} h-full">
       {@render children?.()}
     </ContentWidth>

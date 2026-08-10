@@ -18,14 +18,14 @@
   darken
   flip
   field={data.page.data.hero_image}
-  class="flex flex-col items-start justify-end py-36 gap-6"
+  heightClass="h-[55vh] min-h-[420px]"
+  class="flex flex-col items-start justify-center pt-12"
 >
-  <h1 class="text-white max-w-screen-lg">{content.hero_header || ""}</h1>
   <div class="max-w-screen-lg text-white whitespace-pre-line flex flex-col gap-2">
     <p>{content.hero_body}</p>
   </div>
 </ScreenWidthImage>
-<section class="bg-light py-24">
+<section class="bg-light pt-14 pb-24">
   <ContentWidth class="text-white mb-10">
     <h2>{content.team_header}</h2>
   </ContentWidth>
