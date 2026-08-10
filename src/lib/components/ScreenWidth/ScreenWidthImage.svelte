@@ -27,7 +27,7 @@
     backdrop?: boolean;
     flip?: boolean;
     heightClass?: string;
-    anchor?: "center" | "top" | "bottom";
+    anchor?: "center" | "top" | "bottom" | number;
     class?: string;
     children?: import("svelte").Snippet;
   } = $props();
@@ -36,12 +36,11 @@
   let viewportWidth: number = $state(0);
 
   // When the section is shorter than the 16:9 image rect, `anchor` picks which
-  // band of the image stays visible instead of the vertical center.
-  const anchorClasses = {
-    center: "top-1/2 -translate-y-1/2",
-    top: "top-0",
-    bottom: "bottom-0",
-  };
+  // band of the image stays visible: keywords or a 0-100 percentage from the
+  // top (0 = top, 50 = center, 100 = bottom).
+  let anchorPercent = $derived(
+    typeof anchor === "number" ? anchor : { top: 0, center: 50, bottom: 100 }[anchor],
+  );
 </script>
 
 <svelte:window bind:innerHeight={viewportHeight} bind:innerWidth={viewportWidth} />
@@ -50,7 +49,8 @@
   class="{heightClass} w-screen overflow-clip {backdrop ? 'fixed -z-10 top-0 left-0' : 'relative'}"
 >
   <div
-    class="absolute {anchorClasses[anchor]} left-1/2 -translate-x-1/2 max-h-screen aspect-video
+    style="top:{anchorPercent}%;transform:translate(-50%,-{anchorPercent}%)"
+    class="absolute left-1/2 max-h-screen aspect-video
 		{viewportHeight * 16 > viewportWidth * 9 ? 'h-screen min-w-full' : 'w-screen min-h-full'}"
   >
     {#if !field}
