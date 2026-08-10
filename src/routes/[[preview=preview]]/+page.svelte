@@ -11,10 +11,25 @@
 
 <svelte:window bind:innerWidth={viewportWidth} />
 
+{#snippet ctaButtons()}
+  <div class="flex flex-row gap-6 text-white">
+    <a
+      href="/executive-team"
+      class="button-text transition w-36 h-9 border-2 border-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center"
+      >Executive Team</a
+    >
+    <a
+      href="/contact"
+      class="button-text transition w-36 h-9 border-2 text-dark bg-white border-white hover:bg-dark active:bg-white active:text-dark hover:text-white flex items-center justify-center"
+      >Contact Us</a
+    >
+  </div>
+{/snippet}
+
 <ScreenWidthImage
   darken
   field={data.page.data.hero_image}
-  class="flex flex-col items-start justify-end py-16 md:py-24"
+  class="flex flex-col items-start justify-end py-16 md:py-24 lg:pb-25"
 >
   <div
     class="max-w-screen-lg text-white whitespace-pre-line flex flex-col gap-6 [&_a]:underline [&_a:hover]:opacity-80"
@@ -24,30 +39,24 @@
       <PrismicRichText field={content.subbody} />
     {/if}
   </div>
+  {#if viewportWidth > 1024}
+    <div class="mt-25">
+      {@render ctaButtons()}
+    </div>
+  {/if}
 </ScreenWidthImage>
 
 <section>
-  <ContentWidth class="flex flex-col items-start text-white pt-12 gap-10">
-    {#if viewportWidth <= 1024}
+  {#if viewportWidth <= 1024}
+    <ContentWidth class="flex flex-col items-start text-white pt-12 gap-10">
       <div class="whitespace-pre-line flex flex-col gap-2 [&_a]:underline [&_a:hover]:opacity-80">
         <PrismicRichText field={content.subbody} />
       </div>
-    {/if}
-    <div class="flex flex-row gap-6">
-      <a
-        href="/executive-team"
-        class="button-text transition w-36 h-9 border-2 border-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center"
-        >Executive Team</a
-      >
-      <a
-        href="/contact"
-        class="button-text transition w-36 h-9 border-2 text-dark bg-white border-white hover:bg-dark active:bg-white active:text-dark hover:text-white flex items-center justify-center"
-        >Contact Us</a
-      >
-    </div>
-  </ContentWidth>
+      {@render ctaButtons()}
+    </ContentWidth>
+  {/if}
   {#if viewportWidth > 1024}
-    <div class="flex flex-row text-white pt-10 relative h-[800px]">
+    <div class="flex flex-row text-white relative h-[800px]">
       <div
         class="w-1/3 h-full flex flex-col justify-start items-start pr-10 relative"
         style="padding-left:{viewportWidth < 1560 ? '4vw' : 'calc( (100vw - 1440px) / 2 )'}"
