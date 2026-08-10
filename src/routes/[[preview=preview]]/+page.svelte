@@ -14,48 +14,38 @@
 <ScreenWidthImage
   darken
   field={data.page.data.hero_image}
-  class="flex flex-col items-start justify-end py-16 md:py-24 gap-6"
+  class="flex flex-col items-start justify-end py-16 md:py-24"
 >
-  <h1 class="text-white max-w-screen-md">{content.headline || ""}</h1>
-  <div class="max-w-screen-md text-white whitespace-pre-line flex flex-col gap-2">
+  <div
+    class="max-w-screen-lg text-white whitespace-pre-line flex flex-col gap-6 [&_a]:underline [&_a:hover]:opacity-80"
+  >
     <PrismicRichText field={content.hero_body} />
+    {#if viewportWidth > 1024}
+      <PrismicRichText field={content.subbody} />
+    {/if}
   </div>
 </ScreenWidthImage>
 
 <section>
-  <div class="flex flex-col lg:flex-row text-white pt-10">
-    {#if viewportWidth > 1024}
-      <div
-        class="w-1/3 flex flex-col justify-start items-start pr-10"
-        style="padding-left:{viewportWidth < 1560 ? '4vw' : 'calc( (100vw - 1440px) / 2 )'}"
-      >
-        <h2>{content.subheading}</h2>
-        <div class="flex flex-row gap-6 mt-14">
-          <a
-            href="/executive-team"
-            class="button-text transition w-36 h-9 border-2 border-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center"
-            >Executive Team</a
-          >
-          <a
-            href="/contact"
-            class="button-text transition w-36 h-9 border-2 text-dark bg-white border-white hover:bg-dark active:bg-white active:text-dark hover:text-white flex items-center justify-center"
-            >Contact Us</a
-          >
-        </div>
-      </div>
-      <div
-        class="w-2/3"
-        style="padding-right:{viewportWidth < 1560 ? '4vw' : 'calc( (100vw - 1440px) / 2 )'}"
-      >
+  <ContentWidth class="flex flex-col items-start text-white pt-12 gap-10">
+    {#if viewportWidth <= 1024}
+      <div class="whitespace-pre-line flex flex-col gap-2 [&_a]:underline [&_a:hover]:opacity-80">
         <PrismicRichText field={content.subbody} />
       </div>
-    {:else}
-      <ContentWidth class="flex flex-col items-start justify-start gap-6">
-        <h2 class="text-left">{content.subheading}</h2>
-        <PrismicRichText field={content.subbody} />
-      </ContentWidth>
     {/if}
-  </div>
+    <div class="flex flex-row gap-6">
+      <a
+        href="/executive-team"
+        class="button-text transition w-36 h-9 border-2 border-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center"
+        >Executive Team</a
+      >
+      <a
+        href="/contact"
+        class="button-text transition w-36 h-9 border-2 text-dark bg-white border-white hover:bg-dark active:bg-white active:text-dark hover:text-white flex items-center justify-center"
+        >Contact Us</a
+      >
+    </div>
+  </ContentWidth>
   {#if viewportWidth > 1024}
     <div class="flex flex-row text-white pt-10 relative h-[800px]">
       <div
