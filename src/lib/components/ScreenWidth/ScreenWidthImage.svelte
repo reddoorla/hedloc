@@ -3,6 +3,7 @@
   import placeholder from "../../assets/images/background_placeholder.svg";
   import ContentWidth from "../ContentWidth/ContentWidth.svelte";
   import { PrismicImage } from "@prismicio/svelte";
+  import { cappedWidths } from "@reddoorla/maintenance/images";
 
   let {
     src = placeholder,
@@ -63,7 +64,13 @@
           : ''}"
       />
     {:else}
-      <PrismicImage {field} class="absolute  h-full w-full object-cover -z-10" />
+      <PrismicImage
+        {field}
+        class="absolute  h-full w-full object-cover -z-10"
+        widths={cappedWidths(field)}
+        sizes="100vw"
+        fetchpriority="high"
+      />
     {/if}
 
     {#if vimeoId}
