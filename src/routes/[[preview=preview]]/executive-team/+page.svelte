@@ -3,6 +3,7 @@
   import ScreenWidthImage from "$lib/components/ScreenWidth/ScreenWidthImage.svelte";
   import { PrismicImage, PrismicRichText } from "@prismicio/svelte";
   import { fade } from "svelte/transition";
+  import { cappedWidths } from "@reddoorla/maintenance/images";
 
   let { data } = $props();
   let content = $derived(data.page.data);
@@ -40,6 +41,9 @@
           <PrismicImage
             class="w-full aspect-[3/4] object-cover"
             field={content.team_member[active].headshot}
+            widths={cappedWidths(content.team_member[active].headshot)}
+            sizes="(min-width: 1024px) 25vw, 100vw"
+            loading="lazy"
           />
           <h4>{content.team_member[active].name}</h4>
           <h5>{content.team_member[active].title}</h5>
@@ -73,6 +77,9 @@
         <PrismicImage
           class="w-full aspect-[3/4] object-cover mb-4"
           field={content.team_member[i].headshot}
+          widths={cappedWidths(content.team_member[i].headshot)}
+          sizes="(min-width: 1024px) 25vw, 100vw"
+          loading="lazy"
         />
         <h4>{content.team_member[i].name}</h4>
         <h5>{content.team_member[i].title}</h5>
@@ -98,6 +105,9 @@
             <PrismicImage
               class="w-full aspect-[3/4] object-cover"
               field={content.team_member[active].headshot || ""}
+              widths={cappedWidths(content.team_member[active].headshot)}
+              sizes="100vw"
+              loading="lazy"
             />
             <h4>{content.team_member[active].name}</h4>
             <h5>{content.team_member[active].title}</h5>

@@ -2,6 +2,7 @@
   import ContentWidth from "$lib/components/ContentWidth/ContentWidth.svelte";
   import ScreenWidthImage from "$lib/components/ScreenWidth/ScreenWidthImage.svelte";
   import { PrismicImage, PrismicRichText } from "@prismicio/svelte";
+  import { cappedWidths } from "@reddoorla/maintenance/images";
 
   let { data } = $props();
   let content = $derived(data.page.data);
@@ -61,26 +62,65 @@
         class="w-1/3 h-full flex flex-col justify-start items-start pr-10 relative"
         style="padding-left:{viewportWidth < 1560 ? '4vw' : 'calc( (100vw - 1440px) / 2 )'}"
       >
-        <PrismicImage field={content.vertical_image} class="w-full h-full object-cover" />
+        <PrismicImage
+          field={content.vertical_image}
+          class="w-full h-full object-cover"
+          widths={cappedWidths(content.vertical_image)}
+          sizes="(min-width: 1024px) 33vw, 100vw"
+          loading="lazy"
+        />
       </div>
       <div
         class="w-2/3 flex flex-col relative"
         style="padding-right:{viewportWidth < 1560 ? '4vw' : 'calc( (100vw - 1440px) / 2 )'}"
       >
         <div class="w-full h-1/2 flex flex-row gap-10 pb-5">
-          <PrismicImage field={content.nine_by_4_small} class="w-2/3 aspect-[16/9] object-cover" />
-          <PrismicImage field={content.four_by_three} class="w-1/3 object-cover" />
+          <PrismicImage
+            field={content.nine_by_4_small}
+            class="w-2/3 aspect-[16/9] object-cover"
+            widths={cappedWidths(content.nine_by_4_small)}
+            sizes="(min-width: 1024px) 44vw, 100vw"
+            loading="lazy"
+          />
+          <PrismicImage
+            field={content.four_by_three}
+            class="w-1/3 object-cover"
+            widths={cappedWidths(content.four_by_three)}
+            sizes="(min-width: 1024px) 22vw, 100vw"
+            loading="lazy"
+          />
         </div>
         <div class="w-full h-1/2 flex flex-row pt-5">
-          <PrismicImage field={content.nine_by_four_large} class="w-full h-full object-cover" />
+          <PrismicImage
+            field={content.nine_by_four_large}
+            class="w-full h-full object-cover"
+            widths={cappedWidths(content.nine_by_four_large)}
+            sizes="(min-width: 1024px) 66vw, 100vw"
+            loading="lazy"
+          />
         </div>
       </div>
     </div>
   {:else}
     <ContentWidth class="gap-10 flex flex-col items-center justify-center my-10">
-      <PrismicImage field={content.nine_by_4_small} />
-      <PrismicImage field={content.four_by_three} />
-      <PrismicImage field={content.nine_by_four_large} />
+      <PrismicImage
+        field={content.nine_by_4_small}
+        widths={cappedWidths(content.nine_by_4_small)}
+        sizes="92vw"
+        loading="lazy"
+      />
+      <PrismicImage
+        field={content.four_by_three}
+        widths={cappedWidths(content.four_by_three)}
+        sizes="92vw"
+        loading="lazy"
+      />
+      <PrismicImage
+        field={content.nine_by_four_large}
+        widths={cappedWidths(content.nine_by_four_large)}
+        sizes="92vw"
+        loading="lazy"
+      />
     </ContentWidth>
   {/if}
 </section>
