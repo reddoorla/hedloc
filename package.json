@@ -52,6 +52,6 @@
     "@tailwindcss/vite": "^4.3.0",
     "@lucide/svelte": "^1.17.0",
     "svelte-gestures": "^5.0.7",
-    "svelte-select": "^5.8.3"
+    "svelte-select": "^6.0.0"
   }
 }
