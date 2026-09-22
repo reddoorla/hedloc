@@ -29,8 +29,8 @@ importers:
         specifier: ^5.0.7
         version: 5.2.2
       svelte-select:
-        specifier: ^5.8.3
-        version: 5.8.3
+        specifier: ^6.0.0
+        version: 6.0.0(svelte@5.57.1(@typescript-eslint/types@8.70.0))
     devDependencies:
       '@axe-core/playwright':
         specifier: ^4.11.3
@@ -3167,8 +3167,10 @@ packages:
   svelte-gestures@5.2.2:
     resolution: {integrity: sha512-Y+chXPaSx8OsPoFppUwPk8PJzgrZ7xoDJKXeiEc7JBqyKKzXer9hlf8F9O34eFuAWB4/WQEvccACvyBplESL7A==}
 
-  svelte-select@5.8.3:
-    resolution: {integrity: sha512-nQsvflWmTCOZjssdrNptzfD1Ok45hHVMTL5IHay5DINk7dfu5Er+8KsVJnZMJdSircqtR0YlT4YkCFlxOUhVPA==}
+  svelte-select@6.0.0:
+    resolution: {integrity: sha512-WJ1UDw0a1Z3I7oVFgaCS7G9D2rCSmYAPpufNEj/DNuk5Oyb2a5dju6F36o0urBVw9bTE3WkM9cZkI0x+Sfo8Bg==}
+    peerDependencies:
+      svelte: '>=5'
 
   svelte2tsx@0.7.61:
     resolution: {integrity: sha512-EpQ/+UHITBULeUojx/LLD3uTYasZXcX1BrqlrzfLUnT9vdUhaOWK59a3ryWcFU8L0sY1SP+gRhJ2Beiis98+qw==}
@@ -3202,8 +3204,8 @@ packages:
   third-party-web@0.26.7:
     resolution: {integrity: sha512-buUzX4sXC4efFX6xg2bw6/eZsCUh8qQwSavC4D9HpONMFlRbcHhD8Je5qwYdCpViR6q0qla2wPP+t91a2vgolg==}
 
-  third-party-web@0.30.0:
-    resolution: {integrity: sha512-p+PfyL5U0ediGzvwPzMSdD9MnC8rHW6nWJJVLIQvqN7RsSqfaZ+7n4c9GILqH36EYR0eXB9CzAeCRnKFr/9uJg==}
+  third-party-web@0.29.2:
+    resolution: {integrity: sha512-fegtha91tq2DHphyoiBXVHjVi2YG9zFaRnboT9C28tO1en9Y3wJsfspuy40F+u5wl3hHVbw7cnd1b67kEGHb8g==}
 
   through@2.3.8:
     resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}
@@ -3905,7 +3907,7 @@ snapshots:
   '@paulirish/trace_engine@0.0.53':
     dependencies:
       legacy-javascript: 0.0.1
-      third-party-web: 0.30.0
+      third-party-web: 0.29.2
 
   '@playwright/test@1.63.0':
     dependencies:
@@ -6702,8 +6704,9 @@ snapshots:
 
   svelte-gestures@5.2.2: {}
 
-  svelte-select@5.8.3:
+  svelte-select@6.0.0(svelte@5.57.1(@typescript-eslint/types@8.70.0)):
     dependencies:
+      svelte: 5.57.1(@typescript-eslint/types@8.70.0)
       svelte-floating-ui: 1.5.8
 
   svelte2tsx@0.7.61(svelte@5.57.1(@typescript-eslint/types@8.70.0))(typescript@6.0.3):
@@ -6775,7 +6778,7 @@ snapshots:
 
   third-party-web@0.26.7: {}
 
-  third-party-web@0.30.0: {}
+  third-party-web@0.29.2: {}
 
   through@2.3.8: {}
 
