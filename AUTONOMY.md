@@ -33,7 +33,7 @@ safety, not a human gate.
 - Behavior-changing `feat` merges — allowed unattended **only** when CI is green AND a 3-lens
   adversarial review is clean. These deploy to prod on merge; reversibility is the gate. Logged
   in `docs/autonomy-journal.md`.
-- Prismic content-model (Slice Machine) changes shipped through a PR.
+- Prismic content-model changes (`customtypes/`, slice `model.json`) shipped through a PR.
 
 ### 🔴 RED — never autonomous (human checkpoint, every time)
 
