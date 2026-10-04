@@ -1,0 +1,5 @@
+{
+  "repositoryName": "hedloc",
+  "libraries": ["./src/lib/slices"],
+  "routes": []
+}

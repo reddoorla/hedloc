@@ -30,7 +30,7 @@ This library will grow as we require new interactive functions or layouts, and a
 
 4. initiate new prismic repo
 
-5. change slicemachine.config.json to new prismic name
+5. change prismic.config.json to new prismic name
 
 6. start dev server and push changes to prismic
 

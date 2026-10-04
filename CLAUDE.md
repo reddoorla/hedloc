@@ -17,6 +17,21 @@ scaffold this repo was forked from, not this site** — don't read either as a
 description of Hedloc. And `/about` no longer exists: it was split into
 `/executive-team` and `/contact`, with a 301 in `netlify.toml`.
 
+**`src/lib/slices/index.ts` and `prismicio-types.d.ts` are generated** by the
+Prismic CLI (`pnpm prismic:gen`; Slice Machine is gone, deprecated by Prismic
+2026-09-18, and models are edited in Prismic's Type Builder). Edit a model's
+JSON, regenerate, commit both; the `prismic-codegen` job fails a PR whose
+generated files are stale. Both are in `.prettierignore`. The types file sits at
+the project root, outside SvelteKit's `src/**` include, so `src/app.d.ts`
+imports it. Run by an agent, the CLI refuses without `--task-id` and
+`--user-intent`, so an agent runs `pnpm exec prismic task-id` once, then
+`pnpm exec prismic gen types --task-id <id> --user-intent "<the ask>"` and the
+same for `gen slice-index`. Never `prismic push` or `prismic pull`: both delete
+to match. `/slice-simulator` is the Type Builder's preview page; it is
+server-rendered (`prerender = false`) so `src/hooks.server.ts` can drop
+netlify.toml's `X-Frame-Options: SAMEORIGIN` there and name Prismic in
+`frame-ancestors` instead.
+
 How an agent is allowed to operate here is [AUTONOMY.md](AUTONOMY.md), and
 unattended changes are logged in
 [docs/autonomy-journal.md](docs/autonomy-journal.md).
