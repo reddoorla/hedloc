@@ -66,12 +66,12 @@ async function expectBioCoversRow(page: Page) {
           b.right > cover.right + 1 ||
           b.bottom > cover.bottom + 1,
       ).length;
-    return {
-      alpha: background.startsWith("rgba") ? parseFloat(background.split(",")[3]) : 1,
-      uncovered,
-    };
+    const context = document.createElement("canvas").getContext("2d")!;
+    context.fillStyle = background;
+    context.fillRect(0, 0, 1, 1);
+    return { alpha: context.getImageData(0, 0, 1, 1).data[3], uncovered };
   });
-  expect(alpha).toBe(1);
+  expect(alpha).toBe(255);
   expect(uncovered).toBe(0);
 }
 
