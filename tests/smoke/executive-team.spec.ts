@@ -40,6 +40,41 @@ function bioPanel(page: Page) {
   return page.getByTestId("team-bio");
 }
 
+async function effectiveOpacity(page: Page, selector: string) {
+  return page
+    .locator(selector)
+    .first()
+    .evaluate((el) => {
+      let opacity = 1;
+      for (let node: Element | null = el; node; node = node.parentElement) {
+        opacity *= parseFloat(getComputedStyle(node).opacity);
+      }
+      return opacity;
+    });
+}
+
+async function expectBioCoversRow(page: Page) {
+  const { alpha, uncovered } = await bioPanel(page).evaluate((panel) => {
+    const background = getComputedStyle(panel).backgroundColor;
+    const cover = panel.getBoundingClientRect();
+    const uncovered = [...document.querySelectorAll("button.members")]
+      .map((member) => member.getBoundingClientRect())
+      .filter(
+        (b) =>
+          b.left < cover.left - 1 ||
+          b.top < cover.top - 1 ||
+          b.right > cover.right + 1 ||
+          b.bottom > cover.bottom + 1,
+      ).length;
+    return {
+      alpha: background.startsWith("rgba") ? parseFloat(background.split(",")[3]) : 1,
+      uncovered,
+    };
+  });
+  expect(alpha).toBe(1);
+  expect(uncovered).toBe(0);
+}
+
 async function lineOffsets(page: Page, selector: string) {
   return page.locator(selector).evaluateAll((els) =>
     els.map((el) => {
@@ -88,6 +123,9 @@ for (const width of [1440, 1024]) {
         await expect(bioPanel(page)).toHaveCSS("opacity", "1");
         await expect(page.locator("#team-top h4")).toHaveText(name);
         await expect(page.locator("#team-top img")).toHaveAttribute("alt", name);
+        await expect.poll(() => effectiveOpacity(page, "#team-top img")).toBe(1);
+        await expect.poll(() => effectiveOpacity(page, `p:has-text("${name} bio.")`)).toBe(1);
+        await expectBioCoversRow(page);
         for (const other of NAMES.filter((n) => n !== name)) {
           await expect(page.getByText(`${other} bio.`)).toHaveCount(0);
         }
@@ -98,6 +136,8 @@ for (const width of [1440, 1024]) {
         expect(Math.abs(selected.width - firstColumn!.width)).toBeLessThanOrEqual(PX);
         const bio = await page.getByText(`${name} bio.`).boundingBox();
         expect(bio!.x).toBeGreaterThan(selected.x + selected.width);
+        expect(bio!.y).toBeGreaterThanOrEqual(selected.y);
+        expect(bio!.y).toBeLessThan(selected.y + selected.height);
 
         await page.locator("#team-top button").click();
         await expect(page.getByText(`${name} bio.`)).toHaveCount(0);
@@ -126,10 +166,34 @@ for (const width of [1440, 1024]) {
     test("the first member answers a click straight after Close", async ({ page }) => {
       const members = await openFixture(page);
       const first = (await members.first().boundingBox())!;
+      const x = first.x + first.width / 2;
+      const y = first.y + first.height / 2;
       await members.nth(2).click();
       await expect(page.getByText(`${NAMES[2]} bio.`)).toBeVisible();
-      await page.locator("#team-top button").click();
-      await page.mouse.click(first.x + first.width / 2, first.y + first.height / 2);
+      const duringFade = await page.evaluate(
+        async ([px, py]) => {
+          document.querySelector<HTMLButtonElement>("#team-top button")!.click();
+          await new Promise((resolve) => setTimeout(resolve, 0));
+          return {
+            cardStillFading: !!document.querySelector("#team-top button"),
+            hitsMember: !!document.elementFromPoint(px, py)?.closest("button.members"),
+          };
+        },
+        [x, y],
+      );
+      expect(duringFade).toEqual({ cardStillFading: true, hitsMember: true });
+      await page.mouse.click(x, y);
+      await expect(page.getByText(`${NAMES[0]} bio.`)).toBeVisible();
+    });
+
+    test("a member under the open bio does not take the click", async ({ page }) => {
+      const members = await openFixture(page);
+      const third = (await members.nth(2).boundingBox())!;
+      await members.first().click();
+      await expect(bioPanel(page)).toHaveCSS("opacity", "1");
+      await page.mouse.click(third.x + third.width / 2, third.y + third.height / 2);
+      await page.waitForTimeout(400);
+      await expect(page.locator("#team-top h4")).toHaveText(NAMES[0]);
       await expect(page.getByText(`${NAMES[0]} bio.`)).toBeVisible();
     });
 
@@ -188,6 +252,10 @@ for (const width of [768, 390]) {
       await members.nth(3).click();
       await expect(page.getByText("Member Four Longer Placeholder bio.")).toBeVisible();
       await expect(bioPanel(page)).toHaveCSS("opacity", "1");
+      await expect
+        .poll(() => effectiveOpacity(page, 'p:has-text("Member Four Longer Placeholder bio.")'))
+        .toBe(1);
+      await expectBioCoversRow(page);
       await expectBioInsideSection(page, "Member Four Longer Placeholder paragraph 5.");
       await page.getByRole("button", { name: "Close", exact: true }).click();
       await expect(page.getByText("Member Four Longer Placeholder bio.")).toHaveCount(0);
