@@ -133,6 +133,28 @@ for (const width of [1440, 1024]) {
       await expect(page.getByText(`${NAMES[0]} bio.`)).toBeVisible();
     });
 
+    test("a double-click on the open card closes it without opening the first member", async ({
+      page,
+    }) => {
+      const members = await openFixture(page);
+      await members.nth(2).click();
+      await expect(bioPanel(page)).toHaveCSS("opacity", "1");
+      await page.locator("#team-top button").dblclick();
+      await page.waitForTimeout(500);
+      await expect(bioPanel(page)).toHaveCSS("opacity", "0");
+      await expect(page.getByText(`${NAMES[0]} bio.`)).toHaveCount(0);
+    });
+
+    test("the open card's name sits where the first member's name does", async ({ page }) => {
+      const members = await openFixture(page);
+      const memberName = (await members.first().locator("h4").boundingBox())!;
+      await members.nth(2).click();
+      await expect(page.locator("#team-top h4")).toHaveText(NAMES[2]);
+      const cardName = await box(page, "#team-top h4");
+      expect(Math.abs(cardName.y - memberName.y)).toBeLessThanOrEqual(PX);
+      expect(Math.abs(cardName.x - memberName.x)).toBeLessThanOrEqual(PX);
+    });
+
     test("the longest bio stays inside the section instead of running into the footer", async ({
       page,
     }) => {

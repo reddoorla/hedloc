@@ -30,7 +30,7 @@
           class="hidden lg:flex flex-col items-start justify-start gap-2 text-left pointer-events-auto"
         >
           <PrismicImage
-            class="w-full aspect-[3/4] object-cover"
+            class="w-full aspect-[3/4] object-cover mb-4"
             field={members[active].headshot}
             widths={cappedWidths(members[active].headshot)}
             sizes="(min-width: 1024px) 25vw, 100vw"
@@ -49,7 +49,8 @@
     </div>
     {#each members as _p, i (i)}
       <button
-        onclick={() => {
+        onclick={(event) => {
+          if (event.detail > 1) return;
           if (active === i) {
             active = -1;
           } else {
