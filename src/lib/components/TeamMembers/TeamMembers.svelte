@@ -17,14 +17,17 @@
 <ContentWidth class="grid relative lg:min-h-[640px]">
   <div class="[grid-area:1/1] flex flex-col lg:flex-row justify-start relative gap-10">
     <div
-      class="lg:absolute lg:top-0 lg:left-0 lg:w-[calc((100%-7.5rem)/4)] flex flex-col items-start justify-start gap-2 z-30"
+      class="lg:absolute lg:top-0 lg:left-0 lg:w-[calc((100%-7.5rem)/4)] lg:pointer-events-none flex flex-col items-start justify-start gap-2 z-30"
       id="team-top"
     >
       {#if active !== -1}
         <button
           transition:fade={{ duration: 150 }}
-          onclick={() => (active = -1)}
-          class="hidden lg:flex flex-col items-start justify-start gap-2 text-left"
+          onclick={(event) => {
+            if (event.detail > 1) return;
+            active = -1;
+          }}
+          class="hidden lg:flex flex-col items-start justify-start gap-2 text-left pointer-events-auto"
         >
           <PrismicImage
             class="w-full aspect-[3/4] object-cover"
@@ -76,6 +79,7 @@
     {/each}
   </div>
   <div
+    data-testid="team-bio"
     class="[grid-area:1/1] bg-light flex flex-col justify-start items-end z-20 pointer-events-none transition-opacity duration-150 {active ===
     -1
       ? 'opacity-0'

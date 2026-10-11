@@ -1,7 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 
 const FIXTURE = "/dev/executive-team";
-const NAMES = ["Member One", "Member Two", "Member Three", "Member Four Annamalai"];
+const NAMES = ["Member One", "Member Two", "Member Three", "Member Four Longer Placeholder"];
 const PX = 1;
 
 async function openFixture(page: Page) {
@@ -21,12 +21,23 @@ async function box(page: Page, selector: string) {
 async function expectBioInsideSection(page: Page, lastParagraph: string) {
   const last = page.getByText(lastParagraph);
   await expect(last).toBeVisible();
-  const bio = await last.boundingBox();
-  const section = await box(page, "[data-testid=team-section]");
-  const paddingBottom = await page
+  const { bioBottom, contentBottom } = await page
     .getByTestId("team-section")
-    .evaluate((el) => parseFloat(getComputedStyle(el).paddingBottom));
-  expect(bio!.y + bio!.height).toBeLessThanOrEqual(section.y + section.height - paddingBottom + PX);
+    .evaluate((section, text) => {
+      const paragraph = [...section.querySelectorAll("p")].find((p) =>
+        p.textContent!.startsWith(text),
+      )!;
+      const s = section.getBoundingClientRect();
+      return {
+        bioBottom: paragraph.getBoundingClientRect().bottom,
+        contentBottom: s.bottom - parseFloat(getComputedStyle(section).paddingBottom),
+      };
+    }, lastParagraph);
+  expect(bioBottom).toBeLessThanOrEqual(contentBottom + PX);
+}
+
+function bioPanel(page: Page) {
+  return page.getByTestId("team-bio");
 }
 
 async function lineOffsets(page: Page, selector: string) {
@@ -43,6 +54,7 @@ async function lineOffsets(page: Page, selector: string) {
 async function expectLinesFromLeftEdge(page: Page, selector: string) {
   const offsets = await lineOffsets(page, selector);
   expect(offsets.length).toBeGreaterThan(0);
+  expect(Math.max(...offsets.map((lines) => lines.length))).toBeGreaterThan(1);
   for (const lines of offsets) for (const offset of lines) expect(offset).toBeLessThanOrEqual(PX);
 }
 
@@ -54,6 +66,7 @@ for (const width of [1440, 1024]) {
       page,
     }) => {
       const members = await openFixture(page);
+      await expect(bioPanel(page)).toHaveCSS("opacity", "0");
       const row = await box(page, "#team-top >> xpath=..");
       const boxes = [];
       for (let i = 0; i < NAMES.length; i++) boxes.push((await members.nth(i).boundingBox())!);
@@ -72,7 +85,9 @@ for (const width of [1440, 1024]) {
       for (const [i, name] of NAMES.entries()) {
         await members.nth(i).click();
         await expect(page.getByText(`${name} bio.`)).toBeVisible();
+        await expect(bioPanel(page)).toHaveCSS("opacity", "1");
         await expect(page.locator("#team-top h4")).toHaveText(name);
+        await expect(page.locator("#team-top img")).toHaveAttribute("alt", name);
         for (const other of NAMES.filter((n) => n !== name)) {
           await expect(page.getByText(`${other} bio.`)).toHaveCount(0);
         }
@@ -86,6 +101,7 @@ for (const width of [1440, 1024]) {
 
         await page.locator("#team-top button").click();
         await expect(page.getByText(`${name} bio.`)).toHaveCount(0);
+        await expect(bioPanel(page)).toHaveCSS("opacity", "0");
       }
     });
 
@@ -99,12 +115,30 @@ for (const width of [1440, 1024]) {
       await expectLinesFromLeftEdge(page, "#team-top h4, #team-top h5");
     });
 
+    test("a double-click on the first member leaves their bio open", async ({ page }) => {
+      const members = await openFixture(page);
+      await members.first().dblclick();
+      await page.waitForTimeout(500);
+      await expect(page.getByText(`${NAMES[0]} bio.`)).toBeVisible();
+      await expect(page.locator("#team-top h4")).toHaveText(NAMES[0]);
+    });
+
+    test("the first member answers a click straight after Close", async ({ page }) => {
+      const members = await openFixture(page);
+      const first = (await members.first().boundingBox())!;
+      await members.nth(2).click();
+      await expect(page.getByText(`${NAMES[2]} bio.`)).toBeVisible();
+      await page.locator("#team-top button").click();
+      await page.mouse.click(first.x + first.width / 2, first.y + first.height / 2);
+      await expect(page.getByText(`${NAMES[0]} bio.`)).toBeVisible();
+    });
+
     test("the longest bio stays inside the section instead of running into the footer", async ({
       page,
     }) => {
       const members = await openFixture(page);
       await members.nth(3).click();
-      await expectBioInsideSection(page, "Member Four Annamalai paragraph 5.");
+      await expectBioInsideSection(page, "Member Four Longer Placeholder paragraph 5.");
     });
   });
 }
@@ -128,11 +162,14 @@ for (const width of [768, 390]) {
 
     test("the 4th member opens their bio and Close puts it away", async ({ page }) => {
       const members = await openFixture(page);
+      await expect(bioPanel(page)).toHaveCSS("opacity", "0");
       await members.nth(3).click();
-      await expect(page.getByText("Member Four Annamalai bio.")).toBeVisible();
-      await expectBioInsideSection(page, "Member Four Annamalai paragraph 5.");
+      await expect(page.getByText("Member Four Longer Placeholder bio.")).toBeVisible();
+      await expect(bioPanel(page)).toHaveCSS("opacity", "1");
+      await expectBioInsideSection(page, "Member Four Longer Placeholder paragraph 5.");
       await page.getByRole("button", { name: "Close", exact: true }).click();
-      await expect(page.getByText("Member Four Annamalai bio.")).toHaveCount(0);
+      await expect(page.getByText("Member Four Longer Placeholder bio.")).toHaveCount(0);
+      await expect(bioPanel(page)).toHaveCSS("opacity", "0");
     });
   });
 }
