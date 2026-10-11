@@ -50,10 +50,10 @@
       body: bio("Member Three", [898]),
     },
     {
-      name: "Member Four",
+      name: "Member Four Annamalai",
       title: "Advisor",
-      headshot: headshot("Member Four"),
-      body: bio("Member Four", [113, 642, 675, 98, 339]),
+      headshot: headshot("Member Four Annamalai"),
+      body: bio("Member Four Annamalai", [113, 642, 675, 98, 339]),
     },
   ];
 

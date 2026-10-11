@@ -1,7 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 
 const FIXTURE = "/dev/executive-team";
-const NAMES = ["Member One", "Member Two", "Member Three", "Member Four"];
+const NAMES = ["Member One", "Member Two", "Member Three", "Member Four Annamalai"];
 const PX = 1;
 
 async function openFixture(page: Page) {
@@ -27,6 +27,23 @@ async function expectBioInsideSection(page: Page, lastParagraph: string) {
     .getByTestId("team-section")
     .evaluate((el) => parseFloat(getComputedStyle(el).paddingBottom));
   expect(bio!.y + bio!.height).toBeLessThanOrEqual(section.y + section.height - paddingBottom + PX);
+}
+
+async function lineOffsets(page: Page, selector: string) {
+  return page.locator(selector).evaluateAll((els) =>
+    els.map((el) => {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const left = el.closest("button")!.getBoundingClientRect().left;
+      return [...range.getClientRects()].map((line) => Math.round(line.left - left));
+    }),
+  );
+}
+
+async function expectLinesFromLeftEdge(page: Page, selector: string) {
+  const offsets = await lineOffsets(page, selector);
+  expect(offsets.length).toBeGreaterThan(0);
+  for (const lines of offsets) for (const offset of lines) expect(offset).toBeLessThanOrEqual(PX);
 }
 
 for (const width of [1440, 1024]) {
@@ -72,12 +89,22 @@ for (const width of [1440, 1024]) {
       }
     });
 
+    test("names and titles start at the column's left edge, even when a name wraps", async ({
+      page,
+    }) => {
+      const members = await openFixture(page);
+      await expectLinesFromLeftEdge(page, "button.members h4, button.members h5");
+      await members.nth(3).click();
+      await expect(page.locator("#team-top h4")).toHaveText(NAMES[3]);
+      await expectLinesFromLeftEdge(page, "#team-top h4, #team-top h5");
+    });
+
     test("the longest bio stays inside the section instead of running into the footer", async ({
       page,
     }) => {
       const members = await openFixture(page);
       await members.nth(3).click();
-      await expectBioInsideSection(page, "Member Four paragraph 5.");
+      await expectBioInsideSection(page, "Member Four Annamalai paragraph 5.");
     });
   });
 }
@@ -102,10 +129,10 @@ for (const width of [768, 390]) {
     test("the 4th member opens their bio and Close puts it away", async ({ page }) => {
       const members = await openFixture(page);
       await members.nth(3).click();
-      await expect(page.getByText("Member Four bio.")).toBeVisible();
-      await expectBioInsideSection(page, "Member Four paragraph 5.");
+      await expect(page.getByText("Member Four Annamalai bio.")).toBeVisible();
+      await expectBioInsideSection(page, "Member Four Annamalai paragraph 5.");
       await page.getByRole("button", { name: "Close", exact: true }).click();
-      await expect(page.getByText("Member Four bio.")).toHaveCount(0);
+      await expect(page.getByText("Member Four Annamalai bio.")).toHaveCount(0);
     });
   });
 }

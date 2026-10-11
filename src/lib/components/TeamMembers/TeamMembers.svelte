@@ -24,7 +24,7 @@
         <button
           transition:fade={{ duration: 150 }}
           onclick={() => (active = -1)}
-          class="hidden lg:flex flex-col items-start justify-start gap-2"
+          class="hidden lg:flex flex-col items-start justify-start gap-2 text-left"
         >
           <PrismicImage
             class="w-full aspect-[3/4] object-cover"
@@ -58,7 +58,7 @@
             }
           }
         }}
-        class="lg:w-[calc((100%-7.5rem)/4)] members flex flex-col items-start justify-start gap-2 {active !==
+        class="lg:w-[calc((100%-7.5rem)/4)] members flex flex-col items-start justify-start gap-2 text-left {active !==
         -1
           ? 'pointer-events-none'
           : ''}"
@@ -86,7 +86,7 @@
         <button
           transition:fade={{ duration: 150 }}
           onclick={() => (active = -1)}
-          class="flex lg:hidden flex-col items-start justify-start gap-2"
+          class="flex lg:hidden flex-col items-start justify-start gap-2 text-left"
         >
           <PrismicImage
             class="w-full aspect-[3/4] object-cover"
