@@ -14,63 +14,69 @@
 
 <svelte:window bind:innerWidth={viewportWidth} />
 
-<ContentWidth class="flex flex-col lg:flex-row justify-start relative lg:h-[640px] gap-10">
-  <div class="lg:w-1/4 flex flex-col items-start justify-start gap-2 z-30" id="team-top">
-    {#if active !== -1}
+<ContentWidth class="grid relative lg:min-h-[640px]">
+  <div class="[grid-area:1/1] flex flex-col lg:flex-row justify-start relative gap-10">
+    <div
+      class="lg:absolute lg:top-0 lg:left-0 lg:w-[calc((100%-7.5rem)/4)] flex flex-col items-start justify-start gap-2 z-30"
+      id="team-top"
+    >
+      {#if active !== -1}
+        <button
+          transition:fade={{ duration: 150 }}
+          onclick={() => (active = -1)}
+          class="hidden lg:flex flex-col items-start justify-start gap-2"
+        >
+          <PrismicImage
+            class="w-full aspect-[3/4] object-cover"
+            field={members[active].headshot}
+            widths={cappedWidths(members[active].headshot)}
+            sizes="(min-width: 1024px) 25vw, 100vw"
+            loading="lazy"
+          />
+          <h4>{members[active].name}</h4>
+          <h5>{members[active].title}</h5>
+
+          <div
+            class="mt-8 button-text transition w-36 h-9 border-2 border-white text-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center"
+          >
+            Close
+          </div>
+        </button>
+      {/if}
+    </div>
+    {#each members as _p, i (i)}
       <button
-        transition:fade={{ duration: 150 }}
-        onclick={() => (active = -1)}
-        class="hidden lg:flex flex-col items-start justify-start gap-2"
+        onclick={() => {
+          if (active === i) {
+            active = -1;
+          } else {
+            active = i;
+            if (viewportWidth < 1024) {
+              document
+                .getElementById("team-top")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          }
+        }}
+        class="lg:w-[calc((100%-7.5rem)/4)] members flex flex-col items-start justify-start gap-2 {active !==
+        -1
+          ? 'pointer-events-none'
+          : ''}"
       >
         <PrismicImage
-          class="w-full aspect-[3/4] object-cover"
-          field={members[active].headshot}
-          widths={cappedWidths(members[active].headshot)}
+          class="w-full aspect-[3/4] object-cover mb-4"
+          field={members[i].headshot}
+          widths={cappedWidths(members[i].headshot)}
           sizes="(min-width: 1024px) 25vw, 100vw"
           loading="lazy"
         />
-        <h4>{members[active].name}</h4>
-        <h5>{members[active].title}</h5>
-
-        <div
-          class="mt-8 button-text transition w-36 h-9 border-2 border-white text-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center"
-        >
-          Close
-        </div>
+        <h4>{members[i].name}</h4>
+        <h5>{members[i].title}</h5>
       </button>
-    {/if}
+    {/each}
   </div>
-  {#each members as _p, i (i)}
-    <button
-      onclick={() => {
-        if (active === i) {
-          active = -1;
-        } else {
-          active = i;
-          if (viewportWidth < 1024) {
-            document
-              .getElementById("team-top")
-              ?.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
-        }
-      }}
-      class="lg:w-1/4 members flex flex-col items-start justify-start gap-2 {active !== -1
-        ? 'pointer-events-none'
-        : ''}"
-    >
-      <PrismicImage
-        class="w-full aspect-[3/4] object-cover mb-4"
-        field={members[i].headshot}
-        widths={cappedWidths(members[i].headshot)}
-        sizes="(min-width: 1024px) 25vw, 100vw"
-        loading="lazy"
-      />
-      <h4>{members[i].name}</h4>
-      <h5>{members[i].title}</h5>
-    </button>
-  {/each}
   <div
-    class="w-full h-full absolute bg-light flex flex-col justify-start items-end z-20 pointer-events-none transition-opacity duration-150 {active ===
+    class="[grid-area:1/1] bg-light flex flex-col justify-start items-end z-20 pointer-events-none transition-opacity duration-150 {active ===
     -1
       ? 'opacity-0'
       : ''}"
