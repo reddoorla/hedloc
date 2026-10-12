@@ -36,8 +36,8 @@
             sizes="(min-width: 1024px) 25vw, 100vw"
             loading="lazy"
           />
-          <h4>{members[active].name}</h4>
-          <h5>{members[active].title}</h5>
+          <h3 class="h4">{members[active].name}</h3>
+          <p class="h5">{members[active].title}</p>
 
           <div
             class="mt-8 button-text transition w-36 h-9 border-2 border-white text-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center"
@@ -74,8 +74,8 @@
           sizes="(min-width: 1024px) 25vw, 100vw"
           loading="lazy"
         />
-        <h4>{members[i].name}</h4>
-        <h5>{members[i].title}</h5>
+        <h3 class="h4">{members[i].name}</h3>
+        <p class="h5">{members[i].title}</p>
       </button>
     {/each}
   </div>
@@ -100,8 +100,8 @@
             sizes="100vw"
             loading="lazy"
           />
-          <h4>{members[active].name}</h4>
-          <h5>{members[active].title}</h5>
+          <h3 class="h4">{members[active].name}</h3>
+          <p class="h5">{members[active].title}</p>
         </button>
         <div class="lg:mt-8">
           <PrismicRichText field={members[active].body || ""} />
