@@ -66,6 +66,7 @@
     {:else}
       <PrismicImage
         {field}
+        fallbackAlt=""
         class="absolute  h-full w-full object-cover -z-10"
         widths={cappedWidths(field)}
         sizes="100vw"

@@ -121,7 +121,7 @@ for (const width of [1440, 1024]) {
         await members.nth(i).click();
         await expect(page.getByText(`${name} bio.`)).toBeVisible();
         await expect(bioPanel(page)).toHaveCSS("opacity", "1");
-        await expect(page.locator("#team-top h4")).toHaveText(name);
+        await expect(page.locator("#team-top .h4")).toHaveText(name);
         await expect(page.locator("#team-top img")).toHaveAttribute("alt", name);
         await expect.poll(() => effectiveOpacity(page, "#team-top img")).toBe(1);
         await expect.poll(() => effectiveOpacity(page, `p:has-text("${name} bio.")`)).toBe(1);
@@ -149,10 +149,10 @@ for (const width of [1440, 1024]) {
       page,
     }) => {
       const members = await openFixture(page);
-      await expectLinesFromLeftEdge(page, "button.members h4, button.members h5");
+      await expectLinesFromLeftEdge(page, "button.members .h4, button.members .h5");
       await members.nth(3).click();
-      await expect(page.locator("#team-top h4")).toHaveText(NAMES[3]);
-      await expectLinesFromLeftEdge(page, "#team-top h4, #team-top h5");
+      await expect(page.locator("#team-top .h4")).toHaveText(NAMES[3]);
+      await expectLinesFromLeftEdge(page, "#team-top .h4, #team-top .h5");
     });
 
     test("a double-click on the first member leaves their bio open", async ({ page }) => {
@@ -160,7 +160,7 @@ for (const width of [1440, 1024]) {
       await members.first().dblclick();
       await page.waitForTimeout(500);
       await expect(page.getByText(`${NAMES[0]} bio.`)).toBeVisible();
-      await expect(page.locator("#team-top h4")).toHaveText(NAMES[0]);
+      await expect(page.locator("#team-top .h4")).toHaveText(NAMES[0]);
     });
 
     test("the first member answers a click straight after Close", async ({ page }) => {
@@ -193,7 +193,7 @@ for (const width of [1440, 1024]) {
       await expect(bioPanel(page)).toHaveCSS("opacity", "1");
       await page.mouse.click(third.x + third.width / 2, third.y + third.height / 2);
       await page.waitForTimeout(400);
-      await expect(page.locator("#team-top h4")).toHaveText(NAMES[0]);
+      await expect(page.locator("#team-top .h4")).toHaveText(NAMES[0]);
       await expect(page.getByText(`${NAMES[0]} bio.`)).toBeVisible();
     });
 
@@ -211,10 +211,10 @@ for (const width of [1440, 1024]) {
 
     test("the open card's name sits where the first member's name does", async ({ page }) => {
       const members = await openFixture(page);
-      const memberName = (await members.first().locator("h4").boundingBox())!;
+      const memberName = (await members.first().locator(".h4").boundingBox())!;
       await members.nth(2).click();
-      await expect(page.locator("#team-top h4")).toHaveText(NAMES[2]);
-      const cardName = await box(page, "#team-top h4");
+      await expect(page.locator("#team-top .h4")).toHaveText(NAMES[2]);
+      const cardName = await box(page, "#team-top .h4");
       expect(Math.abs(cardName.y - memberName.y)).toBeLessThanOrEqual(PX);
       expect(Math.abs(cardName.x - memberName.x)).toBeLessThanOrEqual(PX);
     });
