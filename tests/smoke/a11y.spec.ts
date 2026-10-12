@@ -34,3 +34,10 @@ test("the error page is titled for Hedloc", async ({ page }) => {
   await page.goto("/this-uid-does-not-exist");
   await expect(page).toHaveTitle("Hedloc | 404");
 });
+
+test("the error page's white panel starts below the white header", async ({ page }) => {
+  await page.goto("/this-uid-does-not-exist");
+  const header = await page.locator("header").boundingBox();
+  const panel = await page.locator("h1").locator("..").boundingBox();
+  expect(panel!.y).toBeGreaterThanOrEqual(header!.y + header!.height);
+});
