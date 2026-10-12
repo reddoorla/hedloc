@@ -3,6 +3,19 @@
 Append-only log of unattended/agentic changes on hedloc: what changed, why, and how it was
 verified. Newest entries on top. See [`AUTONOMY.md`](../AUTONOMY.md) for the contract.
 
+## 2026-10-12 — Easy-wins pass: axe fixes, 404 header, form autofill, Typekit preconnect (#56, #57, #58)
+
+- `fix` #56: the Executive Team hero rendered an `<img>` with no alt (now `alt=""` via `fallbackAlt`), member names skipped h2 → h4 (now `h3.h4`, titles `p.h5`, styled identically), and the error page nested a second `<main>`, was titled "404 — Reddoor", and hid the white header on its white panel (now a div titled "Hedloc | 404", starting 6rem down).
+- `fix` #57: the contact form's name, email and phone carry `autocomplete` tokens.
+- `perf` #58: preconnects to `use.typekit.net` (CORS, for the fonts) and `p.typekit.net` (for the `@import`ed CSS).
+- Verified:
+  - Red tests first: `tests/smoke/a11y.spec.ts`, `contact-form.spec.ts` and `head.spec.ts`, with mutations listed in each PR.
+  - Pixel diffs of `main` against each branch at 1440, 1024 and 390 were identical, except the intended 404 change. The diff instrument caught an injected 2px letter-spacing change.
+  - Production after deploy: `/executive-team` Lighthouse accessibility 90 → 100 and SEO 92 → 100. axe is clean on every route except `page-has-heading-one`, which is left for a copy call.
+  - The preconnect's measured gain is small: −135 ms FCP on `/` in a preview-against-preview A/B.
+- Review: one three-lens round per PR, no blocking findings. The round on #56 found the 404 header defect, which was fixed in the same PR.
+- Not done here: the items that need the operator are listed in reddoor-maintenance's journal entry for this pass.
+
 ## 2026-10-11 — Executive Team row 4 wide at lg (#55)
 
 - `feat`: the Executive Team row holds four members in one row at `lg` (Erik, #hedloc-web, 10-09). The selected-member slot sits over column one; an open bio grows the section; a wrapped name starts at the left edge. Phone and tablet still stack.
