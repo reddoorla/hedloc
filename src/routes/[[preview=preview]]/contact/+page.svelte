@@ -109,6 +109,7 @@
             id="name"
             class="lg:w-11/12 border-[0.5px] rounded-xs normal-case text-white border-gold bg-transparent h-12 px-6"
             name="name"
+            autocomplete="name"
             type="text"
             placeholder="First and Last Name"
             required
@@ -121,6 +122,7 @@
             id="email"
             class="lg:w-4/12 border-[0.5px] rounded-xs normal-case text-white border-gold bg-transparent h-12 px-6"
             name="email"
+            autocomplete="email"
             type="email"
             placeholder="Email Address"
             required
@@ -131,6 +133,7 @@
             id="phone"
             class="lg:w-4/12 border-[0.5px] rounded-xs normal-case text-white border-gold bg-transparent h-12 px-6"
             name="phone"
+            autocomplete="tel"
             type="tel"
             placeholder="(000)-000-0000"
             required
