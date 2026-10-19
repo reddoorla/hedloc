@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@prismicio/client": "^7.3.1",
-    "@prismicio/svelte": "^2.2.1",
+    "@prismicio/svelte": "^3.0.0",
     "@tailwindcss/vite": "^4.3.0",
     "@lucide/svelte": "^1.17.0",
     "svelte-gestures": "^5.0.7",
