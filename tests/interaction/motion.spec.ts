@@ -286,14 +286,20 @@ test.describe("bio and image-band timing, with motion allowed", () => {
       const timing = await page.evaluate(async () => {
         (document.querySelector("button.members") as HTMLElement).click();
         const panel = document.querySelector("[data-testid=team-bio]")!;
-        // Every animation in the bio, panel and all its contents, by the element
+        // Every animation in the bio (the panel and all its contents, and the
+        // open card beside it on desktop: headshot, name, Close), by the element
         // it runs on, its length read when first seen (Svelte drops a finished
         // animation's effect). An element's animations run one after another
         // (Svelte's delay, then the fade), so its total is when it is fully in.
         const seen = new Map<Element, Map<Animation, number>>();
         const t0 = performance.now();
         while (performance.now() - t0 < 1500) {
-          for (const a of panel.getAnimations({ subtree: true })) {
+          const card = document.querySelector("#team-top");
+          const all = [
+            ...panel.getAnimations({ subtree: true }),
+            ...(card?.getAnimations({ subtree: true }) ?? []),
+          ];
+          for (const a of all) {
             const effect = a.effect as KeyframeEffect | null;
             const t = effect?.getTiming();
             if (!effect?.target || !t) continue;
@@ -386,20 +392,34 @@ test.describe("bio and image-band timing, with motion allowed", () => {
   for (const width of [1440, 1920, 2560]) {
     test(`the band's top row ends flush with the image below it (${width}px)`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
+      // Measured at rest: under reduced motion every tile is in place at once.
+      await page.emulateMedia({ reducedMotion: "reduce" });
       await page.goto("/", { waitUntil: "networkidle" });
       // The images themselves, not only their reveal wrappers: an image can
       // outgrow its wrapper (the #74 symptom) while the wrapper stays flush.
       const boxes = await page.locator(`${tiles} img`).evaluateAll((els) =>
         els.map((el) => {
           const r = el.getBoundingClientRect();
-          return { left: r.left, right: r.right, width: r.width };
+          return { left: r.left, right: r.right, width: r.width, top: r.top, bottom: r.bottom };
         }),
       );
       expect(boxes.length).toBe(4);
-      const [, small, side, bottom] = boxes;
+      const [tall, small, side, bottom] = boxes;
       expect(Math.abs(side.right - bottom.right), "right edges").toBeLessThanOrEqual(1);
       expect(Math.abs(small.left - bottom.left), "left edges").toBeLessThanOrEqual(1);
       expect(Math.abs(side.left - small.right - 40), "the 40px gap").toBeLessThanOrEqual(1);
+      // Top and bottom edges: the top row starts together, the pair ends level,
+      // the image below starts 40px under it, and the tall image ends with it.
+      for (const b of [small, side]) {
+        expect(Math.abs(b.top - tall.top), "top edges").toBeLessThanOrEqual(1);
+      }
+      expect(Math.abs(small.bottom - side.bottom), "the pair's bottom edges").toBeLessThanOrEqual(
+        1,
+      );
+      expect(Math.abs(bottom.top - small.bottom - 40), "the 40px row gap").toBeLessThanOrEqual(1);
+      expect(Math.abs(tall.bottom - bottom.bottom), "the band's bottom edge").toBeLessThanOrEqual(
+        1,
+      );
       // The wide image first, at twice the width of the one beside it.
       expect(Math.abs(small.width - 2 * side.width), "a 2:1 split, wide first").toBeLessThanOrEqual(
         2,
@@ -427,6 +447,15 @@ test.describe("bio and image-band timing, with motion allowed", () => {
           ),
         );
       expect(own).toEqual(Array(3).fill("0 translateY(96px)"));
+      // Stacked at one left edge, each waits only its position's few ms once in
+      // view, not a stagger of its own.
+      const delays = await page
+        .locator(tiles)
+        .evaluateAll((els) =>
+          els.map((el) => parseFloat((el as HTMLElement).style.transitionDelay)),
+        );
+      for (const d of delays)
+        expect(d, "a phone image's reveal delay (ms)").toBeLessThanOrEqual(100);
       for (const tile of await page.locator(tiles).all()) await tile.scrollIntoViewIfNeeded();
       await expect.poll(() => tileOpacities(page), { timeout: 8_000 }).toEqual([1, 1, 1]);
     });
