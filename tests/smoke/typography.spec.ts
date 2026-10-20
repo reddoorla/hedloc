@@ -6,8 +6,8 @@ import { test, expect, type ElementHandle, type Page } from "@playwright/test";
 const BODY = "ff-good-web-pro";
 const DISPLAY = "eurostile-extended";
 
-// Every helper reads only rendered elements and fails on an empty match, so a
-// selector that stops matching cannot pass.
+// Every helper fails when its selector stops matching anything visible (or, for
+// the painted-face check, anything that paints text), so it cannot pass empty.
 async function visible(page: Page, selector: string) {
   const handles = await page.locator(selector).elementHandles();
   const shown: ElementHandle<HTMLElement>[] = [];
@@ -170,11 +170,21 @@ for (const [width, floor] of [
         .first()
         .evaluate((img) => img.getBoundingClientRect().width);
       expect(logo).toBeGreaterThanOrEqual(floor);
-      const rights = await page
-        .locator('header a:not([href="/"])')
-        .evaluateAll((els) => els.map((el) => el.getBoundingClientRect().right));
-      expect(rights.length).toBe(2);
-      for (const right of rights) expect(right).toBeLessThanOrEqual(width);
+      const { logoRight, links } = await page.evaluate(() => ({
+        logoRight: document.querySelector("header img")!.getBoundingClientRect().right,
+        links: [...document.querySelectorAll('header a:not([href="/"])')].map((el) => {
+          const r = el.getBoundingClientRect();
+          return { left: r.left, right: r.right, top: r.top, bottom: r.bottom };
+        }),
+      }));
+      expect(links.length).toBe(2);
+      for (const link of links) {
+        expect(link.top).toBeGreaterThanOrEqual(0);
+        expect(link.bottom).toBeLessThanOrEqual(844);
+        expect(link.right).toBeLessThanOrEqual(width);
+        // They meet exactly at 320 today; the half pixel is rounding.
+        expect(link.left).toBeGreaterThanOrEqual(logoRight - 0.5);
+      }
     });
   });
 }
