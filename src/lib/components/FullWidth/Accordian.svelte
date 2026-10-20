@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { slide } from "svelte/transition";
+  import { slide } from "$lib/transitions";
   import chevronRight from "$lib/assets/icons/chevron-right.svg";
 
   const LOREM =

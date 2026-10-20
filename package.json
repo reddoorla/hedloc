@@ -18,6 +18,9 @@
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
     "slicemachine": "start-slicemachine",
+    "test": "pnpm test:unit && pnpm test:smoke",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
     "test:smoke": "playwright install chromium && playwright test"
   },
   "devDependencies": {
@@ -30,11 +33,13 @@
     "@sveltejs/adapter-netlify": "^6.0.4",
     "@sveltejs/kit": "^2.61.1",
     "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "@testing-library/svelte": "^5.4.2",
     "concurrently": "^10.0.0",
     "eslint": "^10.4.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-svelte": "^3.18.0",
     "globals": "^17.6.0",
+    "jsdom": "^30.1.3",
     "prettier": "^3.8.3",
     "prettier-plugin-svelte": "^4.0.1",
     "slice-machine-ui": "^2.21.3",
@@ -44,13 +49,14 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.60.0",
     "typescript-svelte-plugin": "^0.3.52",
-    "vite": "^8.0.14"
+    "vite": "^8.0.14",
+    "vitest": "^4.1.12"
   },
   "dependencies": {
+    "@lucide/svelte": "^1.17.0",
     "@prismicio/client": "^7.3.1",
     "@prismicio/svelte": "^2.2.1",
     "@tailwindcss/vite": "^4.3.0",
-    "@lucide/svelte": "^1.17.0",
     "svelte-gestures": "^5.0.7",
     "svelte-select": "^6.0.0"
   }

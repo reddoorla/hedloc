@@ -1,3 +1,8 @@
+<script lang="ts">
+  import { animateIn } from "$lib/actions/animateIn";
+  import ContentWidth from "$lib/components/ContentWidth/ContentWidth.svelte";
+</script>
+
 <svelte:head>
   <title>animate-in demo — Reddoor</title>
   <!-- Dev/test target only — keep it out of search indexes (robots.txt also
@@ -23,6 +28,25 @@
       It is not linked from the public site.
     </p>
   </header>
+
+  <!-- The site's scroll reveal (use:animateIn), the subject of
+       tests/interaction/reveal-no-js.spec.ts and motion.spec.ts.
+
+       The first block is the only element here whose hidden state ships in the
+       SERVER markup: `data-reveal` is a literal attribute, so app.css hides it
+       before first paint, and `failSafe` is what makes that safe — an element
+       hidden by server markup depends on JS to ever appear. -->
+  <section aria-labelledby="action-heading">
+    <h2 id="action-heading">use:animateIn</h2>
+    <div data-reveal data-reveal-subject use:animateIn={{ failSafe: 2500 }}>
+      <p>Hidden in the server markup, so it never paints before it reveals.</p>
+    </div>
+    <div data-reveal-subject>
+      <ContentWidth animateIn>
+        <p>A ContentWidth block with <code>animateIn</code>, as the site would use it.</p>
+      </ContentWidth>
+    </div>
+  </section>
 
   <section aria-labelledby="reveal-heading">
     <h2 id="reveal-heading" class="reveal" style="animation-delay: 80ms">Reveal on entry</h2>
