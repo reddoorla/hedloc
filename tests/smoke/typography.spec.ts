@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type ElementHandle, type Page } from "@playwright/test";
 
 // Erik's 2026-10-20 type spec, from Adobe kit noj4tji: FF Good Regular on body
 // copy and the footer; Eurostile Extended Regular on the top nav, every
@@ -6,37 +6,42 @@ import { test, expect, type Page } from "@playwright/test";
 const BODY = "ff-good-web-pro";
 const DISPLAY = "eurostile-extended";
 
-const firstFamily = (page: Page, selector: string) =>
-  page.locator(selector).evaluateAll((els) =>
-    els.map((el) =>
-      getComputedStyle(el)
+// Every helper reads only rendered elements and fails on an empty match, so a
+// selector that stops matching cannot pass.
+async function visible(page: Page, selector: string) {
+  const handles = await page.locator(selector).elementHandles();
+  const shown: ElementHandle<HTMLElement>[] = [];
+  for (const h of handles) if (await h.isVisible()) shown.push(h as ElementHandle<HTMLElement>);
+  expect(shown.length, `${selector} matches something visible`).toBeGreaterThan(0);
+  return shown;
+}
+
+async function expectFamily(page: Page, selector: string, family: string) {
+  for (const el of await visible(page, selector)) {
+    const first = await el.evaluate((e) =>
+      getComputedStyle(e)
         .fontFamily.split(",")[0]
         .trim()
         .replace(/^["']|["']$/g, ""),
-    ),
-  );
-
-async function expectFamily(page: Page, selector: string, family: string) {
-  const families = await firstFamily(page, selector);
-  expect(families.length, `${selector} matches something`).toBeGreaterThan(0);
-  for (const f of families) expect(f, `font-family of ${selector}`).toBe(family);
+    );
+    expect(first, `font-family of ${selector}`).toBe(family);
+  }
 }
 
 // Eurostile Extended is in the kit at 400, 500 and 900 only, so a 600 rule would
 // render the Black cut. "Regular" means the 400 upright face.
 async function expectRegular(page: Page, selector: string) {
-  const styles = await page
-    .locator(selector)
-    .evaluateAll((els) =>
-      els.map((el) => `${getComputedStyle(el).fontWeight} ${getComputedStyle(el).fontStyle}`),
+  for (const el of await visible(page, selector)) {
+    const s = await el.evaluate(
+      (e) => `${getComputedStyle(e).fontWeight} ${getComputedStyle(e).fontStyle}`,
     );
-  for (const s of styles) expect(s, `weight and style of ${selector}`).toBe("400 normal");
+    expect(s, `weight and style of ${selector}`).toBe("400 normal");
+  }
 }
 
 // document.fonts.check() is true for a family with no @font-face at all, so it
 // cannot tell a missing kit from a loaded one. Ask for the face itself.
 async function expectFaceLoaded(page: Page, family: string) {
-  await page.evaluate(() => document.fonts.ready);
   await expect
     .poll(() =>
       page.evaluate(
@@ -54,6 +59,11 @@ async function expectFaceLoaded(page: Page, family: string) {
     .toBe(true);
 }
 
+async function open(page: Page, path: string) {
+  await page.goto(path, { waitUntil: "networkidle" });
+  await page.evaluate(() => document.fonts.ready);
+}
+
 async function expectSharedType(page: Page, { paragraphs = true } = {}) {
   await expectFamily(page, "body", BODY);
   if (paragraphs) await expectFamily(page, "main p", BODY);
@@ -67,17 +77,14 @@ async function expectSharedType(page: Page, { paragraphs = true } = {}) {
 async function expectButtons(page: Page) {
   await expectFamily(page, ".button-text", DISPLAY);
   await expectRegular(page, ".button-text");
-  const overflow = await page.locator(".button-text").evaluateAll((els) =>
-    els
-      .filter((el) => (el as HTMLElement).offsetParent)
-      .filter((el) => {
-        const range = document.createRange();
-        range.selectNodeContents(el);
-        return range.getClientRects().length > 1 || el.scrollWidth > el.clientWidth;
-      })
-      .map((el) => el.textContent!.trim()),
-  );
-  expect(overflow, "button labels that wrap or overflow").toEqual([]);
+  for (const el of await visible(page, ".button-text")) {
+    const fits = await el.evaluate((e) => {
+      const range = document.createRange();
+      range.selectNodeContents(e);
+      return range.getClientRects().length === 1 && e.scrollWidth <= e.clientWidth;
+    });
+    expect(fits, `"${await el.textContent()}" fits on one line`).toBe(true);
+  }
 }
 
 async function expectHeading(page: Page, selector: string) {
@@ -91,19 +98,21 @@ for (const width of [1440, 390]) {
     test.use({ viewport: { width, height: width === 1440 ? 900 : 844 } });
 
     test("home: body, footer, nav and buttons", async ({ page }) => {
-      await page.goto("/");
+      await open(page, "/");
       await expectSharedType(page);
       await expectButtons(page);
     });
 
-    test("executive team: 'The Team' heading", async ({ page }) => {
-      await page.goto("/executive-team");
+    test("executive team: 'The Team' heading and the Close button", async ({ page }) => {
+      await open(page, "/executive-team");
       await expectSharedType(page);
       await expectHeading(page, "main h2");
+      await page.locator("button.members").first().click();
+      await expectButtons(page);
     });
 
     test("contact: 'Contact Us' heading and the submit button", async ({ page }) => {
-      await page.goto("/contact");
+      await open(page, "/contact");
       // The contact hero's body is empty in Prismic, so the page has no <p>.
       await expectSharedType(page, { paragraphs: false });
       await expectHeading(page, "main h1");
@@ -115,18 +124,39 @@ for (const width of [1440, 390]) {
 test.describe("home buttons at 1440×900", () => {
   test.use({ viewport: { width: 1440, height: 900 } });
 
-  // Erik asked on 08-10 for the home CTAs above the fold.
+  // Erik asked on 08-10 for the home CTAs above the fold. The hero settles
+  // after load (the CTAs read 1094px straight after goto), so poll.
   test("stay above the fold in Eurostile Extended", async ({ page }) => {
-    await page.goto("/");
-    await page.evaluate(() => document.fonts.ready);
-    const bottoms = await page
-      .locator(".button-text")
-      .evaluateAll((els) =>
-        els
-          .filter((el) => (el as HTMLElement).offsetParent)
-          .map((el) => el.getBoundingClientRect().bottom),
-      );
-    expect(bottoms.length).toBeGreaterThan(0);
-    for (const b of bottoms) expect(b).toBeLessThanOrEqual(900);
+    await open(page, "/");
+    await expect
+      .poll(() =>
+        page.locator(".button-text").evaluateAll((els) => {
+          const bottoms = els
+            .filter((el) => (el as HTMLElement).offsetParent)
+            .map((el) => el.getBoundingClientRect().bottom);
+          return bottoms.length ? Math.max(...bottoms) : Infinity;
+        }),
+      )
+      .toBeLessThanOrEqual(900);
   });
 });
+
+// The header is a justify-between row whose logo link can shrink; the wide
+// Eurostile nav must leave it room on a phone.
+for (const [width, floor] of [
+  [390, 140],
+  [320, 110],
+] as const) {
+  test.describe(`header at ${width}px`, () => {
+    test.use({ viewport: { width, height: 844 } });
+
+    test(`the nav leaves the logo at least ${floor}px`, async ({ page }) => {
+      await open(page, "/");
+      const logo = await page
+        .locator("header img")
+        .first()
+        .evaluate((img) => img.getBoundingClientRect().width);
+      expect(logo).toBeGreaterThanOrEqual(floor);
+    });
+  });
+}

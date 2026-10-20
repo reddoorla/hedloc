@@ -198,13 +198,11 @@
 
   .button-text {
     font-family: "eurostile-extended", sans-serif;
-    font-size: 12px;
+    font-size: 11px;
     font-style: normal;
     font-weight: 400;
     line-height: 30px; /* 250% */
-    /* 0.48px set "EXECUTIVE TEAM" at 140.7px in Eurostile Extended, past the
-       144px button's 140px inside its borders; at 0 it is 134px. */
-    letter-spacing: 0;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
   }
 
@@ -224,10 +222,10 @@
     }
 
     p {
-      font-size: 12px;
+      font-size: 15px;
       font-style: normal;
       font-weight: 400;
-      line-height: 24px; /* 150% */
+      line-height: 24px; /* 160% */
     }
 
     header,
@@ -245,14 +243,31 @@
      header rules above ask for would render its Black cut. */
   header {
     font-family: "eurostile-extended", sans-serif;
+    font-size: 15px;
     font-weight: 400;
+    letter-spacing: 0.06em;
   }
 
   .heading-display {
     font-family: "eurostile-extended", sans-serif;
     font-style: normal;
     font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
+  }
+
+  @media only screen and (max-width: 786px) {
+    /* Eurostile Extended is wide: at 14px the nav took the logo's room. */
+    header {
+      font-size: 11px;
+      line-height: 1.4;
+      letter-spacing: 0.04em;
+    }
+
+    .heading-display {
+      font-size: 28px;
+    }
   }
 
   /* svelte-select stylings */
