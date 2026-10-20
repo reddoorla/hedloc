@@ -40,7 +40,10 @@ async function traceFirstRevealTarget(page: Page) {
     const tick = () => {
       held ??= document.querySelector("[data-reveal]");
       if (held) w.__trace.push(Number(getComputedStyle(held).opacity));
-      if (performance.now() - t0 < 4000) requestAnimationFrame(tick);
+      // 10s, not reddoor-starter's 4s: a passing run takes ~3.5s (hydration,
+      // then a 2400ms reveal plus its stagger), so a slow dev-server load
+      // stopped the trace short of opacity 1 and failed as "never completed".
+      if (performance.now() - t0 < 10_000) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
   });
@@ -108,7 +111,7 @@ test("with scripting on, it is hidden on the first frame and never flashes", asy
             const t = (window as unknown as { __trace: number[] }).__trace;
             return t.length > 5 && t[t.length - 1] === 1;
           }),
-        { timeout: 10_000, message: `${FIXTURE}: the reveal never completed` },
+        { timeout: 15_000, message: `${FIXTURE}: the reveal never completed` },
       )
       .toBe(true);
 
