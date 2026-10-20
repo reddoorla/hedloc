@@ -397,7 +397,9 @@
      hydration is a no-op re-write rather than a visible state change — which
      is why the travel below is animateIn's default `translateY` and not a
      number of its own (src/reveal-hidden-state.test.ts asserts they agree, and
-     a call site passing its own `translateY` must not ship the attribute).
+     a call site passing its own `translateY` must not ship the bare attribute;
+     the team cards' `[data-reveal="card"]` rule below is the one variant, with
+     its own matching travel).
 
      The no-JS contract lives in app.html: a <noscript><style> there forces
      these two properties back with !important, so a browser that will never

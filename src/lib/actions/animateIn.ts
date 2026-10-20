@@ -78,9 +78,11 @@ function applyHidden(node: HTMLElement, cfg: ResolvedConfig) {
   //
   // Only true for the DEFAULT travel, which is what the CSS rule hard-codes
   // (src/reveal-hidden-state.test.ts asserts the two agree). A call site
-  // passing its own `translateY` must NOT put `data-reveal` in its
+  // passing its own `translateY` must NOT put a bare `data-reveal` in its
   // server-rendered markup, because CSS would hide it at a different distance
-  // than JS reveals it from. Pair a server-rendered marker with `failSafe`.
+  // than JS reveals it from — unless app.css carries a matching rule for an
+  // attribute value of its own, as Hedloc's team cards do (`data-reveal="card"`,
+  // also asserted by that test). Pair a server-rendered marker with `failSafe`.
   node.setAttribute("data-reveal", "");
   node.style.opacity = "0";
   node.style.transform = `translateY(${cfg.translateY})`;

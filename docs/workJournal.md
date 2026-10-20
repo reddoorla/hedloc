@@ -113,13 +113,26 @@ Erik asked on 10-20 whether Reddoor still meant to modernise Hedloc's transition
 
 At 1440×900 the home CTAs sit at y 764–800 on both the live site and the branch, and the page is 1988px tall on both: nothing moved. The hero image keeps no blur, because it is the LCP image and is shared by both pages.
 
-**The belief corrected on contact:** the brief assumed Hedloc had a live scroll reveal to modernise. It had the code: `AnimateIn.svelte`, a 4s `setInterval` plus a scroll listener. But no call site ever passed `animateIn` to `ContentWidth`, so it never ran in production. The IntersectionObserver action now sits behind that prop, still switched off. Which blocks should reveal is a design choice, and it went to the operator as workspace `decisions/2026-10-20-1744-hedloc-reveal-which-blocks.md`.
+**The belief corrected on contact:** the brief assumed Hedloc had a live scroll reveal to modernise. It had the code: `AnimateIn.svelte`, a 4s `setInterval` plus a scroll listener. But no call site ever passed `animateIn` to `ContentWidth`, so it never ran in production. That went to the operator (workspace `decisions/2026-10-20-1744-hedloc-reveal-which-blocks.md`), who chose to switch it on for these blocks, at the old 2400ms, staggered by position:
+
+- `/executive-team`: the heading and the team;
+- `/`: the image band, plus the mobile subbody/CTA block.
+
+Blocks that can be in view at first paint ship `data-reveal` from the server with a 2500ms `failSafe`, so they are hidden before they paint rather than vanishing at hydration.
+
+**The default 50% travel was wrong for the team, measured twice.** Revealing the whole grid (640px+ tall) put its hidden state 320px lower, below the fold at both 1280×720 and 1440×900. Roalson's fail-safe correctly stands down on the observer's first "not in view" report, so the team's slot sat empty until the reader scrolled.
+
+- **Per card inside each button:** the button stretches to the row's 640px, so a wrapper `<span>` inside it carries the reveal instead.
+- **Then the cards themselves:** at 390 and 768 the team is one column of 551–1015px cards, and half of that put the first card's slot below the fold the same way.
+
+The cards now travel 24px (`CARD_REVEAL`), with a matching `[data-reveal="card"]` rule so the server-rendered state stays byte-identical. A browser spec at 1280, 768 and 390 goes red when the 50% travel is put back. The home blocks keep 50%, because the `h-screen` hero puts every one of them at or below the fold.
 
 **Kit 2 cost one line.** `BeforeNavigate` is a type from `@sveltejs/kit` here, not `$app/navigation`. The starter's `Img` wraps `@zerodevx/svelte-img`, which Hedloc does not use. Hedloc's version wraps `PrismicImage`, and its load tracker reaches the `<img>` as a Svelte 5 `{@attach}`, because `PrismicImage` spreads its rest props onto the element. That avoids a wrapper element that could have moved a flex layout.
 
 **Defects, named:**
 
 - **No-JS images stuck blurred (review round 1, major).** `.progressive-img` is blurred by CSS and unblurred only by JS, so with scripting off every headshot stayed at `blur(40px)` after loading. It came over from the starter unchanged; the `<noscript>` style now releases it, and the gap is filed as reddoorla/reddoor-starter#194. The same blur with JS on but hydration failing is #66.
+- **A test that could never fail, inherited.** The starter's "the server ships a hidden reveal target" counts the word `data-reveal` in the HTML, and app.html's `<noscript>` style names `[data-reveal]` on every page. It now matches the attribute on an element. My own first `.members` opacity check had the same flaw: it was measured on the button after the reveal had moved to a span inside it, so it passed whatever happened.
 - **A spec that only ever measured motion by accident.** The shared Playwright config forces `reducedMotion: "reduce"`. One executive-team spec, "a click straight after Close", only passed because `svelte/transition` ignored that setting. Once the fade honoured it there was no fade to click through, so that one test now asks for motion.
 - **A flaky trace window.** The starter's no-JS spec traces opacity for 4s, and a passing run takes about 3.5s. Under load it failed 2 runs in 4, so it now traces for 10s.
 
