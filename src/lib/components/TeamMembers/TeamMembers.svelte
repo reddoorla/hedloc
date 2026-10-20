@@ -1,12 +1,36 @@
+<script lang="ts" module>
+  import type { AnimateInOptions } from "$lib/actions/animateIn";
+
+  /** How each member card reveals. A short travel, not animateIn's default
+   *  50%: in one column a card is 551-1015px tall, and half of that put its
+   *  hidden state below the fold (390x844, 768x1024), so the observer reported
+   *  "not in view" and the first card's slot sat empty until the reader
+   *  scrolled. app.css hides `[data-reveal="card"]` at this same travel
+   *  (src/reveal-hidden-state.test.ts holds them together). */
+  export const CARD_REVEAL: AnimateInOptions = { translateY: "24px", failSafe: 2500 };
+</script>
+
 <script lang="ts">
   import ContentWidth from "$lib/components/ContentWidth/ContentWidth.svelte";
   import Img from "$lib/components/Img.svelte";
   import { PrismicRichText } from "@prismicio/svelte";
   import { fade, prefersReducedMotion } from "$lib/transitions";
+  import { animateIn as revealOnScroll } from "$lib/actions/animateIn";
+  import { fromAction } from "svelte/attachments";
   import { cappedWidths } from "@reddoorla/maintenance/images";
   import type { AboutDocumentData } from "../../../prismicio-types";
 
-  let { members }: { members: AboutDocumentData["team_member"] } = $props();
+  let {
+    members,
+    animateIn = false,
+  }: {
+    members: AboutDocumentData["team_member"];
+    /** Reveal each member's photo, name and title on scroll (CARD_REVEAL),
+     *  staggered by its position in the row. Per card, not the whole grid: the
+     *  grid is 640px+ tall, and its hidden state sat below the fold at
+     *  1280x720 and 1440x900. */
+    animateIn?: boolean;
+  } = $props();
 
   let viewportWidth = $state(1024);
 
@@ -69,15 +93,24 @@
           ? 'pointer-events-none'
           : ''}"
       >
-        <Img
-          class="w-full aspect-[3/4] object-cover mb-4"
-          field={members[i].headshot}
-          widths={cappedWidths(members[i].headshot)}
-          sizes="(min-width: 1024px) 25vw, 100vw"
-          loading="lazy"
-        />
-        <h3 class="h4">{members[i].name}</h3>
-        <p class="h5">{members[i].title}</p>
+        <!-- The reveal moves this wrapper, not the button: the button stretches
+             to the row's 640px, so 50% of it would hide the card below the
+             fold. Same flex column as the button, so nothing moves. -->
+        <span
+          class="w-full flex flex-col items-start justify-start gap-2"
+          data-reveal={animateIn ? "card" : undefined}
+          {@attach animateIn ? fromAction(revealOnScroll, () => CARD_REVEAL) : undefined}
+        >
+          <Img
+            class="w-full aspect-[3/4] object-cover mb-4"
+            field={members[i].headshot}
+            widths={cappedWidths(members[i].headshot)}
+            sizes="(min-width: 1024px) 25vw, 100vw"
+            loading="lazy"
+          />
+          <h3 class="h4">{members[i].name}</h3>
+          <p class="h5">{members[i].title}</p>
+        </span>
       </button>
     {/each}
   </div>

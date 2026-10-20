@@ -130,22 +130,36 @@ test.describe("with motion allowed", () => {
       .toBeLessThan(-7);
     await page.mouse.up();
   });
-  test("/executive-team ships its heading and team hidden, then reveals them", async ({ page }) => {
-    // Hidden in the SERVER markup, so neither paints and then vanishes at
-    // hydration; failSafe is what makes shipping it safe.
-    const html = await (await page.request.get("/executive-team")).text();
-    // On an element: app.html's <noscript> style names `[data-reveal]` on
-    // every page.
-    expect((html.match(/<[a-z][^>]*\sdata-reveal[\s=>]/g) ?? []).length).toBeGreaterThanOrEqual(2);
+  // Each viewport puts the first card somewhere else relative to the fold; at
+  // 390 and 768 the team is one column of 551-1015px cards, where a 50% travel
+  // left the first card's slot empty until the reader scrolled.
+  for (const viewport of [
+    { width: 1280, height: 720 },
+    { width: 768, height: 1024 },
+    { width: 390, height: 844 },
+  ]) {
+    test(`/executive-team ships its heading and first card hidden, then reveals them without a scroll (${viewport.width}px)`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(viewport);
+      // Hidden in the SERVER markup, so neither paints and then vanishes at
+      // hydration; failSafe is what makes shipping it safe. Matched on an
+      // element: app.html's <noscript> style names `[data-reveal]` on every page.
+      const html = await (await page.request.get("/executive-team")).text();
+      expect((html.match(/<[a-z][^>]*\sdata-reveal[\s=>]/g) ?? []).length).toBeGreaterThanOrEqual(
+        2,
+      );
 
-    await page.goto("/executive-team");
-    await hydrated(page);
-    for (const selector of ["section h2", ".members"]) {
-      await expect
-        .poll(() => seenOpacity(page, selector), { timeout: 8_000, message: selector })
-        .toBe(1);
-    }
-  });
+      await page.goto("/executive-team");
+      await hydrated(page);
+      // The photo, not the button: the reveal moves a wrapper inside it.
+      for (const selector of ["section h2", ".members img"]) {
+        await expect
+          .poll(() => seenOpacity(page, selector), { timeout: 8_000, message: selector })
+          .toBe(1);
+      }
+    });
+  }
 
   test("the home image band waits below the fold, then reveals on scroll", async ({ page }) => {
     await page.goto("/");
@@ -210,6 +224,6 @@ test.describe("under prefers-reduced-motion: reduce", () => {
   test("/executive-team shows its heading and team at once", async ({ page }) => {
     await page.goto("/executive-team", { waitUntil: "domcontentloaded" });
     expect(await seenOpacity(page, "section h2")).toBe(1);
-    expect(await seenOpacity(page, ".members")).toBe(1);
+    expect(await seenOpacity(page, ".members img")).toBe(1);
   });
 });

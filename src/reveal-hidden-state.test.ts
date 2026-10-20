@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { animateIn } from "$lib/actions/animateIn";
+import { animateIn, type AnimateInOptions } from "$lib/actions/animateIn";
+import { CARD_REVEAL } from "$lib/components/TeamMembers/TeamMembers.svelte";
 
 // The scroll reveal's hidden state has two halves that have to agree, and the
 // CSS half is not reachable from jsdom (which resolves no stylesheets):
@@ -27,9 +28,9 @@ const css = readFileSync(resolve(process.cwd(), "src/app.css"), "utf-8");
  *  and sliced to the closing brace rather than matched by regex: a selector
  *  regex with `[^)]*` in it stops at a nested `)` and matches nothing however
  *  good the CSS is, which is how a check that can only ever fail gets written. */
-function gatedRule(source: string) {
+function gatedRule(source: string, selector = "[data-reveal]") {
   const bare = source.replace(/\/\*[\s\S]*?\*\//g, "");
-  const at = bare.indexOf("[data-reveal] {");
+  const at = bare.indexOf(`${selector} {`);
   if (at === -1) return null;
   const gate = bare.lastIndexOf("@media", at);
   if (gate === -1) return null;
@@ -45,14 +46,17 @@ function gatedRule(source: string) {
 const declared = (rule: string | null, property: string) =>
   new RegExp(`(?<![\\w-])${property}:\\s*([^;}]+)`).exec(rule ?? "")?.[1]?.trim();
 
-/** What animateIn writes on an element it hides with its default options. */
-const hiddenByAction = (() => {
+/** What animateIn writes on an element it hides with `options`. */
+const hiddenWith = (options?: AnimateInOptions) => {
   const node = document.createElement("div");
-  const { destroy } = animateIn(node);
+  const { destroy } = animateIn(node, options);
   const state = { opacity: node.style.opacity, transform: node.style.transform };
   destroy();
   return state;
-})();
+};
+
+/** What animateIn writes on an element it hides with its default options. */
+const hiddenByAction = hiddenWith();
 
 const DEFAULT_TRAVEL = /^translateY\((.+)\)$/.exec(hiddenByAction.transform)?.[1]?.trim();
 
@@ -66,5 +70,17 @@ describe("the scroll reveal's first-paint hidden state", () => {
     expect(DEFAULT_TRAVEL, "animateIn wrote no translateY when hiding").toBeTruthy();
     expect(declared(rule, "opacity")).toBe(hiddenByAction.opacity);
     expect(declared(rule, "transform")).toBe(hiddenByAction.transform);
+  });
+
+  // TeamMembers reveals its cards from a shorter travel than the default (a
+  // card is 551-1015px tall in one column, and 50% of that put its hidden
+  // state below the fold), so it ships `data-reveal="card"`, and app.css must
+  // hide that value at exactly the travel the component asks the action for.
+  it('hides [data-reveal="card"] exactly as animateIn does with CARD_REVEAL', () => {
+    const rule = gatedRule(css, '[data-reveal="card"]');
+    expect(rule, 'no [data-reveal="card"] rule inside a no-preference block').not.toBeNull();
+    const card = hiddenWith(CARD_REVEAL);
+    expect(card.transform).not.toBe(hiddenByAction.transform);
+    expect(declared(rule, "transform")).toBe(card.transform);
   });
 });
