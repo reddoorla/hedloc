@@ -90,7 +90,7 @@ async function expectSharedType(page: Page, { paragraphs = true } = {}) {
   await expectRendered(page, 'header a:not([href="/"])', DISPLAY_MEDIUM);
   // Erik's tracking is for the Eurostile only: FF Good keeps its own.
   if (paragraphs) await expectTracking(page, "main p", "0px");
-  await expectTracking(page, "footer div div", "0.3px");
+  await expectTracking(page, "footer div div, footer a:not(:has(img))", "0.3px");
   await expectRendered(page, "footer a:not(:has(img)), footer div div", REGULAR);
   // Body copy is Regular, upright; only the team titles (p.h5) are italic.
   if (paragraphs) await expectRendered(page, "main p:not(.h5)", REGULAR);
@@ -174,7 +174,11 @@ for (const width of [1440, 390]) {
       await expectFamily(page, "form label, form input, form textarea", BODY);
       await expectRendered(page, "form label", /^GoodPro-Medium$/);
       // The form's own tracking: 0.54px, or 0.44px under its phone rule.
-      await expectTracking(page, "form label", width === 1440 ? "0.54px" : "0.44px");
+      await expectTracking(
+        page,
+        "form label, form input, form textarea",
+        width === 1440 ? "0.54px" : "0.44px",
+      );
     });
   });
 }
@@ -185,8 +189,10 @@ for (const width of [1024, 768, 360, 320]) {
   test.describe(`home buttons at ${width}px`, () => {
     test.use({ viewport: { width, height: 844 } });
 
-    test("stack evenly, with room, on screen", async ({ page }) => {
+    test("one width, with room, on screen", async ({ page }) => {
       await open(page, "/");
+      // The nav is Medium at these widths too, not only at 1440 and 390.
+      await expectDisplay(page, 'header a:not([href="/"])');
       await expectButtons(page);
       await expectRoomyHomeButtons(page);
     });
