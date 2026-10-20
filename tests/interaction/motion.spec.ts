@@ -227,3 +227,237 @@ test.describe("under prefers-reduced-motion: reduce", () => {
     expect(await seenOpacity(page, ".members img")).toBe(1);
   });
 });
+
+// Operator, 2026-10-20: the team bio "feels too slow", and the home images
+// should stagger in, "a bit sooner", the way reddoorla/reddoor-website does it
+// (one reveal per image, up to 400ms of left-to-right delay; the travel here is
+// a fixed 96px, see TILE_REVEAL in the home page).
+test.describe("bio and image-band timing, with motion allowed", () => {
+  test.use(MOTION);
+
+  const tiles = "section [data-reveal-tile]";
+
+  /** The opacity a reader sees on every band tile, in DOM order. */
+  const tileOpacities = (page: Page) =>
+    page.locator(tiles).evaluateAll((els) =>
+      els.map((el) => {
+        let o = 1;
+        for (let n: Element | null = el; n; n = n.parentElement) {
+          o *= Number(getComputedStyle(n).opacity);
+        }
+        return o;
+      }),
+    );
+
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
+    // The open card shows a headshot the reader has just seen sharp in the
+    // grid. Blurring it up again held the bio's photo soft for 1.5s after the
+    // text had arrived, which is what read as slow.
+    test(`an opened bio's headshot is sharp at once (${viewport.width}px)`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await page.goto("/executive-team");
+      await hydrated(page);
+      const first = page.locator("button.members").first();
+      await first.scrollIntoViewIfNeeded();
+      await expect(first.locator("img")).toHaveClass(/progressive-img--loaded/, {
+        timeout: 10_000,
+      });
+      await first.click();
+      const opened = page
+        .locator("#team-top img, [data-testid=team-bio] img")
+        .locator("visible=true");
+      await expect(opened).toHaveCount(1);
+      expect(await opened.evaluate((el) => getComputedStyle(el).filter)).toBe("none");
+    });
+
+    // How long the bio takes to arrive, read from the animations themselves,
+    // since a wall-clock reading depends on when the runner gets a frame. Svelte
+    // runs an intro's delay as its own animation before the fade, so the text's
+    // total is every animation it runs while opening: 75 + 150ms here, 150 +
+    // 150ms on main. The panel behind it is a 150ms CSS transition.
+    test(`an opened bio arrives within 250ms (${viewport.width}px)`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await page.goto("/executive-team");
+      await hydrated(page);
+      await page.locator("button.members").first().scrollIntoViewIfNeeded();
+      const timing = await page.evaluate(async () => {
+        (document.querySelector("button.members") as HTMLElement).click();
+        const panel = document.querySelector("[data-testid=team-bio]")!;
+        // Every animation in the bio (the panel and all its contents, and the
+        // open card beside it on desktop: headshot, name, Close), by the element
+        // it runs on, its length read when first seen (Svelte drops a finished
+        // animation's effect). An element's animations run one after another
+        // (Svelte's delay, then the fade), so its total is when it is fully in.
+        const seen = new Map<Element, Map<Animation, number>>();
+        const t0 = performance.now();
+        while (performance.now() - t0 < 1500) {
+          const card = document.querySelector("#team-top");
+          const all = [
+            ...panel.getAnimations({ subtree: true }),
+            ...(card?.getAnimations({ subtree: true }) ?? []),
+          ];
+          for (const a of all) {
+            const effect = a.effect as KeyframeEffect | null;
+            const t = effect?.getTiming();
+            if (!effect?.target || !t) continue;
+            const mine = seen.get(effect.target) ?? new Map<Animation, number>();
+            if (!mine.has(a)) mine.set(a, Number(t.delay ?? 0) + Number(t.duration ?? 0));
+            seen.set(effect.target, mine);
+          }
+          await new Promise((r) => requestAnimationFrame(r));
+        }
+        const totals = [...seen.values()].map((m) => [...m.values()].reduce((a, b) => a + b, 0));
+        return { slowest: Math.max(0, ...totals), animated: seen.size };
+      });
+      expect(timing.animated, "the bio animates in").toBeGreaterThan(1);
+      expect(timing.slowest, "the slowest part of the bio to arrive (ms)").toBeLessThanOrEqual(250);
+    });
+  }
+
+  test.describe("the home image band at 1440×900", () => {
+    test.use({ viewport: { width: 1440, height: 900 } });
+
+    test("each image reveals on its own, later the further right it sits", async ({ page }) => {
+      await page.goto("/");
+      await hydrated(page);
+      const delays = await page.locator(tiles).evaluateAll((els) =>
+        els.map((el) => {
+          let top = 0;
+          let left = 0;
+          for (let n = el as HTMLElement | null; n; n = n.offsetParent as HTMLElement | null) {
+            top += n.offsetTop;
+            left += n.offsetLeft;
+          }
+          const style = (el as HTMLElement).style;
+          return { top, left, delay: parseFloat(style.transitionDelay), travel: style.transform };
+        }),
+      );
+      expect(delays.length, "one reveal per image").toBe(4);
+      // Every tile hides at the travel app.css gives [data-reveal="tile"] at
+      // first paint (the unit test binds that rule to TILE_REVEAL). A tile with
+      // a travel of its own would slide at hydration and start late.
+      expect(delays.map((d) => d.travel)).toEqual(Array(4).fill("translateY(96px)"));
+      // The top row (vertical image, then the two to its right) staggers left to right.
+      const firstTop = Math.min(...delays.map((d) => d.top));
+      const row = delays
+        .filter((d) => Math.abs(d.top - firstTop) < 2)
+        .sort((a, b) => a.left - b.left);
+      expect(row.length).toBe(3);
+      expect(row[0].delay).toBeLessThan(row[1].delay);
+      expect(row[1].delay).toBeLessThan(row[2].delay);
+      expect(row[2].delay).toBeLessThanOrEqual(400);
+    });
+
+    test("the whole top row starts in once the band is 150px into view", async ({ page }) => {
+      await page.goto("/");
+      await hydrated(page);
+      const images = "section img.progressive-img";
+      // Scroll so the band's top, in its laid-out (unshifted) place, sits 150px
+      // above the bottom of the viewport, and name the images on that top row.
+      const topRow = await page.locator(images).evaluateAll((els) => {
+        const top = (el: Element) => {
+          let t = 0;
+          for (let n = el as HTMLElement | null; n; n = n.offsetParent as HTMLElement | null) {
+            t += n.offsetTop;
+          }
+          return t;
+        };
+        const rowTop = Math.min(...els.map(top));
+        window.scrollTo(0, rowTop - window.innerHeight + 150);
+        return els.map((el, i) => (Math.abs(top(el) - rowTop) < 2 ? i : -1)).filter((i) => i >= 0);
+      });
+      expect(topRow.length, "three images in the band's top row").toBe(3);
+      // On main, none of them had started.
+      for (const i of topRow) {
+        await expect
+          .poll(() => seenOpacity(page, `${images} >> nth=${i}`), { timeout: 4_000 })
+          .toBeGreaterThan(0);
+      }
+    });
+
+    test("every image ends fully in once scrolled to", async ({ page }) => {
+      await page.goto("/");
+      await hydrated(page);
+      for (const tile of await page.locator(tiles).all()) await tile.scrollIntoViewIfNeeded();
+      await expect.poll(() => tileOpacities(page), { timeout: 8_000 }).toEqual([1, 1, 1, 1]);
+    });
+  });
+
+  // The top-right pair used to overrun the row by up to 41px, by an amount
+  // that depended on which image size had loaded (#74); now it ends flush with
+  // the image below it at every desktop width.
+  for (const width of [1440, 1920, 2560]) {
+    test(`the band's top row ends flush with the image below it (${width}px)`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      // Measured at rest: under reduced motion every tile is in place at once.
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await page.goto("/", { waitUntil: "networkidle" });
+      // The images themselves, not only their reveal wrappers: an image can
+      // outgrow its wrapper (the #74 symptom) while the wrapper stays flush.
+      const boxes = await page.locator(`${tiles} img`).evaluateAll((els) =>
+        els.map((el) => {
+          const r = el.getBoundingClientRect();
+          return { left: r.left, right: r.right, width: r.width, top: r.top, bottom: r.bottom };
+        }),
+      );
+      expect(boxes.length).toBe(4);
+      const [tall, small, side, bottom] = boxes;
+      expect(Math.abs(side.right - bottom.right), "right edges").toBeLessThanOrEqual(1);
+      expect(Math.abs(small.left - bottom.left), "left edges").toBeLessThanOrEqual(1);
+      expect(Math.abs(side.left - small.right - 40), "the 40px gap").toBeLessThanOrEqual(1);
+      // Top and bottom edges: the top row starts together, the pair ends level,
+      // the image below starts 40px under it, and the tall image ends with it.
+      for (const b of [small, side]) {
+        expect(Math.abs(b.top - tall.top), "top edges").toBeLessThanOrEqual(1);
+      }
+      expect(Math.abs(small.bottom - side.bottom), "the pair's bottom edges").toBeLessThanOrEqual(
+        1,
+      );
+      expect(Math.abs(bottom.top - small.bottom - 40), "the 40px row gap").toBeLessThanOrEqual(1);
+      expect(Math.abs(tall.bottom - bottom.bottom), "the band's bottom edge").toBeLessThanOrEqual(
+        1,
+      );
+      // The wide image first, at twice the width of the one beside it.
+      expect(Math.abs(small.width - 2 * side.width), "a 2:1 split, wide first").toBeLessThanOrEqual(
+        2,
+      );
+    });
+  }
+
+  test.describe("the home image list at 390×844", () => {
+    test.use({ viewport: { width: 390, height: 844 } });
+
+    test("each image reveals on its own and ends fully in", async ({ page }) => {
+      await page.goto("/");
+      await hydrated(page);
+      const count = await page.locator(tiles).count();
+      expect(count, "one reveal per image").toBe(3);
+      // All three wait below the fold until the reader scrolls to them, each
+      // hidden on its own (not by one reveal around the list).
+      await page.waitForTimeout(3_000);
+      expect(await tileOpacities(page)).toEqual([0, 0, 0]);
+      const own = await page
+        .locator(tiles)
+        .evaluateAll((els) =>
+          els.map(
+            (el) => `${(el as HTMLElement).style.opacity} ${(el as HTMLElement).style.transform}`,
+          ),
+        );
+      expect(own).toEqual(Array(3).fill("0 translateY(96px)"));
+      // Stacked at one left edge, each waits only its position's few ms once in
+      // view, not a stagger of its own.
+      const delays = await page
+        .locator(tiles)
+        .evaluateAll((els) =>
+          els.map((el) => parseFloat((el as HTMLElement).style.transitionDelay)),
+        );
+      for (const d of delays)
+        expect(d, "a phone image's reveal delay (ms)").toBeLessThanOrEqual(100);
+      for (const tile of await page.locator(tiles).all()) await tile.scrollIntoViewIfNeeded();
+      await expect.poll(() => tileOpacities(page), { timeout: 8_000 }).toEqual([1, 1, 1]);
+    });
+  });
+});

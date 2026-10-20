@@ -6,9 +6,14 @@
   import { PrismicImage } from "@prismicio/svelte";
   import type { ComponentProps } from "svelte";
 
-  type Props = ComponentProps<typeof PrismicImage>;
+  type Props = ComponentProps<typeof PrismicImage> & {
+    /** Blur the image until it loads. Off for an image the reader has just
+     *  seen sharp elsewhere on the page (the team's open card), where a second
+     *  blur-up only reads as lag. */
+    blurUp?: boolean;
+  };
 
-  let { class: passedClasses = "", ...rest }: Props = $props();
+  let { class: passedClasses = "", blurUp = true, ...rest }: Props = $props();
 
   let loaded = $state(false);
 
@@ -36,8 +41,12 @@
   }
 </script>
 
-<PrismicImage
-  {...rest}
-  class={`progressive-img${loaded ? " progressive-img--loaded" : ""}${passedClasses ? " " + passedClasses : ""}`}
-  {@attach track}
-/>
+{#if blurUp}
+  <PrismicImage
+    {...rest}
+    class={`progressive-img${loaded ? " progressive-img--loaded" : ""}${passedClasses ? " " + passedClasses : ""}`}
+    {@attach track}
+  />
+{:else}
+  <PrismicImage {...rest} class={passedClasses} />
+{/if}

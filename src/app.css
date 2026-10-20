@@ -462,6 +462,15 @@
     }
   }
 
+  /* The home page's images reveal one by one from a 96px travel, after
+     reddoorla/reddoor-website (+page.svelte TILE_REVEAL says why not its 25%).
+     Same rule, same gate. */
+  @media (prefers-reduced-motion: no-preference) {
+    [data-reveal="tile"] {
+      transform: translateY(96px);
+    }
+  }
+
   /* Respect users who ask for less motion: neutralize CSS transitions/animations
      and smooth scrolling. Svelte's JS-driven transitions don't see this reset —
      import fade/fly/slide from $lib/transitions instead of svelte/transition.
