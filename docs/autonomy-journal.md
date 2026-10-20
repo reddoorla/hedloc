@@ -3,6 +3,15 @@
 Append-only log of unattended/agentic changes on hedloc: what changed, why, and how it was
 verified. Newest entries on top. See [`AUTONOMY.md`](../AUTONOMY.md) for the contract.
 
+## 2026-10-20 — A quicker team bio, per-image home reveal, and Medium Eurostile (#73, #75)
+
+- `feat` #73 (issues #72, #74): the open bio's headshot no longer blurs up again (sharp at 17ms, against ~1.5s), and the bio text is in at 255ms (was 387). The home images reveal one by one the way reddoorla/reddoor-website does: 96px travel, up to 400ms left to right, starting 100px into view instead of ~400px. The band's top-right pair now splits its row 2:1 less the gap (575/287px at 1440, was 602/301 overrunning by 40px).
+- `feat` #75: Erik's notes. Eurostile Extended is Medium (500) with 0.05em tracking on the Eurostile only. Both home buttons are 184px, with ~20px either side of "EXECUTIVE TEAM". The phone nav is 10.5px.
+- Verified:
+  - Red tests first, with mutation tables in each PR: 22 rows on #73 and 17 on #75. CI is green.
+  - #75 checked live by its own spec against https://hedloc.netlify.app: 26 of 26.
+- Review: #73 ran five three-lens rounds, and its fifth round's three test gaps went to the operator. #75 ran four, and the fourth was clean (minor filed as #76).
+
 ## 2026-10-20 — Typography: FF Good and Eurostile Extended from kit noj4tji (#65)
 
 - `feat` #65 (issue #61): body copy and the footer in FF Good (`ff-good-web-pro`). The top nav, every `.button-text`, the executive-team heading and the contact heading are in Eurostile Extended (`eurostile-extended`) at 400, and the two headings are uppercase. The kit link moves from `nnm4nwt` (Raleway only) to `noj4tji` on the operator's word. Nav, button, heading and mobile body sizes were set by eye, also on the operator's word.
