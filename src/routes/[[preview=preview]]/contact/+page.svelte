@@ -160,7 +160,7 @@
           <button
             type="submit"
             disabled={submitting}
-            class="mt-8 button-text transition w-36 h-9 border border-white text-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center disabled:opacity-60"
+            class="mt-8 button-text bump w-36 h-9 border border-white text-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center disabled:opacity-60"
             >{submitting ? "Sending…" : "Submit"}</button
           >
         </div>

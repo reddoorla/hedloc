@@ -48,24 +48,143 @@
 @source inline("md:w-1/2");
 @source inline("h-[40vw]");
 
+/* Micro-interaction utilities — press/hover/idle nudges shared across sites.
+   All movement is gated behind `prefers-reduced-motion: no-preference`, so
+   reduced-motion users get a plain, static control. */
+
+@keyframes pos-y-wiggle {
+  0% {
+    transform: translateY(1px);
+  }
+  50% {
+    transform: translateY(-1px);
+  }
+  100% {
+    transform: translateY(1px);
+  }
+}
+
+@keyframes pulse-scale {
+  0% {
+    transform: scale(1.01);
+  }
+  50% {
+    transform: scale(0.99);
+  }
+  100% {
+    transform: scale(1.01);
+  }
+}
+
+@keyframes boop {
+  0% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-15deg);
+  }
+  40% {
+    transform: rotate(15deg);
+  }
+  60% {
+    transform: rotate(-7deg);
+  }
+  80% {
+    transform: rotate(7deg);
+  }
+  90% {
+    transform: rotate(-3deg);
+  }
+  95% {
+    transform: rotate(2deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/* Press feedback: the element hops up (or down) while held. Use INSTEAD of
+   Tailwind's `transition` utility, never alongside it — `transition` emits
+   later in the built CSS, so its longhands would override these timings. The
+   shorthand already covers the hover properties commonly animated with it. */
 @utility bump {
-  &:active {
-    transform: translateY(-8px);
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      transform 300ms ease-out,
+      color 400ms ease,
+      background-color 400ms ease,
+      filter 400ms ease,
+      gap 100ms ease;
+    &:active {
+      transform: translateY(-8px);
+    }
   }
 }
 
 @utility negative-bump {
-  &:active {
-    transform: translateY(8px);
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      transform 300ms ease-out,
+      color 400ms ease,
+      background-color 400ms ease,
+      filter 400ms ease,
+      gap 100ms ease;
+    &:active {
+      transform: translateY(8px);
+    }
+  }
+}
+
+/* Gentle vertical wiggle — on hover only, or continuously. */
+@utility bob-on-hover {
+  @media (prefers-reduced-motion: no-preference) {
+    &:hover {
+      animation: 1s infinite pos-y-wiggle ease-out;
+    }
+  }
+}
+
+@utility bob-always {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: 1s infinite pos-y-wiggle ease-out;
+  }
+}
+
+/* Subtle continuous scale breathing — for standout CTAs. */
+@utility pulse-always {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: 1.5s infinite pulse-scale ease-out;
+  }
+}
+
+/* One-shot rotational wiggle; re-apply the class to replay. */
+@utility boop {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: boop 1s;
+  }
+}
+
+/* Blur-up companion to $lib/components/Img.svelte. Outside @layer base so it
+   wins over utility resets without needing !important. */
+.progressive-img {
+  filter: blur(40px);
+  transition: filter 1500ms cubic-bezier(0.5, 0, 0, 1);
+}
+
+.progressive-img.progressive-img--loaded {
+  filter: blur(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progressive-img {
+    filter: none;
+    transition: none;
   }
 }
 
 @layer base {
   body {
     font-family: "ff-good-web-pro", sans-serif;
-    transition-property: all;
-    transition-timing-function: cubic-bezier(0.5, 0, 0, 1);
-    transition-duration: 500ms;
     max-width: 100vw;
     overflow-x: hidden;
     scrollbar-width: none !important;
@@ -82,47 +201,6 @@
   }
   body::-webkit-scrollbar {
     width: 0 !important; /* Remove scrollbar space */ /* Optional: just make scrollbar invisible */
-  }
-
-  .bump,
-  .negative-bump {
-    transition: transform 300ms ease-out;
-  }
-
-  @keyframes pos-y-wiggle {
-    0% {
-      transform: translateY(1px);
-    }
-    50% {
-      transform: translateY(-1px);
-    }
-    100% {
-      transform: translateY(1px);
-    }
-  }
-  .bob-on-hover:hover {
-    animation-name: pos-y-wiggle;
-    animation-play-state: running;
-  }
-
-  .bob-always {
-    animation: 1s infinite forwards pos-y-wiggle ease-out;
-  }
-
-  @keyframes pulse-scale {
-    0% {
-      transform: scale(1.01);
-    }
-    50% {
-      transform: scale(0.99);
-    }
-    100% {
-      transform: scale(1.01);
-    }
-  }
-
-  .pulse-always {
-    animation: 1.5s infinite forwards pulse-scale ease-out;
   }
 
   a {
@@ -336,5 +414,73 @@
 
   .filter-to-dark {
     filter: invert(25%) sepia(15%) saturate(703%) hue-rotate(178deg) brightness(99%) contrast(85%);
+  }
+
+  /* The scroll reveal's hidden state, in CSS, so it exists at FIRST PAINT.
+     `use:animateIn` can only hide its targets from JS at hydration, which is
+     150-850ms after the browser has already painted them: content appeared in
+     final position, sat there, then dropped half its height and vanished
+     before floating back. That reads as a broken page load.
+
+     `[data-reveal]` is written by animateIn while an element is hidden and
+     removed the moment it reveals; SERVER-RENDERED markup can carry it too,
+     and must for a given element to be covered at first paint. The inline
+     styles animateIn writes are byte-identical to these declarations, so
+     hydration is a no-op re-write rather than a visible state change — which
+     is why the travel below is animateIn's default `translateY` and not a
+     number of its own (src/reveal-hidden-state.test.ts asserts they agree, and
+     a call site passing its own `translateY` must not ship the bare attribute;
+     the team cards' `[data-reveal="card"]` rule below is the one variant, with
+     its own matching travel).
+
+     The no-JS contract lives in app.html: a <noscript><style> there forces
+     these two properties back with !important, so a browser that will never
+     run the reveal never hides anything. Read that comment before changing
+     either half — it records why the guard is a style and not an inline
+     `html.js` class script.
+
+     An element whose SSR markup carries `data-reveal` depends on JS to ever
+     appear — pair it with animateIn's `failSafe` option, which is what that
+     option is for. */
+  @media (prefers-reduced-motion: no-preference) {
+    [data-reveal] {
+      opacity: 0;
+      transform: translateY(50%);
+    }
+  }
+
+  /* Hedloc's team cards reveal from a short travel (TeamMembers.svelte
+     CARD_REVEAL says why). Same rule, same gate; the <noscript> release
+     already covers it. */
+  @media (prefers-reduced-motion: no-preference) {
+    [data-reveal="card"] {
+      transform: translateY(24px);
+    }
+  }
+
+  /* Respect users who ask for less motion: neutralize CSS transitions/animations
+     and smooth scrolling. Svelte's JS-driven transitions don't see this reset —
+     import fade/fly/slide from $lib/transitions instead of svelte/transition.
+     The DELAYS have to go too, not just the durations: a zero-length animation
+     that still waits out its delay is "nothing happens, then it pops", which is
+     worse than the motion it replaced — a staggered reveal sits through its
+     whole cascade and then snaps in.
+     NOT COVERED: scroll-driven animations. An element on
+     `animation-timeline: scroll(root)` has no duration for this block to zero,
+     so the first component to reach for `animation-timeline: view()` or
+     `scroll()` must ship its own `@media (prefers-reduced-motion: reduce)`
+     opt-out (`animation-timeline: auto` plus a static resting state). Nothing
+     here will do it for you. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-delay: 0ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      transition-delay: 0ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }

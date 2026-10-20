@@ -24,7 +24,7 @@
     onclick={click}
     class="{filled
       ? 'bg-dark/80 hover:bg-dark active:bg-black  text-white'
-      : 'hover:bg-dark text-dark hover:text-white active:bg-black '} border-2 border-dark w-full md:w-auto text-center mb-5 sm:mb-0 uppercase cursor-pointer text-nowrap transition-all duration-300 active:-translate-y-2 {className ||
+      : 'hover:bg-dark text-dark hover:text-white active:bg-black '} border-2 border-dark w-full md:w-auto text-center mb-5 sm:mb-0 uppercase cursor-pointer text-nowrap bump {className ||
       ''}"
   >
     {#if children}{@render children()}{:else}{text}{/if}
@@ -34,7 +34,7 @@
     onclick={click}
     class="{filled
       ? 'bg-dark/80 hover:bg-dark active:bg-black  text-white'
-      : 'hover:bg-dark text-dark hover:text-white active:bg-black '} border-2 border-dark w-full md:w-auto text-center mb-5 sm:mb-0 uppercase cursor-pointer text-nowrap transition-all duration-300 active:-translate-y-2 {className ||
+      : 'hover:bg-dark text-dark hover:text-white active:bg-black '} border-2 border-dark w-full md:w-auto text-center mb-5 sm:mb-0 uppercase cursor-pointer text-nowrap bump {className ||
       ''}"
   >
     {#if children}{@render children()}{:else}{text}{/if}

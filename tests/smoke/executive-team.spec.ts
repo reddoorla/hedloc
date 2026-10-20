@@ -163,27 +163,34 @@ for (const width of [1440, 1024]) {
       await expect(page.locator("#team-top .h4")).toHaveText(NAMES[0]);
     });
 
-    test("the first member answers a click straight after Close", async ({ page }) => {
-      const members = await openFixture(page);
-      const first = (await members.first().boundingBox())!;
-      const x = first.x + first.width / 2;
-      const y = first.y + first.height / 2;
-      await members.nth(2).click();
-      await expect(page.getByText(`${NAMES[2]} bio.`)).toBeVisible();
-      const duringFade = await page.evaluate(
-        async ([px, py]) => {
-          document.querySelector<HTMLButtonElement>("#team-top button")!.click();
-          await new Promise((resolve) => setTimeout(resolve, 0));
-          return {
-            cardStillFading: !!document.querySelector("#team-top button"),
-            hitsMember: !!document.elementFromPoint(px, py)?.closest("button.members"),
-          };
-        },
-        [x, y],
-      );
-      expect(duringFade).toEqual({ cardStillFading: true, hitsMember: true });
-      await page.mouse.click(x, y);
-      await expect(page.getByText(`${NAMES[0]} bio.`)).toBeVisible();
+    test.describe("with motion allowed", () => {
+      // The case is a click landing DURING the card's fade-out. The fade comes
+      // from $lib/transitions, which (rightly) skips it under the reduced
+      // motion the shared config forces, so this test asks for motion.
+      test.use({ contextOptions: { reducedMotion: "no-preference" } });
+
+      test("the first member answers a click straight after Close", async ({ page }) => {
+        const members = await openFixture(page);
+        const first = (await members.first().boundingBox())!;
+        const x = first.x + first.width / 2;
+        const y = first.y + first.height / 2;
+        await members.nth(2).click();
+        await expect(page.getByText(`${NAMES[2]} bio.`)).toBeVisible();
+        const duringFade = await page.evaluate(
+          async ([px, py]) => {
+            document.querySelector<HTMLButtonElement>("#team-top button")!.click();
+            await new Promise((resolve) => setTimeout(resolve, 0));
+            return {
+              cardStillFading: !!document.querySelector("#team-top button"),
+              hitsMember: !!document.elementFromPoint(px, py)?.closest("button.members"),
+            };
+          },
+          [x, y],
+        );
+        expect(duringFade).toEqual({ cardStillFading: true, hitsMember: true });
+        await page.mouse.click(x, y);
+        await expect(page.getByText(`${NAMES[0]} bio.`)).toBeVisible();
+      });
     });
 
     test("a member under the open bio does not take the click", async ({ page }) => {
