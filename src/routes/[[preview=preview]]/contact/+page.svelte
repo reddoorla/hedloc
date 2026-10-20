@@ -55,7 +55,7 @@
   anchor={75}
   class="flex flex-col items-start justify-end pt-12 pb-25 gap-6"
 >
-  <h1 class="text-white max-w-screen-lg">{hero.header}</h1>
+  <h1 class="heading-display text-white max-w-screen-lg">{hero.header}</h1>
   {#if hero.body}
     <div class="max-w-screen-lg text-white whitespace-pre-line flex flex-col gap-2">
       <p>{hero.body}</p>
