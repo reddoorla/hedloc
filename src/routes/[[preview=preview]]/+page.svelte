@@ -15,15 +15,18 @@
 <svelte:window bind:innerWidth={viewportWidth} />
 
 {#snippet ctaButtons()}
-  <div class="flex flex-row gap-6 text-white">
+  <!-- One width for both, with ~20px either side of "EXECUTIVE TEAM" (Erik:
+       it felt cramped). Side by side they need 392px, so on a phone they
+       stack as an even pair instead of overflowing. -->
+  <div class="flex flex-row flex-wrap gap-6 text-white">
     <a
       href="/executive-team"
-      class="button-text bump w-36 h-9 border-2 border-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center"
+      class="button-text bump w-46 h-9 border-2 border-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center"
       >Executive Team</a
     >
     <a
       href="/contact"
-      class="button-text bump w-36 h-9 border-2 text-dark bg-white border-white hover:bg-dark active:bg-white active:text-dark hover:text-white flex items-center justify-center"
+      class="button-text bump w-46 h-9 border-2 text-dark bg-white border-white hover:bg-dark active:bg-white active:text-dark hover:text-white flex items-center justify-center"
       >Contact Us</a
     >
   </div>

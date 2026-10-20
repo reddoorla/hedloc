@@ -1,8 +1,9 @@
 import { test, expect, type ElementHandle, type Page } from "@playwright/test";
 
 // Erik's 2026-10-20 type spec, from Adobe kit noj4tji: FF Good Regular on body
-// copy and the footer; Eurostile Extended Regular on the top nav, every
-// .button-text and the two page headings, which are all caps.
+// copy and the footer; Eurostile Extended on the top nav, every .button-text
+// and the two page headings, which are all caps. At 19:16Z he asked for the
+// Eurostile one weight up (Medium) with 25-50 units of print tracking.
 const BODY = "ff-good-web-pro";
 const DISPLAY = "eurostile-extended";
 
@@ -29,13 +30,23 @@ async function expectFamily(page: Page, selector: string, family: string) {
 }
 
 // Eurostile Extended is in the kit at 400, 500 and 900 only, so a 600 rule would
-// render the Black cut. "Regular" means the 400 upright face.
-async function expectRegular(page: Page, selector: string) {
+// render the Black cut. Erik's Medium is the 500 upright face, tracked 0.05em
+// (50 units in print, the top of the 25-50 he asked for).
+async function expectTracking(page: Page, selector: string, value: string) {
   for (const el of await visible(page, selector)) {
-    const s = await el.evaluate(
-      (e) => `${getComputedStyle(e).fontWeight} ${getComputedStyle(e).fontStyle}`,
-    );
-    expect(s, `weight and style of ${selector}`).toBe("400 normal");
+    const spacing = await el.evaluate((e) => getComputedStyle(e).letterSpacing);
+    expect(spacing === "normal" ? "0px" : spacing, `tracking of ${selector}`).toBe(value);
+  }
+}
+
+async function expectDisplay(page: Page, selector: string) {
+  for (const el of await visible(page, selector)) {
+    const s = await el.evaluate((e) => {
+      const cs = getComputedStyle(e);
+      const tracking = parseFloat(cs.letterSpacing) / parseFloat(cs.fontSize);
+      return `${cs.fontWeight} ${cs.fontStyle} ${tracking.toFixed(3)}em`;
+    });
+    expect(s, `weight, style and tracking of ${selector}`).toBe("500 normal 0.050em");
   }
 }
 
@@ -44,7 +55,7 @@ async function expectRegular(page: Page, selector: string) {
 // @font-face at all, and a FontFace's "loaded" status can belong to a
 // same-named face that never renders, so neither can tell.
 const REGULAR = /^GoodPro$/;
-const DISPLAY_REGULAR = /^EurostileExt-Reg$/;
+const DISPLAY_MEDIUM = /^EurostileExt-Med$/;
 
 async function expectRendered(page: Page, selector: string, face: RegExp) {
   const cdp = await page.context().newCDPSession(page);
@@ -75,8 +86,11 @@ async function expectSharedType(page: Page, { paragraphs = true } = {}) {
   if (paragraphs) await expectFamily(page, "main p", BODY);
   await expectFamily(page, "footer, footer div, footer a", BODY);
   await expectFamily(page, 'header a:not([href="/"])', DISPLAY);
-  await expectRegular(page, 'header a:not([href="/"])');
-  await expectRendered(page, 'header a:not([href="/"])', DISPLAY_REGULAR);
+  await expectDisplay(page, 'header a:not([href="/"])');
+  await expectRendered(page, 'header a:not([href="/"])', DISPLAY_MEDIUM);
+  // Erik's tracking is for the Eurostile only: FF Good keeps its own.
+  if (paragraphs) await expectTracking(page, "main p", "0px");
+  await expectTracking(page, "footer div div, footer a:not(:has(img))", "0.3px");
   await expectRendered(page, "footer a:not(:has(img)), footer div div", REGULAR);
   // Body copy is Regular, upright; only the team titles (p.h5) are italic.
   if (paragraphs) await expectRendered(page, "main p:not(.h5)", REGULAR);
@@ -84,8 +98,8 @@ async function expectSharedType(page: Page, { paragraphs = true } = {}) {
 
 async function expectButtons(page: Page) {
   await expectFamily(page, ".button-text", DISPLAY);
-  await expectRegular(page, ".button-text");
-  await expectRendered(page, ".button-text", DISPLAY_REGULAR);
+  await expectDisplay(page, ".button-text");
+  await expectRendered(page, ".button-text", DISPLAY_MEDIUM);
   for (const el of await visible(page, ".button-text")) {
     const fits = await el.evaluate((e) => {
       const range = document.createRange();
@@ -96,10 +110,36 @@ async function expectButtons(page: Page) {
   }
 }
 
+// Erik, 19:16Z: "Executive Team" felt cramped in its button. The two home
+// buttons share one width with room either side, side by side or stacked,
+// and never run off a phone.
+async function expectRoomyHomeButtons(page: Page) {
+  const boxes = await page.locator("a.button-text").evaluateAll((els) =>
+    els
+      .filter((el) => (el as HTMLElement).offsetParent)
+      .map((el) => el.getBoundingClientRect())
+      .map((r) => ({ width: r.width, right: r.right })),
+  );
+  expect(boxes.length, "two home buttons").toBe(2);
+  expect(Math.abs(boxes[0].width - boxes[1].width), "one width for both").toBeLessThan(1);
+  const viewport = page.viewportSize()!.width;
+  for (const b of boxes) expect(b.right, "on screen").toBeLessThanOrEqual(viewport);
+  for (const el of await visible(page, "a.button-text")) {
+    const clear = await el.evaluate((e) => {
+      const range = document.createRange();
+      range.selectNodeContents(e);
+      const text = range.getBoundingClientRect();
+      const box = e.getBoundingClientRect();
+      return Math.min(text.left - box.left, box.right - text.right);
+    });
+    expect(clear, `room either side of "${await el.textContent()}"`).toBeGreaterThanOrEqual(16);
+  }
+}
+
 async function expectHeading(page: Page, selector: string) {
   await expectFamily(page, selector, DISPLAY);
-  await expectRegular(page, selector);
-  await expectRendered(page, selector, DISPLAY_REGULAR);
+  await expectDisplay(page, selector);
+  await expectRendered(page, selector, DISPLAY_MEDIUM);
   await expect(page.locator(selector)).toHaveCSS("text-transform", "uppercase");
 }
 
@@ -111,12 +151,15 @@ for (const width of [1440, 390]) {
       await open(page, "/");
       await expectSharedType(page);
       await expectButtons(page);
+      await expectRoomyHomeButtons(page);
     });
 
     test("executive team: 'The Team' heading and the Close button", async ({ page }) => {
       await open(page, "/executive-team");
       await expectSharedType(page);
       await expectHeading(page, "main h2");
+      // FF Good keeps its own tracking: the team names stay at 0.54px.
+      await expectTracking(page, "main .h4", "0.54px");
       await page.locator("button.members").first().click();
       await expectButtons(page);
     });
@@ -130,6 +173,28 @@ for (const width of [1440, 390]) {
       // The form keeps its 600 labels, FF Good's real Medium cut.
       await expectFamily(page, "form label, form input, form textarea", BODY);
       await expectRendered(page, "form label", /^GoodPro-Medium$/);
+      // The form's own tracking: 0.54px, or 0.44px under its phone rule.
+      await expectTracking(
+        page,
+        "form label, form input, form textarea",
+        width === 1440 ? "0.54px" : "0.44px",
+      );
+    });
+  });
+}
+
+// Between the desktop row and the phone stack (the page moves the buttons at
+// 1024px), and on the narrowest phones: still one width, roomy and on screen.
+for (const width of [1024, 768, 360, 320]) {
+  test.describe(`home buttons at ${width}px`, () => {
+    test.use({ viewport: { width, height: 844 } });
+
+    test("one width, with room, on screen", async ({ page }) => {
+      await open(page, "/");
+      // The nav is Medium at these widths too, not only at 1440 and 390.
+      await expectDisplay(page, 'header a:not([href="/"])');
+      await expectButtons(page);
+      await expectRoomyHomeButtons(page);
     });
   });
 }
