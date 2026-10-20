@@ -338,8 +338,9 @@
   }
 
   @media only screen and (max-width: 786px) {
-    /* Eurostile Extended is wide: at 14px the nav took the logo's room, and at
-       Medium 11px it still took 7px of it at 390 (16px at 320). */
+    /* Eurostile Extended is wide: at 14px the nav took the logo's room. At
+       Medium 11px it took 7px of it at 390 (16px at 320); at 10.5px the logo
+       is within 1px of Regular's at 390 and 3px at 320. */
     header {
       font-size: 10.5px;
       line-height: 1.4;

@@ -158,6 +158,8 @@ for (const width of [1440, 390]) {
       await open(page, "/executive-team");
       await expectSharedType(page);
       await expectHeading(page, "main h2");
+      // FF Good keeps its own tracking: the team names stay at 0.54px.
+      await expectTracking(page, "main .h4", "0.54px");
       await page.locator("button.members").first().click();
       await expectButtons(page);
     });
@@ -171,13 +173,15 @@ for (const width of [1440, 390]) {
       // The form keeps its 600 labels, FF Good's real Medium cut.
       await expectFamily(page, "form label, form input, form textarea", BODY);
       await expectRendered(page, "form label", /^GoodPro-Medium$/);
+      // The form's own tracking: 0.54px, or 0.44px under its phone rule.
+      await expectTracking(page, "form label", width === 1440 ? "0.54px" : "0.44px");
     });
   });
 }
 
-// The home buttons stack on the narrowest phones: still one width, roomy and
-// on screen.
-for (const width of [360, 320]) {
+// Between the desktop row and the phone stack (the page moves the buttons at
+// 1024px), and on the narrowest phones: still one width, roomy and on screen.
+for (const width of [1024, 768, 360, 320]) {
   test.describe(`home buttons at ${width}px`, () => {
     test.use({ viewport: { width, height: 844 } });
 
