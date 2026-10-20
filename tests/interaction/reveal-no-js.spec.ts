@@ -54,7 +54,10 @@ test("the server ships a hidden reveal target in the markup", async ({ page }) =
   // the attribute is in the response, not added by the client.
   const html = await (await page.request.get(FIXTURE)).text();
   expect(
-    (html.match(/data-reveal/g) ?? []).length,
+    // The attribute on an element, not the bare word: app.html's <noscript>
+    // style names `[data-reveal]` on every page, so counting the word (as
+    // reddoor-starter's version does) passes on a page with no target at all.
+    (html.match(/<[a-z][^>]*\sdata-reveal[\s=>]/g) ?? []).length,
     `${FIXTURE} server-renders at least one hidden reveal target`,
   ).toBeGreaterThan(0);
 });
@@ -95,28 +98,40 @@ test(
   },
 );
 
-test("with scripting off, blur-up images paint sharp", { tag: "@smoke" }, async ({ browser }) => {
-  // `.progressive-img` is blurred by CSS and only JS (Img.svelte) ever
-  // unblurs it, so without the <noscript> release every headshot stayed at
-  // blur(40px) forever on a page that showed them sharp before the port.
-  const context = await browser.newContext({
-    javaScriptEnabled: false,
-    reducedMotion: "no-preference",
-  });
-  try {
-    const page = await context.newPage();
-    await page.goto("/executive-team", { waitUntil: "domcontentloaded" });
-    const filters = await page.evaluate(() =>
-      Array.from(document.querySelectorAll(".progressive-img")).map(
-        (el) => getComputedStyle(el).filter,
-      ),
-    );
-    expect(filters.length, "the page ships blur-up images").toBeGreaterThan(0);
-    for (const f of filters) expect(f, "scripting off: filter").toBe("none");
-  } finally {
-    await context.close();
-  }
-});
+test(
+  "with scripting off, /executive-team paints its reveals and images in full",
+  { tag: "@smoke" },
+  async ({ browser }) => {
+    // `.progressive-img` is blurred by CSS and only JS (Img.svelte) ever
+    // unblurs it, so without the <noscript> release every headshot stayed at
+    // blur(40px) forever on a page that showed them sharp before the port.
+    const context = await browser.newContext({
+      javaScriptEnabled: false,
+      reducedMotion: "no-preference",
+    });
+    try {
+      const page = await context.newPage();
+      await page.goto("/executive-team", { waitUntil: "domcontentloaded" });
+      // The page's revealed blocks ship data-reveal from the server too.
+      const reveals = await page.evaluate(() =>
+        Array.from(document.querySelectorAll("[data-reveal]")).map(
+          (el) => getComputedStyle(el).opacity,
+        ),
+      );
+      expect(reveals.length, "the page ships data-reveal markup").toBeGreaterThan(0);
+      for (const o of reveals) expect(o, "scripting off: opacity").toBe("1");
+      const filters = await page.evaluate(() =>
+        Array.from(document.querySelectorAll(".progressive-img")).map(
+          (el) => getComputedStyle(el).filter,
+        ),
+      );
+      expect(filters.length, "the page ships blur-up images").toBeGreaterThan(0);
+      for (const f of filters) expect(f, "scripting off: filter").toBe("none");
+    } finally {
+      await context.close();
+    }
+  },
+);
 
 test("with scripting on, it is hidden on the first frame and never flashes", async ({
   browser,

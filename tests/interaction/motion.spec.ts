@@ -46,6 +46,21 @@ async function hydrated(page: Page) {
   await page.waitForFunction(() => document.documentElement.hasAttribute("data-hydrated"));
 }
 
+/** The opacity a reader actually sees: the element's own, times every
+ *  ancestor's. The reveal hides a block's container, not the node a locator
+ *  names. */
+const seenOpacity = (page: Page, selector: string) =>
+  page
+    .locator(selector)
+    .first()
+    .evaluate((el) => {
+      let o = 1;
+      for (let n: Element | null = el; n; n = n.parentElement) {
+        o *= Number(getComputedStyle(n).opacity);
+      }
+      return o;
+    });
+
 test.describe("with motion allowed", () => {
   test.use(MOTION);
 
@@ -115,6 +130,34 @@ test.describe("with motion allowed", () => {
       .toBeLessThan(-7);
     await page.mouse.up();
   });
+  test("/executive-team ships its heading and team hidden, then reveals them", async ({ page }) => {
+    // Hidden in the SERVER markup, so neither paints and then vanishes at
+    // hydration; failSafe is what makes shipping it safe.
+    const html = await (await page.request.get("/executive-team")).text();
+    // On an element: app.html's <noscript> style names `[data-reveal]` on
+    // every page.
+    expect((html.match(/<[a-z][^>]*\sdata-reveal[\s=>]/g) ?? []).length).toBeGreaterThanOrEqual(2);
+
+    await page.goto("/executive-team");
+    await hydrated(page);
+    for (const selector of ["section h2", ".members"]) {
+      await expect
+        .poll(() => seenOpacity(page, selector), { timeout: 8_000, message: selector })
+        .toBe(1);
+    }
+  });
+
+  test("the home image band waits below the fold, then reveals on scroll", async ({ page }) => {
+    await page.goto("/");
+    await hydrated(page);
+    const band = "section img.progressive-img";
+    // Well past the fail-safe: below the fold, it waits for the reader.
+    await page.waitForTimeout(3_000);
+    expect(await seenOpacity(page, band), "revealed before it was scrolled to").toBe(0);
+
+    await page.locator(band).first().scrollIntoViewIfNeeded();
+    await expect.poll(() => seenOpacity(page, band), { timeout: 8_000 }).toBe(1);
+  });
 });
 
 test.describe("under prefers-reduced-motion: reduce", () => {
@@ -163,5 +206,10 @@ test.describe("under prefers-reduced-motion: reduce", () => {
     for (const t of await targets.all()) {
       expect(await t.evaluate((el) => getComputedStyle(el).opacity)).toBe("1");
     }
+  });
+  test("/executive-team shows its heading and team at once", async ({ page }) => {
+    await page.goto("/executive-team", { waitUntil: "domcontentloaded" });
+    expect(await seenOpacity(page, "section h2")).toBe(1);
+    expect(await seenOpacity(page, ".members")).toBe(1);
   });
 });
