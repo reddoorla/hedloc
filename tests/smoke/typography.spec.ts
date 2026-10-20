@@ -32,6 +32,13 @@ async function expectFamily(page: Page, selector: string, family: string) {
 // Eurostile Extended is in the kit at 400, 500 and 900 only, so a 600 rule would
 // render the Black cut. Erik's Medium is the 500 upright face, tracked 0.05em
 // (50 units in print, the top of the 25-50 he asked for).
+async function expectTracking(page: Page, selector: string, value: string) {
+  for (const el of await visible(page, selector)) {
+    const spacing = await el.evaluate((e) => getComputedStyle(e).letterSpacing);
+    expect(spacing === "normal" ? "0px" : spacing, `tracking of ${selector}`).toBe(value);
+  }
+}
+
 async function expectDisplay(page: Page, selector: string) {
   for (const el of await visible(page, selector)) {
     const s = await el.evaluate((e) => {
@@ -81,6 +88,9 @@ async function expectSharedType(page: Page, { paragraphs = true } = {}) {
   await expectFamily(page, 'header a:not([href="/"])', DISPLAY);
   await expectDisplay(page, 'header a:not([href="/"])');
   await expectRendered(page, 'header a:not([href="/"])', DISPLAY_MEDIUM);
+  // Erik's tracking is for the Eurostile only: FF Good keeps its own.
+  if (paragraphs) await expectTracking(page, "main p", "0px");
+  await expectTracking(page, "footer div div", "0.3px");
   await expectRendered(page, "footer a:not(:has(img)), footer div div", REGULAR);
   // Body copy is Regular, upright; only the team titles (p.h5) are italic.
   if (paragraphs) await expectRendered(page, "main p:not(.h5)", REGULAR);
@@ -100,9 +110,20 @@ async function expectButtons(page: Page) {
   }
 }
 
-// Erik, 19:16Z: "Executive Team" felt cramped in its button. The home buttons
-// size to their labels with room either side.
+// Erik, 19:16Z: "Executive Team" felt cramped in its button. The two home
+// buttons share one width with room either side, side by side or stacked,
+// and never run off a phone.
 async function expectRoomyHomeButtons(page: Page) {
+  const boxes = await page.locator("a.button-text").evaluateAll((els) =>
+    els
+      .filter((el) => (el as HTMLElement).offsetParent)
+      .map((el) => el.getBoundingClientRect())
+      .map((r) => ({ width: r.width, right: r.right })),
+  );
+  expect(boxes.length, "two home buttons").toBe(2);
+  expect(Math.abs(boxes[0].width - boxes[1].width), "one width for both").toBeLessThan(1);
+  const viewport = page.viewportSize()!.width;
+  for (const b of boxes) expect(b.right, "on screen").toBeLessThanOrEqual(viewport);
   for (const el of await visible(page, "a.button-text")) {
     const clear = await el.evaluate((e) => {
       const range = document.createRange();
@@ -150,6 +171,20 @@ for (const width of [1440, 390]) {
       // The form keeps its 600 labels, FF Good's real Medium cut.
       await expectFamily(page, "form label, form input, form textarea", BODY);
       await expectRendered(page, "form label", /^GoodPro-Medium$/);
+    });
+  });
+}
+
+// The home buttons stack on the narrowest phones: still one width, roomy and
+// on screen.
+for (const width of [360, 320]) {
+  test.describe(`home buttons at ${width}px`, () => {
+    test.use({ viewport: { width, height: 844 } });
+
+    test("stack evenly, with room, on screen", async ({ page }) => {
+      await open(page, "/");
+      await expectButtons(page);
+      await expectRoomyHomeButtons(page);
     });
   });
 }
