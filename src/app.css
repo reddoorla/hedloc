@@ -62,7 +62,7 @@
 
 @layer base {
   body {
-    font-family: "raleway", sans-serif;
+    font-family: "ff-good-web-pro", sans-serif;
     transition-property: all;
     transition-timing-function: cubic-bezier(0.5, 0, 0, 1);
     transition-duration: 500ms;
@@ -197,11 +197,14 @@
   }
 
   .button-text {
+    font-family: "eurostile-extended", sans-serif;
     font-size: 12px;
     font-style: normal;
-    font-weight: 600;
+    font-weight: 400;
     line-height: 30px; /* 250% */
-    letter-spacing: 0.48px;
+    /* 0.48px set "EXECUTIVE TEAM" at 140.7px in Eurostile Extended, past the
+       144px button's 140px inside its borders; at 0 it is 134px. */
+    letter-spacing: 0;
     text-transform: uppercase;
   }
 
@@ -236,6 +239,20 @@
       letter-spacing: 0.44px;
       text-transform: uppercase;
     }
+  }
+
+  /* Eurostile Extended is in the kit at 400, 500 and 900 only: the 600 the
+     header rules above ask for would render its Black cut. */
+  header {
+    font-family: "eurostile-extended", sans-serif;
+    font-weight: 400;
+  }
+
+  .heading-display {
+    font-family: "eurostile-extended", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    text-transform: uppercase;
   }
 
   /* svelte-select stylings */
