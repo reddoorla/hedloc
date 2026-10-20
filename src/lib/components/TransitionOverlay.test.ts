@@ -3,15 +3,12 @@ import { render, cleanup } from "@testing-library/svelte";
 import { tick } from "svelte";
 import TransitionOverlay from "./TransitionOverlay.svelte";
 
-// The wash that covers a client navigation. It used to be two seconds of opaque
-// black that ate clicks: mounted on EVERY navigation (back/forward and external
-// ones included), never cleared its timer, not hidden from assistive tech, and
-// with no pointer-events-none — so `elementFromPoint` returned the sheet and a
-// second tap went nowhere.
-//
-// Modelled on PreNavTransition.test.ts, which drives the same two lifecycle
-// hooks and shares the `shouldIntercept` predicate with this component — the
-// pair must not disagree about which navigations get covered.
+// The wash that covers a client navigation. Ported from reddoor-starter, where
+// it used to be two seconds of opaque black that ate clicks: mounted on EVERY
+// navigation (back/forward and external ones included), never cleared its
+// timer, not hidden from assistive tech, and with no pointer-events-none — so
+// `elementFromPoint` returned the sheet and a second tap went nowhere. Hedloc
+// never shipped that version; these tests keep the fixed one fixed.
 
 afterEach(() => cleanup());
 
@@ -187,10 +184,10 @@ describe("TransitionOverlay — the sheet is never in the way", () => {
 // flash, because a lingering outro node satisfied it.
 //
 // What IS observable in this environment is the component's timer bookkeeping,
-// which is also where the defect actually lives: the old component armed no
-// ceiling at all and never cleared the timer belonging to a superseded
-// navigation. The browser-level behaviour (the wash itself) is beachfront's
-// tests/interaction/page-transition.spec.ts, which is not ported here.
+// which is also where the defect actually lives: the starter's old component
+// armed no ceiling at all and never cleared the timer belonging to a superseded
+// navigation. The browser-level behaviour (the wash itself, and the ceiling
+// lifting a navigation that never completes) is tests/interaction/motion.spec.ts.
 describe("TransitionOverlay — how long the cover lasts", () => {
   it("arms a ceiling as the cover goes up", async () => {
     render(TransitionOverlay);

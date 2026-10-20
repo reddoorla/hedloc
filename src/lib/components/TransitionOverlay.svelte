@@ -10,8 +10,9 @@
     <TransitionOverlay class="fixed top-0 left-0 z-50 h-screen w-screen bg-white" />
 
   The cover lasts `real navigation latency + visibleDuration + fadeOutDuration`.
-  It used to be `latency + 1050 + 700`: measured on beachfront-dentistry at
-  1440x900 (a reddoor-starter measurement), a navigation that committed at 247ms was opaque from 17ms to 1309ms
+  In reddoor-starter it used to be `latency + 1050 + 700` (Hedloc never shipped
+  that version): measured on beachfront-dentistry at 1440x900, a navigation
+  that committed at 247ms was opaque from 17ms to 1309ms
   and only gone at 1998ms — nearly two seconds of cover over a page that had
   been ready for 1.7s of it. With no `pointer-events-none`, `elementFromPoint`
   returned this div for all of it, so a second tap was silently eaten. The

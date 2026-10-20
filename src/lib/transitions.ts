@@ -56,7 +56,7 @@ function queryList(): MediaQueryList | null {
 
 /** Live reduced-motion query, exported for components whose BEHAVIOR (not just
  *  animation) changes under reduced motion — here TransitionOverlay raises no
- *  wash at all. Deliberately asks `matchMedia`
+ *  wash at all, and TeamMembers scrolls instantly instead of smoothly. Deliberately asks `matchMedia`
  *  fresh rather than reading the cached list: callers are one-shot (a
  *  transition about to run), and a fresh ask is what keeps it correct where the
  *  list is a stub rather than a live object. Prefer the `reducedMotion` store
