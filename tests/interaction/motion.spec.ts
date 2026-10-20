@@ -24,7 +24,8 @@ async function recordOverlay(page: Page) {
     new MutationObserver((records) => {
       for (const r of records) {
         for (const n of r.addedNodes) {
-          if (n instanceof Element && n.matches("[data-transition-overlay]")) w.__overlay.push("in");
+          if (n instanceof Element && n.matches("[data-transition-overlay]"))
+            w.__overlay.push("in");
         }
         for (const n of r.removedNodes) {
           if (n instanceof Element && n.matches("[data-transition-overlay]")) {
@@ -156,7 +157,8 @@ test.describe("under prefers-reduced-motion: reduce", () => {
   test("revealed content is visible at once", async ({ page }) => {
     await page.goto("/dev/animate-in");
     await hydrated(page);
-    const targets = page.locator("[data-reveal-subject]");
+    // The subjects, and the block animateIn writes to inside the ContentWidth one.
+    const targets = page.locator("[data-reveal-subject], [data-reveal-subject] > div");
     expect(await targets.count()).toBeGreaterThan(0);
     for (const t of await targets.all()) {
       expect(await t.evaluate((el) => getComputedStyle(el).opacity)).toBe("1");

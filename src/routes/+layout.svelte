@@ -5,6 +5,8 @@
   import logo from "$lib/assets/icons/logos/hedloc-white.svg";
   import "../app.css";
   import ContentWidth from "$lib/components/ContentWidth/ContentWidth.svelte";
+  import TransitionOverlay from "$lib/components/TransitionOverlay.svelte";
+  import { onMount } from "svelte";
   /**
    * @typedef {Object} Props
    * @property {import('svelte').Snippet} [children]
@@ -13,6 +15,12 @@
   /** @type {Props} */
 
   let { children } = $props();
+
+  // Hydration marker for the browser specs: a click before this is a full page
+  // load, which gets no route wash by design.
+  onMount(() => {
+    document.documentElement.dataset.hydrated = "";
+  });
 </script>
 
 <svelte:head>
@@ -74,6 +82,7 @@
     </ContentWidth>
   </footer>
 </main>
+<TransitionOverlay class="h-screen w-screen fixed z-50 bg-dark top-0 left-0" />
 <!-- Only mount the Prismic preview toolbar on server-rendered preview routes
      (/preview/*). On public, prerendered pages the toolbar's iframe sets 21
      third-party cookies (io.prismic.previewSession), which tanks the Lighthouse

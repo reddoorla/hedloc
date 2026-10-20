@@ -1,26 +1,26 @@
 <script lang="ts">
-  import AnimateIn from "../Animation/AnimateIn.svelte";
+  import { animateIn } from "$lib/actions/animateIn";
 
   let {
-    animateIn = false,
+    animateIn: reveal = false,
     class: className = "",
     children,
   }: {
+    /** Reveal the block on scroll into view (`use:animateIn`, 2400ms, staggered by position). */
     animateIn?: boolean;
     class?: string;
     children?: import("svelte").Snippet;
   } = $props();
 </script>
 
-{#if animateIn}
-  <AnimateIn
-    ><div
-      class="max-w-[1220px] xl:max-w-[1440px] xl:mx-auto mx-[4%] w-[92%] {className ||
-        'flex flex-col items-center justify-center relative'}"
-    >
-      {@render children?.()}
-    </div></AnimateIn
+{#if reveal}
+  <div
+    use:animateIn
+    class="max-w-[1220px] xl:max-w-[1440px] xl:mx-auto mx-[4%] w-[92%] {className ||
+      'flex flex-col items-center justify-center relative'}"
   >
+    {@render children?.()}
+  </div>
 {:else}
   <div
     class="max-w-[1220px] xl:max-w-[1440px] xl:mx-auto mx-[4%] w-[92%] {className ||

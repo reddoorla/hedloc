@@ -1,7 +1,8 @@
 <script lang="ts">
   import ContentWidth from "$lib/components/ContentWidth/ContentWidth.svelte";
-  import { PrismicImage, PrismicRichText } from "@prismicio/svelte";
-  import { fade } from "svelte/transition";
+  import Img from "$lib/components/Img.svelte";
+  import { PrismicRichText } from "@prismicio/svelte";
+  import { fade } from "$lib/transitions";
   import { cappedWidths } from "@reddoorla/maintenance/images";
   import type { AboutDocumentData } from "../../../prismicio-types";
 
@@ -29,7 +30,7 @@
           }}
           class="hidden lg:flex flex-col items-start justify-start gap-2 text-left pointer-events-auto"
         >
-          <PrismicImage
+          <Img
             class="w-full aspect-[3/4] object-cover mb-4"
             field={members[active].headshot}
             widths={cappedWidths(members[active].headshot)}
@@ -40,7 +41,7 @@
           <p class="h5">{members[active].title}</p>
 
           <div
-            class="mt-8 button-text transition w-36 h-9 border-2 border-white text-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center"
+            class="mt-8 button-text bump w-36 h-9 border-2 border-white text-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center"
           >
             Close
           </div>
@@ -67,7 +68,7 @@
           ? 'pointer-events-none'
           : ''}"
       >
-        <PrismicImage
+        <Img
           class="w-full aspect-[3/4] object-cover mb-4"
           field={members[i].headshot}
           widths={cappedWidths(members[i].headshot)}
@@ -93,7 +94,7 @@
           onclick={() => (active = -1)}
           class="flex lg:hidden flex-col items-start justify-start gap-2 text-left"
         >
-          <PrismicImage
+          <Img
             class="w-full aspect-[3/4] object-cover"
             field={members[active].headshot || ""}
             widths={cappedWidths(members[active].headshot)}
@@ -113,7 +114,7 @@
               [active].scrollIntoView({ behavior: "smooth", block: "start" });
             active = -1;
           }}
-          class=" lg:hidden pointer-events-auto mt-8 button-text transition w-36 h-9 border-2 border-white text-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center"
+          class=" lg:hidden pointer-events-auto mt-8 button-text bump w-36 h-9 border-2 border-white text-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center"
           >Close</button
         >
       </div>

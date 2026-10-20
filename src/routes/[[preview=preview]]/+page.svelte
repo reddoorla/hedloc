@@ -1,7 +1,8 @@
 <script>
   import ContentWidth from "$lib/components/ContentWidth/ContentWidth.svelte";
   import ScreenWidthImage from "$lib/components/ScreenWidth/ScreenWidthImage.svelte";
-  import { PrismicImage, PrismicRichText } from "@prismicio/svelte";
+  import Img from "$lib/components/Img.svelte";
+  import { PrismicRichText } from "@prismicio/svelte";
   import { cappedWidths } from "@reddoorla/maintenance/images";
 
   let { data } = $props();
@@ -16,12 +17,12 @@
   <div class="flex flex-row gap-6 text-white">
     <a
       href="/executive-team"
-      class="button-text transition w-36 h-9 border-2 border-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center"
+      class="button-text bump w-36 h-9 border-2 border-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center"
       >Executive Team</a
     >
     <a
       href="/contact"
-      class="button-text transition w-36 h-9 border-2 text-dark bg-white border-white hover:bg-dark active:bg-white active:text-dark hover:text-white flex items-center justify-center"
+      class="button-text bump w-36 h-9 border-2 text-dark bg-white border-white hover:bg-dark active:bg-white active:text-dark hover:text-white flex items-center justify-center"
       >Contact Us</a
     >
   </div>
@@ -62,7 +63,7 @@
         class="w-1/3 h-full flex flex-col justify-start items-start pr-10 relative"
         style="padding-left:{viewportWidth < 1560 ? '4vw' : 'calc( (100vw - 1440px) / 2 )'}"
       >
-        <PrismicImage
+        <Img
           field={content.vertical_image}
           class="w-full h-full object-cover"
           widths={cappedWidths(content.vertical_image)}
@@ -75,14 +76,14 @@
         style="padding-right:{viewportWidth < 1560 ? '4vw' : 'calc( (100vw - 1440px) / 2 )'}"
       >
         <div class="w-full h-1/2 flex flex-row gap-10 pb-5">
-          <PrismicImage
+          <Img
             field={content.nine_by_4_small}
             class="w-2/3 aspect-[16/9] object-cover"
             widths={cappedWidths(content.nine_by_4_small)}
             sizes="(min-width: 1024px) 44vw, 100vw"
             loading="lazy"
           />
-          <PrismicImage
+          <Img
             field={content.four_by_three}
             class="w-1/3 object-cover"
             widths={cappedWidths(content.four_by_three)}
@@ -91,7 +92,7 @@
           />
         </div>
         <div class="w-full h-1/2 flex flex-row pt-5">
-          <PrismicImage
+          <Img
             field={content.nine_by_four_large}
             class="w-full h-full object-cover"
             widths={cappedWidths(content.nine_by_four_large)}
@@ -103,19 +104,19 @@
     </div>
   {:else}
     <ContentWidth class="gap-10 flex flex-col items-center justify-center my-10">
-      <PrismicImage
+      <Img
         field={content.nine_by_4_small}
         widths={cappedWidths(content.nine_by_4_small)}
         sizes="92vw"
         loading="lazy"
       />
-      <PrismicImage
+      <Img
         field={content.four_by_three}
         widths={cappedWidths(content.four_by_three)}
         sizes="92vw"
         loading="lazy"
       />
-      <PrismicImage
+      <Img
         field={content.nine_by_four_large}
         widths={cappedWidths(content.nine_by_four_large)}
         sizes="92vw"
