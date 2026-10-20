@@ -10,7 +10,7 @@ verified. Newest entries on top. See [`AUTONOMY.md`](../AUTONOMY.md) for the con
   - Red test first: `tests/smoke/typography.spec.ts` pins the painted face over CDP, on `/`, `/executive-team` and `/contact` at 1440 and 390, plus the fold and the phone header.
   - 15 mutations: 13 turn it red, one survivor is inherited and one is equivalent. They are listed in #65.
   - `pnpm lint`, `pnpm check` and `pnpm test` (81 unit, 62 Playwright) all pass. CI is green.
-- Review: four three-lens rounds. Rounds 1–3 had majors, and round 4 had one, all fixed. Minors are filed as #63, #67 and #68.
+- Review: five three-lens rounds. Rounds 1–4 each had majors, all fixed; round 5 was clean apart from two journal corrections. Minors are filed as #63, #67 and #68.
 
 ## 2026-10-12 — Easy-wins pass: axe fixes, 404 header, form autofill, Typekit preconnect (#56, #57, #58)
 
