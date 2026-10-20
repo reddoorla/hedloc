@@ -39,24 +39,27 @@ async function expectRegular(page: Page, selector: string) {
   }
 }
 
-// document.fonts.check() is true for a family with no @font-face at all, so it
-// cannot tell a missing kit from a loaded one. Ask for the face itself.
-async function expectFaceLoaded(page: Page, family: string) {
-  await expect
-    .poll(() =>
-      page.evaluate(
-        (family) =>
-          [...document.fonts].some(
-            (f) =>
-              f.family.replace(/["']/g, "") === family &&
-              f.weight === "400" &&
-              f.style === "normal" &&
-              f.status === "loaded",
-          ),
-        family,
-      ),
-    )
-    .toBe(true);
+// The face Chromium actually paints, by PostScript name, from the kit and not a
+// local fallback. document.fonts.check() is true for a family with no
+// @font-face at all, and a FontFace's "loaded" status can belong to a
+// same-named face that never renders, so neither can tell.
+// Body copy may use FF Good's real italic (the team titles, p.h5).
+const RENDERED = { [BODY]: /^GoodPro(-Italic)?$/, [DISPLAY]: /^EurostileExt-Reg$/ };
+
+async function expectRendered(page: Page, selector: string, family: keyof typeof RENDERED) {
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send("DOM.enable");
+  await cdp.send("CSS.enable");
+  const { root } = await cdp.send("DOM.getDocument", { depth: -1 });
+  const { nodeIds } = await cdp.send("DOM.querySelectorAll", { nodeId: root.nodeId, selector });
+  const faces = new Set<string>();
+  for (const nodeId of nodeIds) {
+    const { fonts } = await cdp.send("CSS.getPlatformFontsForNode", { nodeId });
+    for (const f of fonts) faces.add(`${f.postScriptName}${f.isCustomFont ? "" : " (local)"}`);
+  }
+  await cdp.detach();
+  expect(faces.size, `${selector} paints text`).toBeGreaterThan(0);
+  for (const face of faces) expect(face, `face painted for ${selector}`).toMatch(RENDERED[family]);
 }
 
 async function open(page: Page, path: string) {
@@ -70,13 +73,15 @@ async function expectSharedType(page: Page, { paragraphs = true } = {}) {
   await expectFamily(page, "footer, footer div, footer a", BODY);
   await expectFamily(page, 'header a:not([href="/"])', DISPLAY);
   await expectRegular(page, 'header a:not([href="/"])');
-  await expectFaceLoaded(page, BODY);
-  await expectFaceLoaded(page, DISPLAY);
+  await expectRendered(page, 'header a:not([href="/"])', DISPLAY);
+  await expectRendered(page, "footer a:not(:has(img)), footer div div", BODY);
+  if (paragraphs) await expectRendered(page, "main p", BODY);
 }
 
 async function expectButtons(page: Page) {
   await expectFamily(page, ".button-text", DISPLAY);
   await expectRegular(page, ".button-text");
+  await expectRendered(page, ".button-text", DISPLAY);
   for (const el of await visible(page, ".button-text")) {
     const fits = await el.evaluate((e) => {
       const range = document.createRange();
@@ -90,6 +95,7 @@ async function expectButtons(page: Page) {
 async function expectHeading(page: Page, selector: string) {
   await expectFamily(page, selector, DISPLAY);
   await expectRegular(page, selector);
+  await expectRendered(page, selector, DISPLAY);
   await expect(page.locator(selector)).toHaveCSS("text-transform", "uppercase");
 }
 
@@ -142,7 +148,7 @@ test.describe("home buttons at 1440×900", () => {
 });
 
 // The header is a justify-between row whose logo link can shrink; the wide
-// Eurostile nav must leave it room on a phone.
+// Eurostile nav must leave it room on a phone, and stay on screen itself.
 for (const [width, floor] of [
   [390, 140],
   [320, 110],
@@ -150,13 +156,18 @@ for (const [width, floor] of [
   test.describe(`header at ${width}px`, () => {
     test.use({ viewport: { width, height: 844 } });
 
-    test(`the nav leaves the logo at least ${floor}px`, async ({ page }) => {
+    test(`the logo keeps ${floor}px and the nav stays on screen`, async ({ page }) => {
       await open(page, "/");
       const logo = await page
         .locator("header img")
         .first()
         .evaluate((img) => img.getBoundingClientRect().width);
       expect(logo).toBeGreaterThanOrEqual(floor);
+      const rights = await page
+        .locator('header a:not([href="/"])')
+        .evaluateAll((els) => els.map((el) => el.getBoundingClientRect().right));
+      expect(rights.length).toBe(2);
+      for (const right of rights) expect(right).toBeLessThanOrEqual(width);
     });
   });
 }
