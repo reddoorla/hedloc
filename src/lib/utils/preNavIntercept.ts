@@ -15,16 +15,20 @@ export interface NavigationLike {
 }
 
 export interface PreNavState {
-  /** href of a navigation this component already deferred and re-issued. */
+  /** href of a navigation the caller already deferred and re-issued. Only
+   *  reddoor-starter's PreNavTransition (not ported here) passes it;
+   *  TransitionOverlay never does. */
   pendingHref?: string | undefined;
   /** When true, never intercept — no overlay and no artificial delay. */
   reducedMotion?: boolean;
 }
 
 /**
- * Decides whether `PreNavTransition` should cancel a navigation and re-issue
- * it after the fade. Everything the browser (or SvelteKit) handles better on
- * its own is let through untouched:
+ * Decides whether a navigation gets a transition: here, whether
+ * TransitionOverlay raises its wash (upstream in reddoor-starter it also
+ * decides whether PreNavTransition cancels and re-issues the navigation, which
+ * is where the `goto` and `cancel()` clauses below come from). Everything the
+ * browser (or SvelteKit) handles better on its own is let through untouched:
  *
  * - reduced motion: the fade is pure decoration, so the delay goes too.
  * - popstate: cancelling back/forward and re-issuing via `goto` would push a

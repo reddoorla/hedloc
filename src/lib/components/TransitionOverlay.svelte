@@ -1,8 +1,9 @@
 <!--
   TransitionOverlay — a brief wash of colour ACROSS a client navigation. It
   mounts when SvelteKit starts navigating and lifts once the incoming route has
-  painted (unlike PreNavTransition, which cancels the nav to cover the OUTGOING
-  page first — use one or the other, never both).
+  painted. (reddoor-starter also ships PreNavTransition, which cancels the nav
+  to cover the OUTGOING page first; Hedloc does not port it, and the two must
+  never be mounted together.)
 
   Usage (root +layout.svelte):
     <TransitionOverlay />
@@ -10,15 +11,15 @@
 
   The cover lasts `real navigation latency + visibleDuration + fadeOutDuration`.
   It used to be `latency + 1050 + 700`: measured on beachfront-dentistry at
-  1440x900, a navigation that committed at 247ms was opaque from 17ms to 1309ms
+  1440x900 (a reddoor-starter measurement), a navigation that committed at 247ms was opaque from 17ms to 1309ms
   and only gone at 1998ms — nearly two seconds of cover over a page that had
   been ready for 1.7s of it. With no `pointer-events-none`, `elementFromPoint`
   returned this div for all of it, so a second tap was silently eaten. The
   durations below cover the same navigation for 464ms against a production
   build, 677ms throttled to 4x CPU and Fast 3G.
 
-  Which navigations get a wash is `shouldIntercept` — the same predicate that
-  governs PreNavTransition, so the pair cannot disagree about it. Every clause
+  Which navigations get a wash is `shouldIntercept` ($lib/utils/preNavIntercept,
+  shared with the starter's PreNavTransition upstream). Every clause
   earns its place here: reduced motion wants no full-screen flash at all;
   back/forward should feel instant; and an UNLOADING navigation (external link,
   full reload) is the one case that could strand the sheet, because

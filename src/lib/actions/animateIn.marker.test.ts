@@ -155,7 +155,7 @@ describe("animateIn — content can never be stranded invisible", () => {
     }
   });
 
-  it("stands the fail-safe down on the observer's first report, so below-fold content waits (#105)", () => {
+  it("stands the fail-safe down on the observer's first report, so below-fold content waits (reddoorla/roalson-interests#105)", () => {
     // A live observer reports once after `observe()` whether or not the
     // element is in view. The featured card ships `data-reveal` and sits below
     // the fold at 1440 x 900: a timer that ran until the reveal would reveal

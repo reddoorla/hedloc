@@ -17,7 +17,7 @@
          the whole element, so the hidden state stands and animateIn owns it.
          Content can therefore never be stranded at opacity 0 by a browser that
          was never going to run the reveal — the same guarantee a curl of the
-         SSR HTML gives a crawler.
+         SSR HTML gives a crawler. The same holds for the image blur-up.
 
          A style and not an inline `classList.add("js")` script, as in
          reddoor-starter: there a CSP drops unhashed inline scripts on some
@@ -28,6 +28,10 @@
         [data-reveal] {
           opacity: 1 !important;
           transform: none !important;
+        }
+        /* The blur-up (app.css .progressive-img) is lifted only by Img.svelte. */
+        .progressive-img {
+          filter: none !important;
         }
       </style>
     </noscript>

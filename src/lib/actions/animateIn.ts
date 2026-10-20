@@ -19,7 +19,7 @@ export type AnimateInOptions = {
    *  element must not persist at opacity 0.
    *
    *  A live observer always delivers one first report after `observe()`,
-   *  intersecting or not, and that report stands the timer down (#105): from
+   *  intersecting or not, and that report stands the timer down (reddoorla/roalson-interests#105): from
    *  then on the reveal waits for the reader. It used to run until the reveal
    *  itself, so a below-fold element was revealed on the timer, unseen, by
    *  anyone who had not scrolled to it within `failSafe` ms.
@@ -74,7 +74,7 @@ function applyHidden(node: HTMLElement, cfg: ResolvedConfig) {
   // there, and at hydration FADES OUT and slides away over `duration` — the
   // transition is written in the same block, so it runs on the hide too — and,
   // above the fold, fades straight back in. That reads as the page breaking
-  // (measured, #101).
+  // (measured, reddoorla/roalson-interests#101).
   //
   // Only true for the DEFAULT travel, which is what the CSS rule hard-codes
   // (src/reveal-hidden-state.test.ts asserts the two agree). A call site

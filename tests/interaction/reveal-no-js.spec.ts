@@ -95,6 +95,29 @@ test(
   },
 );
 
+test("with scripting off, blur-up images paint sharp", { tag: "@smoke" }, async ({ browser }) => {
+  // `.progressive-img` is blurred by CSS and only JS (Img.svelte) ever
+  // unblurs it, so without the <noscript> release every headshot stayed at
+  // blur(40px) forever on a page that showed them sharp before the port.
+  const context = await browser.newContext({
+    javaScriptEnabled: false,
+    reducedMotion: "no-preference",
+  });
+  try {
+    const page = await context.newPage();
+    await page.goto("/executive-team", { waitUntil: "domcontentloaded" });
+    const filters = await page.evaluate(() =>
+      Array.from(document.querySelectorAll(".progressive-img")).map(
+        (el) => getComputedStyle(el).filter,
+      ),
+    );
+    expect(filters.length, "the page ships blur-up images").toBeGreaterThan(0);
+    for (const f of filters) expect(f, "scripting off: filter").toBe("none");
+  } finally {
+    await context.close();
+  }
+});
+
 test("with scripting on, it is hidden on the first frame and never flashes", async ({
   browser,
 }) => {

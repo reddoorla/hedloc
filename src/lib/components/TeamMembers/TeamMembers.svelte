@@ -2,7 +2,7 @@
   import ContentWidth from "$lib/components/ContentWidth/ContentWidth.svelte";
   import Img from "$lib/components/Img.svelte";
   import { PrismicRichText } from "@prismicio/svelte";
-  import { fade } from "$lib/transitions";
+  import { fade, prefersReducedMotion } from "$lib/transitions";
   import { cappedWidths } from "@reddoorla/maintenance/images";
   import type { AboutDocumentData } from "../../../prismicio-types";
 
@@ -57,9 +57,10 @@
           } else {
             active = i;
             if (viewportWidth < 1024) {
-              document
-                .getElementById("team-top")
-                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+              document.getElementById("team-top")?.scrollIntoView({
+                behavior: prefersReducedMotion() ? "auto" : "smooth",
+                block: "start",
+              });
             }
           }
         }}
@@ -109,9 +110,10 @@
         </div>
         <button
           onclick={() => {
-            document
-              .getElementsByClassName("members")
-              [active].scrollIntoView({ behavior: "smooth", block: "start" });
+            document.getElementsByClassName("members")[active].scrollIntoView({
+              behavior: prefersReducedMotion() ? "auto" : "smooth",
+              block: "start",
+            });
             active = -1;
           }}
           class=" lg:hidden pointer-events-auto mt-8 button-text bump w-36 h-9 border-2 border-white text-white hover:bg-white active:bg-dark active:text-white hover:text-dark flex items-center justify-center"

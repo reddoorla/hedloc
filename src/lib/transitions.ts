@@ -17,9 +17,10 @@ const subscribers = new Set<Subscriber>();
 
 // ONE MediaQueryList for the whole app, created on first use and reused. A
 // preference consulted in several unconnected places drifts: this module reads
-// it per transition run, Slider keeps its own listener, and animateIn used to
-// sample it once at mount — so turning Reduce Motion on mid-session stopped the
-// carousel but left every scroll reveal running until a reload. Anything that
+// it per transition run, and in reddoor-starter a Slider kept its own listener
+// while animateIn sampled it once at mount — so turning Reduce Motion on
+// mid-session stopped the carousel but left every scroll reveal running until a
+// reload. Anything that
 // lives long enough to react should read the store below.
 let factory: typeof window.matchMedia | null = null;
 let list: MediaQueryList | null = null;
@@ -54,8 +55,8 @@ function queryList(): MediaQueryList | null {
 }
 
 /** Live reduced-motion query, exported for components whose BEHAVIOR (not just
- *  animation) changes under reduced motion — e.g. PreNavTransition skips its
- *  artificial pre-navigation delay entirely. Deliberately asks `matchMedia`
+ *  animation) changes under reduced motion — here TransitionOverlay raises no
+ *  wash at all. Deliberately asks `matchMedia`
  *  fresh rather than reading the cached list: callers are one-shot (a
  *  transition about to run), and a fresh ask is what keeps it correct where the
  *  list is a stub rather than a live object. Prefer the `reducedMotion` store
