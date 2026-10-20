@@ -278,9 +278,9 @@
     font-family: "eurostile-extended", sans-serif;
     font-size: 11px;
     font-style: normal;
-    font-weight: 400;
+    font-weight: 500;
     line-height: 30px; /* 250% */
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
   }
 
@@ -318,29 +318,33 @@
   }
 
   /* Eurostile Extended is in the kit at 400, 500 and 900 only: the 600 the
-     header rules above ask for would render its Black cut. */
+     header rules above ask for would render its Black cut. Erik asked for one
+     weight up from Regular (Medium, 500) and 25-50 units of print tracking,
+     which is 0.025-0.05em; every Eurostile rule takes the top of that. */
   header {
     font-family: "eurostile-extended", sans-serif;
     font-size: 15px;
-    font-weight: 400;
-    letter-spacing: 0.04em;
+    font-weight: 500;
+    letter-spacing: 0.05em;
   }
 
   .heading-display {
     font-family: "eurostile-extended", sans-serif;
     font-style: normal;
-    font-weight: 400;
+    font-weight: 500;
     line-height: 1.15;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
   }
 
   @media only screen and (max-width: 786px) {
-    /* Eurostile Extended is wide: at 14px the nav took the logo's room. */
+    /* Eurostile Extended is wide: at 14px the nav took the logo's room. At
+       Medium 11px it took 7px of it at 390 (16px at 320); at 10.5px the logo
+       is within 1px of Regular's at 390 and 3px at 320. */
     header {
-      font-size: 11px;
+      font-size: 10.5px;
       line-height: 1.4;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
     }
 
     .heading-display {
