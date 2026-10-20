@@ -386,10 +386,12 @@ test.describe("bio and image-band timing, with motion allowed", () => {
     test(`the band's top row ends flush with the image below it (${width}px)`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.goto("/", { waitUntil: "networkidle" });
-      const boxes = await page.locator(tiles).evaluateAll((els) =>
+      // The images themselves, not only their reveal wrappers: an image can
+      // outgrow its wrapper (the #74 symptom) while the wrapper stays flush.
+      const boxes = await page.locator(`${tiles} img`).evaluateAll((els) =>
         els.map((el) => {
           const r = el.getBoundingClientRect();
-          return { left: r.left, right: r.right };
+          return { left: r.left, right: r.right, width: r.width };
         }),
       );
       expect(boxes.length).toBe(4);
@@ -397,6 +399,10 @@ test.describe("bio and image-band timing, with motion allowed", () => {
       expect(Math.abs(side.right - bottom.right), "right edges").toBeLessThanOrEqual(1);
       expect(Math.abs(small.left - bottom.left), "left edges").toBeLessThanOrEqual(1);
       expect(Math.abs(side.left - small.right - 40), "the 40px gap").toBeLessThanOrEqual(1);
+      // The wide image first, at twice the width of the one beside it.
+      expect(Math.abs(small.width - 2 * side.width), "a 2:1 split, wide first").toBeLessThanOrEqual(
+        2,
+      );
     });
   }
 
