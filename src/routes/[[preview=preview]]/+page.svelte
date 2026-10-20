@@ -1,3 +1,15 @@
+<script module>
+  /** How each home image reveals, after reddoorla/reddoor-website's image grids
+   *  (ContentWidthMedia): one observer per image, and up to 400ms of delay by
+   *  how far right the image sits, so a row staggers in left to right. The
+   *  travel is a fixed 96px rather than that site's 25%: its tiles are all
+   *  about 400px tall, but the vertical image here is 800px, and 25% of it
+   *  would start it last in a row it should lead. app.css hides
+   *  `[data-reveal="tile"]` at this same travel (src/reveal-hidden-state.test.ts
+   *  holds them together). */
+  export const TILE_REVEAL = { translateY: "96px", delayMax: 400, failSafe: 2500 };
+</script>
+
 <script>
   import ContentWidth from "$lib/components/ContentWidth/ContentWidth.svelte";
   import ScreenWidthImage from "$lib/components/ScreenWidth/ScreenWidthImage.svelte";
@@ -59,77 +71,73 @@
     </ContentWidth>
   {/if}
   {#if viewportWidth > 1024}
-    <!-- Revealed here rather than per column: the columns carry a `style`
-         attribute Svelte rewrites when the viewport changes, which would wipe
-         the inline state animateIn writes. -->
-    <div
-      data-reveal
-      use:animateIn={{ failSafe: 2500 }}
-      class="flex flex-row text-white relative h-[800px]"
-    >
+    <!-- Each image reveals on its own wrapper, never on a column: the columns
+         carry a `style` attribute Svelte rewrites when the viewport changes,
+         which would wipe the inline state animateIn writes. -->
+    <div class="flex flex-row text-white relative h-[800px]">
       <div
         class="w-1/3 h-full flex flex-col justify-start items-start pr-10 relative"
         style="padding-left:{viewportWidth < 1560 ? '4vw' : 'calc( (100vw - 1440px) / 2 )'}"
       >
-        <Img
-          field={content.vertical_image}
-          class="w-full h-full object-cover"
-          widths={cappedWidths(content.vertical_image)}
-          sizes="(min-width: 1024px) 33vw, 100vw"
-          loading="lazy"
-        />
+        <div data-reveal="tile" data-reveal-tile use:animateIn={TILE_REVEAL} class="w-full h-full">
+          <Img
+            field={content.vertical_image}
+            class="w-full h-full object-cover"
+            widths={cappedWidths(content.vertical_image)}
+            sizes="(min-width: 1024px) 33vw, 100vw"
+            loading="lazy"
+          />
+        </div>
       </div>
       <div
         class="w-2/3 flex flex-col relative"
         style="padding-right:{viewportWidth < 1560 ? '4vw' : 'calc( (100vw - 1440px) / 2 )'}"
       >
         <div class="w-full h-1/2 flex flex-row gap-10 pb-5">
-          <Img
-            field={content.nine_by_4_small}
-            class="w-2/3 aspect-[16/9] object-cover"
-            widths={cappedWidths(content.nine_by_4_small)}
-            sizes="(min-width: 1024px) 44vw, 100vw"
-            loading="lazy"
-          />
-          <Img
-            field={content.four_by_three}
-            class="w-1/3 object-cover"
-            widths={cappedWidths(content.four_by_three)}
-            sizes="(min-width: 1024px) 22vw, 100vw"
-            loading="lazy"
-          />
+          <div data-reveal="tile" data-reveal-tile use:animateIn={TILE_REVEAL} class="w-2/3">
+            <Img
+              field={content.nine_by_4_small}
+              class="w-full h-full aspect-[16/9] object-cover"
+              widths={cappedWidths(content.nine_by_4_small)}
+              sizes="(min-width: 1024px) 44vw, 100vw"
+              loading="lazy"
+            />
+          </div>
+          <div data-reveal="tile" data-reveal-tile use:animateIn={TILE_REVEAL} class="w-1/3">
+            <Img
+              field={content.four_by_three}
+              class="w-full h-full object-cover"
+              widths={cappedWidths(content.four_by_three)}
+              sizes="(min-width: 1024px) 22vw, 100vw"
+              loading="lazy"
+            />
+          </div>
         </div>
         <div class="w-full h-1/2 flex flex-row pt-5">
-          <Img
-            field={content.nine_by_four_large}
-            class="w-full h-full object-cover"
-            widths={cappedWidths(content.nine_by_four_large)}
-            sizes="(min-width: 1024px) 66vw, 100vw"
-            loading="lazy"
-          />
+          <div
+            data-reveal="tile"
+            data-reveal-tile
+            use:animateIn={TILE_REVEAL}
+            class="w-full h-full"
+          >
+            <Img
+              field={content.nine_by_four_large}
+              class="w-full h-full object-cover"
+              widths={cappedWidths(content.nine_by_four_large)}
+              sizes="(min-width: 1024px) 66vw, 100vw"
+              loading="lazy"
+            />
+          </div>
         </div>
       </div>
     </div>
   {:else}
-    <ContentWidth animateIn class="gap-10 flex flex-col items-center justify-center my-10">
-      <Img
-        field={content.nine_by_4_small}
-        widths={cappedWidths(content.nine_by_4_small)}
-        sizes="92vw"
-        loading="lazy"
-      />
-      <Img
-        field={content.four_by_three}
-        widths={cappedWidths(content.four_by_three)}
-        sizes="92vw"
-        loading="lazy"
-      />
-      <Img
-        field={content.nine_by_four_large}
-        widths={cappedWidths(content.nine_by_four_large)}
-        sizes="92vw"
-        loading="lazy"
-      />
+    <ContentWidth class="gap-10 flex flex-col items-center justify-center my-10">
+      {#each [content.nine_by_4_small, content.four_by_three, content.nine_by_four_large] as field, i (i)}
+        <div data-reveal="tile" data-reveal-tile use:animateIn={TILE_REVEAL} class="w-full">
+          <Img {field} class="w-full" widths={cappedWidths(field)} sizes="92vw" loading="lazy" />
+        </div>
+      {/each}
     </ContentWidth>
   {/if}
 </section>

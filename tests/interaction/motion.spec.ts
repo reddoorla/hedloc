@@ -227,3 +227,85 @@ test.describe("under prefers-reduced-motion: reduce", () => {
     expect(await seenOpacity(page, ".members img")).toBe(1);
   });
 });
+
+// Operator, 2026-10-20: the team bio "feels too slow", and the home images
+// should stagger in, "a bit sooner", the way reddoorla/reddoor-website does it
+// (per-tile reveal, 25% travel, up to 400ms of left-to-right delay).
+test.describe("bio and image-band timing, with motion allowed", () => {
+  test.use(MOTION);
+
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
+    // The open card shows a headshot the reader has just seen sharp in the
+    // grid. Blurring it up again held the bio's photo soft for 1.5s after the
+    // text had arrived, which is what read as slow.
+    test(`an opened bio's headshot is sharp at once (${viewport.width}px)`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await page.goto("/executive-team");
+      await hydrated(page);
+      const first = page.locator("button.members").first();
+      await first.scrollIntoViewIfNeeded();
+      await expect(first.locator("img")).toHaveClass(/progressive-img--loaded/, {
+        timeout: 10_000,
+      });
+      await first.click();
+      const opened = page
+        .locator("#team-top img, [data-testid=team-bio] img")
+        .locator("visible=true");
+      await expect(opened).toHaveCount(1);
+      expect(await opened.evaluate((el) => getComputedStyle(el).filter)).toBe("none");
+    });
+  }
+
+  test.describe("the home image band at 1440×900", () => {
+    test.use({ viewport: { width: 1440, height: 900 } });
+
+    const tiles = "section [data-reveal-tile]";
+
+    test("each image reveals on its own, later the further right it sits", async ({ page }) => {
+      await page.goto("/");
+      await hydrated(page);
+      // Layout positions (offsetTop/offsetLeft), not boxes: a hidden tile is
+      // shifted by its own travel, which a box would include.
+      const delays = await page.locator(tiles).evaluateAll((els) =>
+        els.map((el) => {
+          let top = 0;
+          let left = 0;
+          for (let n = el as HTMLElement | null; n; n = n.offsetParent as HTMLElement | null) {
+            top += n.offsetTop;
+            left += n.offsetLeft;
+          }
+          return { top, left, delay: parseFloat((el as HTMLElement).style.transitionDelay) };
+        }),
+      );
+      expect(delays.length, "one reveal per image").toBe(4);
+      // The top row (vertical image, then the two to its right) staggers left to right.
+      const row = delays
+        .filter((d) => Math.abs(d.top - delays[0].top) < 2)
+        .sort((a, b) => a.left - b.left);
+      expect(row.length).toBe(3);
+      expect(row[0].delay).toBeLessThan(row[1].delay);
+      expect(row[1].delay).toBeLessThan(row[2].delay);
+      expect(row[2].delay).toBeLessThanOrEqual(400);
+    });
+
+    test("the top row starts in once the band is 150px into view", async ({ page }) => {
+      await page.goto("/");
+      await hydrated(page);
+      const images = "section img.progressive-img";
+      // Scroll so the top of the band's first image, in its laid-out (unshifted)
+      // place, sits 150px above the bottom of the viewport.
+      await page.evaluate((images) => {
+        const img = document.querySelector(images)!;
+        let top = 0;
+        for (let n = img as HTMLElement | null; n; n = n.offsetParent as HTMLElement | null) {
+          top += n.offsetTop;
+        }
+        window.scrollTo(0, top - window.innerHeight + 150);
+      }, images);
+      await expect.poll(() => seenOpacity(page, images), { timeout: 4_000 }).toBeGreaterThan(0);
+    });
+  });
+});

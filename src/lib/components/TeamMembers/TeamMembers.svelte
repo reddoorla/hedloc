@@ -55,6 +55,7 @@
           class="hidden lg:flex flex-col items-start justify-start gap-2 text-left pointer-events-auto"
         >
           <Img
+            blurUp={false}
             class="w-full aspect-[3/4] object-cover mb-4"
             field={members[active].headshot}
             widths={cappedWidths(members[active].headshot)}
@@ -122,13 +123,14 @@
       : ''}"
   >
     {#if active > -1}
-      <div class="  lg:w-2/3" in:fade={{ duration: 150, delay: 150 }} out:fade={{ duration: 150 }}>
+      <div class="  lg:w-2/3" in:fade={{ duration: 150, delay: 75 }} out:fade={{ duration: 150 }}>
         <button
           transition:fade={{ duration: 150 }}
           onclick={() => (active = -1)}
           class="flex lg:hidden flex-col items-start justify-start gap-2 text-left"
         >
           <Img
+            blurUp={false}
             class="w-full aspect-[3/4] object-cover"
             field={members[active].headshot || ""}
             widths={cappedWidths(members[active].headshot)}

@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { animateIn, type AnimateInOptions } from "$lib/actions/animateIn";
 import { CARD_REVEAL } from "$lib/components/TeamMembers/TeamMembers.svelte";
+import { TILE_REVEAL } from "../src/routes/[[preview=preview]]/+page.svelte";
 
 // The scroll reveal's hidden state has two halves that have to agree, and the
 // CSS half is not reachable from jsdom (which resolves no stylesheets):
@@ -82,5 +83,15 @@ describe("the scroll reveal's first-paint hidden state", () => {
     const card = hiddenWith(CARD_REVEAL);
     expect(card.transform).not.toBe(hiddenByAction.transform);
     expect(declared(rule, "transform")).toBe(card.transform);
+  });
+
+  // The home page's images reveal one by one from a 96px travel (+page.svelte
+  // TILE_REVEAL), so they ship `data-reveal="tile"` with its own matching rule.
+  it('hides [data-reveal="tile"] exactly as animateIn does with TILE_REVEAL', () => {
+    const rule = gatedRule(css, '[data-reveal="tile"]');
+    expect(rule, 'no [data-reveal="tile"] rule inside a no-preference block').not.toBeNull();
+    const tile = hiddenWith(TILE_REVEAL);
+    expect(tile.transform).not.toBe(hiddenByAction.transform);
+    expect(declared(rule, "transform")).toBe(tile.transform);
   });
 });
