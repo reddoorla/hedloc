@@ -379,6 +379,27 @@ test.describe("bio and image-band timing, with motion allowed", () => {
     });
   });
 
+  // The top-right pair used to overrun the row by up to 41px, by an amount
+  // that depended on which image size had loaded (#74); now it ends flush with
+  // the image below it at every desktop width.
+  for (const width of [1440, 1920, 2560]) {
+    test(`the band's top row ends flush with the image below it (${width}px)`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/", { waitUntil: "networkidle" });
+      const boxes = await page.locator(tiles).evaluateAll((els) =>
+        els.map((el) => {
+          const r = el.getBoundingClientRect();
+          return { left: r.left, right: r.right };
+        }),
+      );
+      expect(boxes.length).toBe(4);
+      const [, small, side, bottom] = boxes;
+      expect(Math.abs(side.right - bottom.right), "right edges").toBeLessThanOrEqual(1);
+      expect(Math.abs(small.left - bottom.left), "left edges").toBeLessThanOrEqual(1);
+      expect(Math.abs(side.left - small.right - 40), "the 40px gap").toBeLessThanOrEqual(1);
+    });
+  }
+
   test.describe("the home image list at 390×844", () => {
     test.use({ viewport: { width: 390, height: 844 } });
 

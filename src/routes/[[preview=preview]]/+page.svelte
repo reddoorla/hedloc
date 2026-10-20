@@ -73,7 +73,10 @@
   {#if viewportWidth > 1024}
     <!-- Each image reveals on its own wrapper, never on a column: the columns
          carry a `style` attribute Svelte rewrites when the viewport changes,
-         which would wipe the inline state animateIn writes. -->
+         which would wipe the inline state animateIn writes. The top-right
+         pair splits the row less its 40px gap, 2:1, so it ends flush with the
+         image below; as bare w-2/3 and w-1/3 images they overran the row by
+         up to 41px, by an amount that depended on which image size loaded. -->
     <div class="flex flex-row text-white relative h-[800px]">
       <div
         class="w-1/3 h-full flex flex-col justify-start items-start pr-10 relative"
@@ -98,7 +101,7 @@
             data-reveal="tile"
             data-reveal-tile
             use:animateIn={TILE_REVEAL}
-            class="w-2/3 shrink-0"
+            class="w-[calc((100%-2.5rem)*2/3)] shrink-0"
           >
             <Img
               field={content.nine_by_4_small}
@@ -112,7 +115,7 @@
             data-reveal="tile"
             data-reveal-tile
             use:animateIn={TILE_REVEAL}
-            class="w-1/3 shrink-0"
+            class="w-[calc((100%-2.5rem)/3)] shrink-0"
           >
             <Img
               field={content.four_by_three}
