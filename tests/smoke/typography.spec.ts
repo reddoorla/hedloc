@@ -43,23 +43,26 @@ async function expectRegular(page: Page, selector: string) {
 // local fallback. document.fonts.check() is true for a family with no
 // @font-face at all, and a FontFace's "loaded" status can belong to a
 // same-named face that never renders, so neither can tell.
-// Body copy may use FF Good's real italic (the team titles, p.h5).
-const RENDERED = { [BODY]: /^GoodPro(-Italic)?$/, [DISPLAY]: /^EurostileExt-Reg$/ };
+const REGULAR = /^GoodPro$/;
+const DISPLAY_REGULAR = /^EurostileExt-Reg$/;
 
-async function expectRendered(page: Page, selector: string, family: keyof typeof RENDERED) {
+async function expectRendered(page: Page, selector: string, face: RegExp) {
   const cdp = await page.context().newCDPSession(page);
-  await cdp.send("DOM.enable");
-  await cdp.send("CSS.enable");
-  const { root } = await cdp.send("DOM.getDocument", { depth: -1 });
-  const { nodeIds } = await cdp.send("DOM.querySelectorAll", { nodeId: root.nodeId, selector });
   const faces = new Set<string>();
-  for (const nodeId of nodeIds) {
-    const { fonts } = await cdp.send("CSS.getPlatformFontsForNode", { nodeId });
-    for (const f of fonts) faces.add(`${f.postScriptName}${f.isCustomFont ? "" : " (local)"}`);
+  try {
+    await cdp.send("DOM.enable");
+    await cdp.send("CSS.enable");
+    const { root } = await cdp.send("DOM.getDocument", { depth: -1 });
+    const { nodeIds } = await cdp.send("DOM.querySelectorAll", { nodeId: root.nodeId, selector });
+    for (const nodeId of nodeIds) {
+      const { fonts } = await cdp.send("CSS.getPlatformFontsForNode", { nodeId });
+      for (const f of fonts) faces.add(`${f.postScriptName}${f.isCustomFont ? "" : " (local)"}`);
+    }
+  } finally {
+    await cdp.detach();
   }
-  await cdp.detach();
   expect(faces.size, `${selector} paints text`).toBeGreaterThan(0);
-  for (const face of faces) expect(face, `face painted for ${selector}`).toMatch(RENDERED[family]);
+  for (const f of faces) expect(f, `face painted for ${selector}`).toMatch(face);
 }
 
 async function open(page: Page, path: string) {
@@ -73,15 +76,16 @@ async function expectSharedType(page: Page, { paragraphs = true } = {}) {
   await expectFamily(page, "footer, footer div, footer a", BODY);
   await expectFamily(page, 'header a:not([href="/"])', DISPLAY);
   await expectRegular(page, 'header a:not([href="/"])');
-  await expectRendered(page, 'header a:not([href="/"])', DISPLAY);
-  await expectRendered(page, "footer a:not(:has(img)), footer div div", BODY);
-  if (paragraphs) await expectRendered(page, "main p", BODY);
+  await expectRendered(page, 'header a:not([href="/"])', DISPLAY_REGULAR);
+  await expectRendered(page, "footer a:not(:has(img)), footer div div", REGULAR);
+  // Body copy is Regular, upright; only the team titles (p.h5) are italic.
+  if (paragraphs) await expectRendered(page, "main p:not(.h5)", REGULAR);
 }
 
 async function expectButtons(page: Page) {
   await expectFamily(page, ".button-text", DISPLAY);
   await expectRegular(page, ".button-text");
-  await expectRendered(page, ".button-text", DISPLAY);
+  await expectRendered(page, ".button-text", DISPLAY_REGULAR);
   for (const el of await visible(page, ".button-text")) {
     const fits = await el.evaluate((e) => {
       const range = document.createRange();
@@ -95,7 +99,7 @@ async function expectButtons(page: Page) {
 async function expectHeading(page: Page, selector: string) {
   await expectFamily(page, selector, DISPLAY);
   await expectRegular(page, selector);
-  await expectRendered(page, selector, DISPLAY);
+  await expectRendered(page, selector, DISPLAY_REGULAR);
   await expect(page.locator(selector)).toHaveCSS("text-transform", "uppercase");
 }
 
@@ -123,6 +127,9 @@ for (const width of [1440, 390]) {
       await expectSharedType(page, { paragraphs: false });
       await expectHeading(page, "main h1");
       await expectButtons(page);
+      // The form keeps its 600 labels, FF Good's real Medium cut.
+      await expectFamily(page, "form label, form input, form textarea", BODY);
+      await expectRendered(page, "form label", /^GoodPro-Medium$/);
     });
   });
 }
