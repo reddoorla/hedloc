@@ -94,7 +94,12 @@
         style="padding-right:{viewportWidth < 1560 ? '4vw' : 'calc( (100vw - 1440px) / 2 )'}"
       >
         <div class="w-full h-1/2 flex flex-row gap-10 pb-5">
-          <div data-reveal="tile" data-reveal-tile use:animateIn={TILE_REVEAL} class="w-2/3">
+          <div
+            data-reveal="tile"
+            data-reveal-tile
+            use:animateIn={TILE_REVEAL}
+            class="w-2/3 shrink-0"
+          >
             <Img
               field={content.nine_by_4_small}
               class="w-full h-full aspect-[16/9] object-cover"
@@ -103,7 +108,12 @@
               loading="lazy"
             />
           </div>
-          <div data-reveal="tile" data-reveal-tile use:animateIn={TILE_REVEAL} class="w-1/3">
+          <div
+            data-reveal="tile"
+            data-reveal-tile
+            use:animateIn={TILE_REVEAL}
+            class="w-1/3 shrink-0"
+          >
             <Img
               field={content.four_by_three}
               class="w-full h-full object-cover"

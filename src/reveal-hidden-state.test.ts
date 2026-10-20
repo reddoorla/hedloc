@@ -94,4 +94,12 @@ describe("the scroll reveal's first-paint hidden state", () => {
     expect(tile.transform).not.toBe(hiddenByAction.transform);
     expect(declared(rule, "transform")).toBe(tile.transform);
   });
+
+  // The tiles ship `data-reveal` from the server, so only JS ever shows them:
+  // they need animateIn's fail-safe. And "a bit sooner" (the operator) holds
+  // the reveal to animateIn's own 2400ms at most.
+  it("keeps TILE_REVEAL's fail-safe, and its reveal no slower than 2400ms", () => {
+    expect(TILE_REVEAL.failSafe).toBeGreaterThan(0);
+    expect((TILE_REVEAL as { duration?: number }).duration ?? 2400).toBeLessThanOrEqual(2400);
+  });
 });

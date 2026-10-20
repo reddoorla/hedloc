@@ -230,9 +230,24 @@ test.describe("under prefers-reduced-motion: reduce", () => {
 
 // Operator, 2026-10-20: the team bio "feels too slow", and the home images
 // should stagger in, "a bit sooner", the way reddoorla/reddoor-website does it
-// (per-tile reveal, 25% travel, up to 400ms of left-to-right delay).
+// (one reveal per image, up to 400ms of left-to-right delay; the travel here is
+// a fixed 96px, see TILE_REVEAL in the home page).
 test.describe("bio and image-band timing, with motion allowed", () => {
   test.use(MOTION);
+
+  const tiles = "section [data-reveal-tile]";
+
+  /** The opacity a reader sees on every band tile, in DOM order. */
+  const tileOpacities = (page: Page) =>
+    page.locator(tiles).evaluateAll((els) =>
+      els.map((el) => {
+        let o = 1;
+        for (let n: Element | null = el; n; n = n.parentElement) {
+          o *= Number(getComputedStyle(n).opacity);
+        }
+        return o;
+      }),
+    );
 
   for (const viewport of [
     { width: 1440, height: 900 },
@@ -257,18 +272,50 @@ test.describe("bio and image-band timing, with motion allowed", () => {
       await expect(opened).toHaveCount(1);
       expect(await opened.evaluate((el) => getComputedStyle(el).filter)).toBe("none");
     });
+
+    // How long the bio takes to arrive, read from the animations themselves,
+    // since a wall-clock reading depends on when the runner gets a frame. Svelte
+    // runs an intro's delay as its own animation before the fade, so the text's
+    // total is every animation it runs while opening: 75 + 150ms here, 150 +
+    // 150ms on main. The panel behind it is a 150ms CSS transition.
+    test(`an opened bio arrives within 250ms (${viewport.width}px)`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await page.goto("/executive-team");
+      await hydrated(page);
+      await page.locator("button.members").first().scrollIntoViewIfNeeded();
+      const timing = await page.evaluate(async () => {
+        (document.querySelector("button.members") as HTMLElement).click();
+        const panel = document.querySelector("[data-testid=team-bio]")!;
+        // Each animation's length, read when first seen: Svelte drops a finished
+        // animation's effect.
+        const seen = { panel: new Map<Animation, number>(), text: new Map<Animation, number>() };
+        const record = (map: Map<Animation, number>, el: Element | null) => {
+          for (const a of el?.getAnimations() ?? []) {
+            const t = a.effect?.getTiming();
+            if (t && !map.has(a)) map.set(a, Number(t.delay ?? 0) + Number(t.duration ?? 0));
+          }
+        };
+        const t0 = performance.now();
+        while (performance.now() - t0 < 800) {
+          record(seen.panel, panel);
+          record(seen.text, panel.firstElementChild);
+          await new Promise((r) => requestAnimationFrame(r));
+        }
+        const total = (map: Map<Animation, number>) => [...map.values()].reduce((a, b) => a + b, 0);
+        return { panel: total(seen.panel), text: total(seen.text), textAnims: seen.text.size };
+      });
+      expect(timing.textAnims, "the bio text animates in").toBeGreaterThan(0);
+      expect(timing.text, "bio text, delay plus fade (ms)").toBeLessThanOrEqual(250);
+      expect(timing.panel, "bio panel fade (ms)").toBeLessThanOrEqual(200);
+    });
   }
 
   test.describe("the home image band at 1440×900", () => {
     test.use({ viewport: { width: 1440, height: 900 } });
 
-    const tiles = "section [data-reveal-tile]";
-
     test("each image reveals on its own, later the further right it sits", async ({ page }) => {
       await page.goto("/");
       await hydrated(page);
-      // Layout positions (offsetTop/offsetLeft), not boxes: a hidden tile is
-      // shifted by its own travel, which a box would include.
       const delays = await page.locator(tiles).evaluateAll((els) =>
         els.map((el) => {
           let top = 0;
@@ -277,13 +324,19 @@ test.describe("bio and image-band timing, with motion allowed", () => {
             top += n.offsetTop;
             left += n.offsetLeft;
           }
-          return { top, left, delay: parseFloat((el as HTMLElement).style.transitionDelay) };
+          const style = (el as HTMLElement).style;
+          return { top, left, delay: parseFloat(style.transitionDelay), travel: style.transform };
         }),
       );
       expect(delays.length, "one reveal per image").toBe(4);
+      // Every tile hides at the travel app.css gives [data-reveal="tile"] at
+      // first paint (the unit test binds that rule to TILE_REVEAL). A tile with
+      // a travel of its own would slide at hydration and start late.
+      expect(delays.map((d) => d.travel)).toEqual(Array(4).fill("translateY(96px)"));
       // The top row (vertical image, then the two to its right) staggers left to right.
+      const firstTop = Math.min(...delays.map((d) => d.top));
       const row = delays
-        .filter((d) => Math.abs(d.top - delays[0].top) < 2)
+        .filter((d) => Math.abs(d.top - firstTop) < 2)
         .sort((a, b) => a.left - b.left);
       expect(row.length).toBe(3);
       expect(row[0].delay).toBeLessThan(row[1].delay);
@@ -291,21 +344,54 @@ test.describe("bio and image-band timing, with motion allowed", () => {
       expect(row[2].delay).toBeLessThanOrEqual(400);
     });
 
-    test("the top row starts in once the band is 150px into view", async ({ page }) => {
+    test("the whole top row starts in once the band is 150px into view", async ({ page }) => {
       await page.goto("/");
       await hydrated(page);
       const images = "section img.progressive-img";
-      // Scroll so the top of the band's first image, in its laid-out (unshifted)
-      // place, sits 150px above the bottom of the viewport.
-      await page.evaluate((images) => {
-        const img = document.querySelector(images)!;
-        let top = 0;
-        for (let n = img as HTMLElement | null; n; n = n.offsetParent as HTMLElement | null) {
-          top += n.offsetTop;
-        }
-        window.scrollTo(0, top - window.innerHeight + 150);
-      }, images);
-      await expect.poll(() => seenOpacity(page, images), { timeout: 4_000 }).toBeGreaterThan(0);
+      // Scroll so the band's top, in its laid-out (unshifted) place, sits 150px
+      // above the bottom of the viewport, and name the images on that top row.
+      const topRow = await page.locator(images).evaluateAll((els) => {
+        const top = (el: Element) => {
+          let t = 0;
+          for (let n = el as HTMLElement | null; n; n = n.offsetParent as HTMLElement | null) {
+            t += n.offsetTop;
+          }
+          return t;
+        };
+        const rowTop = Math.min(...els.map(top));
+        window.scrollTo(0, rowTop - window.innerHeight + 150);
+        return els.map((el, i) => (Math.abs(top(el) - rowTop) < 2 ? i : -1)).filter((i) => i >= 0);
+      });
+      expect(topRow.length, "three images in the band's top row").toBe(3);
+      // On main, none of them had started.
+      for (const i of topRow) {
+        await expect
+          .poll(() => seenOpacity(page, `${images} >> nth=${i}`), { timeout: 4_000 })
+          .toBeGreaterThan(0);
+      }
+    });
+
+    test("every image ends fully in once scrolled to", async ({ page }) => {
+      await page.goto("/");
+      await hydrated(page);
+      for (const tile of await page.locator(tiles).all()) await tile.scrollIntoViewIfNeeded();
+      await expect.poll(() => tileOpacities(page), { timeout: 8_000 }).toEqual([1, 1, 1, 1]);
+    });
+  });
+
+  test.describe("the home image list at 390×844", () => {
+    test.use({ viewport: { width: 390, height: 844 } });
+
+    test("each image reveals on its own and ends fully in", async ({ page }) => {
+      await page.goto("/");
+      await hydrated(page);
+      const count = await page.locator(tiles).count();
+      expect(count, "one reveal per image").toBe(3);
+      // All three wait below the fold until the reader scrolls to them.
+      await page.waitForTimeout(3_000);
+      expect(await tileOpacities(page)).toEqual([0, 0, 0]);
+      for (const tile of await page.locator(tiles).all()) await tile.scrollIntoViewIfNeeded();
+      await expect.poll(() => tileOpacities(page), { timeout: 8_000 }).toEqual([1, 1, 1]);
     });
   });
 });
