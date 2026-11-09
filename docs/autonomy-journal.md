@@ -3,6 +3,11 @@
 Append-only log of unattended/agentic changes on hedloc: what changed, why, and how it was
 verified. Newest entries on top. See [`AUTONOMY.md`](../AUTONOMY.md) for the contract.
 
+## 2026-11-09 — `@types/node` declared at `^24.19.2` (reddoor-workspace P1-106)
+
+- `fix(deps)`: declares `@types/node` instead of leaning on vite's optional peer, which only `@types/http-proxy` (from slice-machine-ui) holds in the lockfile today, at 26.6.6. The same lock-file-maintenance failure hit roalson-interests on 11-09 (146 svelte-check errors) and reddoor-starter-blux (36). The range is Node 24's, to match `.nvmrc`.
+- Verified: `pnpm lint`, `pnpm check` and `pnpm test:smoke` locally, and `ci / ci` green on the PR. The details are in `docs/workJournal.md`.
+
 ## 2026-10-20 — A quicker team bio, per-image home reveal, and Medium Eurostile (#73, #75)
 
 - `feat` #73 (issues #72, #74): the open bio's headshot no longer blurs up again (sharp at 17ms, against ~1.5s), and the bio text is in at 255ms (was 387). The home images reveal one by one the way reddoorla/reddoor-website does: 96px travel, up to 400ms left to right, starting 100px into view instead of ~400px. The band's top-right pair now splits its row 2:1 less the gap (575/287px at 1440, was 602/301 overrunning by 40px).
