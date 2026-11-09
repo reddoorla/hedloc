@@ -5,8 +5,8 @@ verified. Newest entries on top. See [`AUTONOMY.md`](../AUTONOMY.md) for the con
 
 ## 2026-11-09 — `@types/node` declared at `^24.19.2` (reddoor-workspace P1-106)
 
-- `fix(deps)`: declares `@types/node` instead of leaning on vite's optional peer, which only `@types/http-proxy` (from slice-machine-ui) holds in the lockfile today, at 26.6.6. The same lock-file-maintenance failure hit roalson-interests on 11-09 (146 svelte-check errors) and reddoor-starter-blux (36). The range is Node 24's, to match `.nvmrc`.
-- Verified: `pnpm lint`, `pnpm check` and `pnpm test:smoke` locally, and `ci / ci` green on the PR. The details are in `docs/workJournal.md`.
+- `fix(deps)`: declares `@types/node` instead of leaning on vite's optional peer, which only transitive dependencies (`@types/http-proxy` from slice-machine-ui; `@types/yauzl`, `chrome-launcher` and `speedline-core` from lighthouse) hold in the lockfile today, at 26.6.6. The same lock-file-maintenance failure hit roalson-interests on 11-09 (146 svelte-check errors) and reddoor-starter-blux (36). The range is Node 24's, to match `.nvmrc`.
+- Verified: `pnpm lint`, `pnpm check` and `pnpm test:smoke` locally, with `ci / ci` on the PR as the merge gate. The details are in `docs/workJournal.md`.
 
 ## 2026-10-20 — A quicker team bio, per-image home reveal, and Medium Eurostile (#73, #75)
 
