@@ -2,6 +2,7 @@ import { env } from "$env/dynamic/private";
 import { isFilled, NotFoundError } from "@prismicio/client";
 import { createIngestAction } from "@reddoorla/maintenance/forms";
 import { createClient } from "$lib/prismicio";
+import { replyCopyFor } from "$lib/server/reply-copy";
 
 import type { Actions, PageServerLoad } from "./$types";
 
@@ -73,7 +74,7 @@ export const actions: Actions = {
       url: env.FORMS_INGEST_URL,
       token: env.FORMS_INGEST_TOKEN,
     }),
-    buildPayload: (form, event) => ({
+    buildPayload: async (form, event) => ({
       name: form.get("name")?.toString(),
       email: form.get("email")?.toString(),
       phone: form.get("phone")?.toString(),
@@ -85,6 +86,10 @@ export const actions: Actions = {
       // sets it. Rides through as an extraField (no schema change); central ingest
       // recognizes it and routes the submission away from every real sink.
       testMode: form.get("testMode")?.toString() === "true" || undefined,
+      // Confirmation-email copy the client wrote in Prismic, resolved
+      // server-side. Undefined until they fill the `form replies` document —
+      // the shared package then sends its own per-form-type default.
+      _reply: await replyCopyFor(event, "contact"),
     }),
   }),
 };
