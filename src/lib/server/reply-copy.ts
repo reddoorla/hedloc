@@ -11,21 +11,20 @@ import type { RequestEvent } from "@sveltejs/kit";
  * submitter-supplied address; submitter-authored body copy would turn the
  * sending domain into a phishing relay.
  *
- * Never throws. `resolveReplyCopy` swallows CMS failures and answers undefined,
- * the caller then omits `_reply`, and the shared package sends its own
- * per-form-type default. A Prismic outage costs a tailored confirmation, never
- * the submission.
+ * `resolveReplyCopy` swallows CMS errors and answers undefined, the caller then
+ * omits `_reply`, and the shared package sends its own per-form-type default. A
+ * Prismic error costs a tailored confirmation, never the submission. A Prismic
+ * call that HANGS is not bounded here yet (reddoorla/hedloc#88).
  *
- * Returns undefined until the client fills the `form replies` document, which
- * is the intended state for a freshly bootstrapped site.
+ * Returns undefined until the `form_replies` type exists in Hedloc's Prismic
+ * (pushed by prismic-models.yml on merge) AND a `form replies` document is
+ * published. Ported unchanged from reddoor-starter except these comments.
  */
 export async function replyCopyFor(event: RequestEvent, formType: string) {
   const client = createClient({ fetch: event.fetch });
-  // The generated client's document type is a CLOSED union built from
-  // `customtypes/`, so it cannot satisfy a `(type: string)` reader — and
-  // `form_replies` is absent from that union until the model is pushed and
-  // `prismicio-types.d.ts` is regenerated. This adapter is the one place that
-  // gap is asserted, rather than loosening the shared type for every caller.
+  // Hedloc's `createClient` is untyped JS, so these casts are not needed here
+  // today; they are kept so this file stays the starter's, whose typed client
+  // has a closed document-type union that `form_replies` may be absent from.
   // Safe because the resolver treats a missing document exactly as it treats an
   // unwritten one: nothing authored, fall back.
   const reader = {
