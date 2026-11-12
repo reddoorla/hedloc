@@ -203,8 +203,8 @@ importers:
         specifier: ^1.60.0
         version: 1.65.0
       '@reddoorla/maintenance':
-        specifier: ^0.97.0
-        version: 0.97.0(@sveltejs/kit@2.70.4(@opentelemetry/api@1.10.0)(@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.3(@typescript-eslint/types@8.72.1))(vite@8.3.7(@types/node@24.19.2)(jiti@2.7.0)))(svelte@5.57.3(@typescript-eslint/types@8.72.1))(typescript@6.0.3)(vite@8.3.7(@types/node@24.19.2)(jiti@2.7.0)))(jiti@2.7.0)(playwright-core@1.65.0)(supports-color@10.2.2)(svelte@5.57.3(@typescript-eslint/types@8.72.1))(typescript@6.0.3)
+        specifier: ^0.117.0
+        version: 0.117.1(@sveltejs/kit@2.70.4(@opentelemetry/api@1.10.0)(@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.3(@typescript-eslint/types@8.72.1))(vite@8.3.7(@types/node@24.19.2)(jiti@2.7.0)))(svelte@5.57.3(@typescript-eslint/types@8.72.1))(typescript@6.0.3)(vite@8.3.7(@types/node@24.19.2)(jiti@2.7.0)))(jiti@2.7.0)(playwright-core@1.65.0)(supports-color@10.2.2)(svelte@5.57.3(@typescript-eslint/types@8.72.1))(typescript@6.0.3)
       '@slicemachine/adapter-sveltekit':
         specifier: ^0.3.96
         version: 0.3.100(@prismicio/client@7.23.0)(@sveltejs/kit@2.70.4(@opentelemetry/api@1.10.0)(@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.3(@typescript-eslint/types@8.72.1))(vite@8.3.7(@types/node@24.19.2)(jiti@2.7.0)))(svelte@5.57.3(@typescript-eslint/types@8.72.1))(typescript@6.0.3)(vite@8.3.7(@types/node@24.19.2)(jiti@2.7.0)))(prettier-plugin-svelte@4.1.1(prettier@3.9.10)(svelte@5.57.3(@typescript-eslint/types@8.72.1)))(prettier@3.9.10)(svelte@5.57.3(@typescript-eslint/types@8.72.1))
@@ -987,12 +987,12 @@ packages:
       yauzl:
         optional: true
 
-  '@reddoorla/maintenance@0.97.0':
-    resolution: {integrity: sha512-hx1qalHHNvj8eNR5DRcWEXx6xGhRgaAj+j7H9rrBUdj2qUFKeyV4fey/Z3Y/PvOkxJNWFh7d6K6M3wVTFIjNvQ==}
+  '@reddoorla/maintenance@0.117.1':
+    resolution: {integrity: sha512-Yd2d/JxZQmMeI4gxvA1KisbuyDRWRKmJIx4ijRErzhPTxgQftHrDKeoj03lJk6eV082rolt5E3SxcYrR52vj7Q==}
     engines: {node: '>=20'}
     hasBin: true
     peerDependencies:
-      '@sveltejs/kit': ^2.0.0
+      '@sveltejs/kit': ^2.0.0 || ^3.0.0
     peerDependenciesMeta:
       '@sveltejs/kit':
         optional: true
@@ -1544,6 +1544,9 @@ packages:
   ansi-styles@6.2.3:
     resolution: {integrity: sha512-4Dj6M28JB+oAH8kFkTLUo+a2jwOFkuqb3yucU0CANcRRUbxS0cP0nZYCGjcc3BNXwRIsUVmDGgzawme7zvJHvg==}
     engines: {node: '>=12'}
+
+  argparse@2.0.1:
+    resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
 
   argparse@3.0.4:
     resolution: {integrity: sha512-fwWK3Zq22l4XJJjx5mcBHGikIk+hJqO+32dPm0Jur7+rtG5x1scOjSfdT9ZKeWHPpsya/l0HHK4tDImBkTrtvA==}
@@ -2600,6 +2603,10 @@ packages:
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
+
+  js-yaml@4.3.2:
+    resolution: {integrity: sha512-SFNOvSJ+Dgf/9An904Yx+CgSlIPCkIpao4qo51lpee25TIRejdH3rhR4EZMGoNx3/TP3O+wzWuiTFl4sqbltzA==}
+    hasBin: true
 
   js-yaml@5.5.0:
     resolution: {integrity: sha512-paNr4LFIFPjeeSmwNYdrb8FafLLG/Cr2Af3GjbsHJ5CxIjH4r0c2emlmRdAtpPAieP1gRVzk6buBbVP5gBMGAg==}
@@ -4600,7 +4607,7 @@ snapshots:
       proxy-agent: 6.5.0(supports-color@10.2.2)
       yauzl: 2.10.0
 
-  '@reddoorla/maintenance@0.97.0(@sveltejs/kit@2.70.4(@opentelemetry/api@1.10.0)(@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.3(@typescript-eslint/types@8.72.1))(vite@8.3.7(@types/node@24.19.2)(jiti@2.7.0)))(svelte@5.57.3(@typescript-eslint/types@8.72.1))(typescript@6.0.3)(vite@8.3.7(@types/node@24.19.2)(jiti@2.7.0)))(jiti@2.7.0)(playwright-core@1.65.0)(supports-color@10.2.2)(svelte@5.57.3(@typescript-eslint/types@8.72.1))(typescript@6.0.3)':
+  '@reddoorla/maintenance@0.117.1(@sveltejs/kit@2.70.4(@opentelemetry/api@1.10.0)(@sveltejs/vite-plugin-svelte@7.3.1(svelte@5.57.3(@typescript-eslint/types@8.72.1))(vite@8.3.7(@types/node@24.19.2)(jiti@2.7.0)))(svelte@5.57.3(@typescript-eslint/types@8.72.1))(typescript@6.0.3)(vite@8.3.7(@types/node@24.19.2)(jiti@2.7.0)))(jiti@2.7.0)(playwright-core@1.65.0)(supports-color@10.2.2)(svelte@5.57.3(@typescript-eslint/types@8.72.1))(typescript@6.0.3)':
     dependencies:
       '@axe-core/playwright': 4.14.0(playwright-core@1.65.0)
       '@eslint/js': 10.0.1(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))
@@ -4610,6 +4617,7 @@ snapshots:
       eslint-config-prettier: 10.1.8(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))
       eslint-plugin-svelte: 3.24.1(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(svelte@5.57.3(@typescript-eslint/types@8.72.1))
       globals: 17.14.0
+      js-yaml: 4.3.2
       listr2: 10.2.2
       node-html-parser: 9.0.7
       prettier: 3.9.10
@@ -5187,6 +5195,8 @@ snapshots:
   ansi-styles@5.2.0: {}
 
   ansi-styles@6.2.3: {}
+
+  argparse@2.0.1: {}
 
   argparse@3.0.4: {}
 
@@ -6295,6 +6305,10 @@ snapshots:
   js-library-detector@6.7.0: {}
 
   js-tokens@4.0.0: {}
+
+  js-yaml@4.3.2:
+    dependencies:
+      argparse: 2.0.1
 
   js-yaml@5.5.0:
     dependencies:
